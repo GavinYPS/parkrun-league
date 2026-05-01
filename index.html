@@ -255,14 +255,7 @@ table td input[type=time]{width:110px;font-size:13px;padding:5px 8px}
 
 <script>
 // ── Constants ──────────────────────────────────────────────────────────────
-// Use our own Netlify function — no CORS issues, no blocked HTML
-async function proxyFetch(url) {
-  const resp = await fetch('/api/fetch-parkrun?url=' + encodeURIComponent(url));
-  if (!resp.ok) throw new Error('HTTP ' + resp.status);
-  const text = await resp.text();
-  if (!text || text.length < 200) throw new Error('empty response');
-  return text;
-}
+const PROXY = 'https://api.allorigins.win/get?url=';
 const STORE_KEY = 'parkrun_league_v3';
 
 // ── Default state ──────────────────────────────────────────────────────────
@@ -342,7 +335,11 @@ function slugFromUrl(url) {
   return m ? m[1].toLowerCase() : null;
 }
 
-
+function proxyFetch(url) {
+  return fetch(PROXY + encodeURIComponent(url))
+    .then(r => r.json())
+    .then(d => { if (!d.contents || d.contents.length < 200) throw new Error('empty'); return d.contents; });
+}
 
 function getTournamentSettings(tid) {
   const t = S.tournaments.find(t=>t.id===tid);
