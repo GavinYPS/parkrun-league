@@ -156,7 +156,7 @@ table td input[type=time]{width:110px;font-size:13px;padding:5px 8px}
       <input type="time" id="r-pb" step="1" style="max-width:160px;"/>
       <span id="r-pb-hint" style="font-size:12px;color:var(--text2);"></span>
     </div>
-    <p class="form-hint">Paste the runner's parkrun profile URL above â name and best time will fill in automatically.</p>
+    <p class="form-hint">Paste the runner's parkrun profile URL above Ã¢ÂÂ name and best time will fill in automatically.</p>
     <div class="btn-group">
       <button class="btn btn-primary" onclick="addRunner()">Save runner</button>
       <button class="btn" onclick="tog('f-runner');clearRunnerForm()">Cancel</button>
@@ -254,8 +254,8 @@ table td input[type=time]{width:110px;font-size:13px;padding:5px 8px}
 </div>
 
 <script>
-// ââ Constants ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-// Use our own Netlify function â no CORS issues, no blocked HTML
+// Ã¢ÂÂÃ¢ÂÂ Constants Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
+// Use our own Netlify function Ã¢ÂÂ no CORS issues, no blocked HTML
 async function proxyFetch(url) {
   const proxies = [
     u => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u),
@@ -275,7 +275,7 @@ async function proxyFetch(url) {
 }
 const STORE_KEY = 'parkrun_league_v3';
 
-// ââ Default state ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// Ã¢ÂÂÃ¢ÂÂ Default state Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 function defaultTournamentSettings() {
   return {
     bonusTiers: [
@@ -285,8 +285,8 @@ function defaultTournamentSettings() {
     ],
     bands: [
       {threshold:-120,points:4,label:'2+ min faster'},
-      {threshold:-60, points:2,label:'1â2 min faster'},
-      {threshold:-30, points:1,label:'30â60s faster'},
+      {threshold:-60, points:2,label:'1Ã¢ÂÂ2 min faster'},
+      {threshold:-30, points:1,label:'30Ã¢ÂÂ60s faster'},
       {threshold:30,  points:0,label:'Within 30s'},
     ]
   };
@@ -316,7 +316,7 @@ function persist() {
   try { localStorage.setItem(STORE_KEY, JSON.stringify(S)); } catch(e) {}
 }
 
-// ââ Helpers ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// Ã¢ÂÂÃ¢ÂÂ Helpers Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 function uid() { return Date.now() + Math.floor(Math.random()*9999); }
 function tog(id) { const el=document.getElementById(id); el.style.display=el.style.display==='none'?'block':'none'; }
 
@@ -372,7 +372,7 @@ function getBonus(runs, settings) {
   return 0;
 }
 
-// ââ Nav ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// Ã¢ÂÂÃ¢ÂÂ Nav Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 function sw(t) {
   document.querySelectorAll('nav button').forEach(el =>
     el.classList.toggle('active', el.getAttribute('onclick').includes("'"+t+"'"))
@@ -385,7 +385,7 @@ function sw(t) {
   if (t==='settings')    { renderSettingsSel(); renderSettings(); }
 }
 
-// ââ Runners ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// Ã¢ÂÂÃ¢ÂÂ Runners Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 let runnerLookupTimer = null;
 
 function scheduleRunnerLookup() {
@@ -403,29 +403,35 @@ async function doRunnerLookup(url) {
   const statusEl = document.getElementById('r-url-status');
   statusEl.innerHTML = '<span class="spin"></span> Looking up runner…';
   try {
-    const pageResp = await fetch(url);
-    if (!pageResp.ok) throw new Error('HTTP ' + pageResp.status);
-    const html = await pageResp.text();
-    const resp = await fetch('/.netlify/functions/fetch-parkrun', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ html })
-    });
-    const data = await resp.json();
-    if (!data.name) throw new Error('Could not find runner on this page');
-    document.getElementById('r-name').value = data.name;
-    if (data.bestAnnualTime) {
-      const t = data.bestAnnualTime.replace(/^00:/, '');
-      const s = tSec(t);
-      if (s) {
-        document.getElementById('r-pb').value = sHMS(s);
-        document.getElementById('r-pb-hint').textContent = 'Best annual time — edit if needed';
-      }
+    const html = await fetchViaIframe(url);
+    const info = parseRunnerPage(html);
+    if (!info || !info.name) throw new Error('Could not find runner');
+    document.getElementById('r-name').value = info.name;
+    if (info.suggestedPBSec) {
+      document.getElementById('r-pb').value = sHMS(info.suggestedPBSec);
+      document.getElementById('r-pb-hint').textContent = 'Best time from ' + info.suggestedYear + ' — edit if needed';
     }
-    statusEl.innerHTML = '<span style="color:var(--green)">&#10003; Found: ' + data.name + '</span>';
+    statusEl.innerHTML = '<span style="color:var(--green)">&#10003; Found: ' + info.name + '</span>';
   } catch(e) {
     statusEl.innerHTML = '<span style="color:var(--red)">Could not look up — enter name and PB manually</span>';
   }
+}
+
+function fetchViaIframe(url) {
+  return new Promise((resolve, reject) => {
+    const f = document.createElement('iframe');
+    f.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;opacity:0;';
+    f.src = url;
+    let done = false;
+    f.onload = () => {
+      if (done) return; done = true;
+      try { const h = f.contentDocument.documentElement.outerHTML; document.body.removeChild(f); resolve(h); }
+      catch(e) { document.body.removeChild(f); reject(new Error('iframe read error')); }
+    };
+    f.onerror = () => { if (done) return; done = true; try{document.body.removeChild(f);}catch(e){} reject(new Error('load error')); };
+    setTimeout(() => { if (done) return; done = true; try{document.body.removeChild(f);}catch(e){} reject(new Error('timeout')); }, 12000);
+    document.body.appendChild(f);
+  });
 }
 
 function parseRunnerPage(html) {
@@ -439,7 +445,7 @@ function parseRunnerPage(html) {
     .map(w => w ? w[0].toUpperCase()+w.slice(1).toLowerCase() : '')
     .join(' ');
 
-  // Best Annual Achievements table â Year | Best Time
+  // Best Annual Achievements table Ã¢ÂÂ Year | Best Time
   const now = new Date().getFullYear();
   let suggestedPBSec = null, suggestedYear = '';
   for (const row of doc.querySelectorAll('table tr')) {
@@ -471,7 +477,7 @@ function addRunner() {
   // Extract ID and slug from the URL
   const ridM  = url.match(/parkrunner\/(\d+)/);
   const rid   = ridM ? ridM[1] : '';
-  if (!name)  { alert('Please enter a name â or wait for the profile lookup to complete.'); return; }
+  if (!name)  { alert('Please enter a name Ã¢ÂÂ or wait for the profile lookup to complete.'); return; }
   if (!rid)   { alert('Please paste a valid parkrun profile URL.'); return; }
   if (!pb)    { alert('Please enter a baseline PB time.'); return; }
   if (S.runners.some(r=>r.rid===rid)) { alert('Runner A'+rid+' is already added.'); return; }
@@ -518,7 +524,7 @@ function renderRunners() {
     </div>`).join('');
 }
 
-// ââ Tournaments ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// Ã¢ÂÂÃ¢ÂÂ Tournaments Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 function addTournament() {
   const name = document.getElementById('t-name').value.trim();
   const desc = document.getElementById('t-desc').value.trim();
@@ -541,7 +547,7 @@ function removeTournament(tid) {
   persist(); renderTournaments(); renderResEvSel(); renderLbSel(); renderSettingsSel();
 }
 
-// ââ Locations ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// Ã¢ÂÂÃ¢ÂÂ Locations Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 let locLookupTimer = null;
 
 function showAddLocation(tid) {
@@ -581,7 +587,7 @@ function scheduleLocLookup(tid) {
 async function doLocLookup(tid, slug, url) {
   const statusEl = document.getElementById('loc-status-'+tid);
   if (!statusEl) return;
-  statusEl.innerHTML = '<span class="spin"></span> Looking up locationâ¦';
+  statusEl.innerHTML = '<span class="spin"></span> Looking up locationÃ¢ÂÂ¦';
   try {
     const html = await proxyFetch('https://www.parkrun.org.uk/'+slug+'/');
     const name = parseLocationName(html, slug);
@@ -589,7 +595,7 @@ async function doLocLookup(tid, slug, url) {
     statusEl.dataset.name = name;
     statusEl.dataset.slug = slug;
   } catch(e) {
-    // Use slug as capitalised fallback â still let them save
+    // Use slug as capitalised fallback Ã¢ÂÂ still let them save
     const name = slug.split('-').map(w=>w[0].toUpperCase()+w.slice(1)).join(' ') + ' parkrun';
     statusEl.innerHTML = '<span style="color:var(--amber)">Using: ' + name + '</span>';
     statusEl.dataset.name = name;
@@ -629,7 +635,7 @@ function removeLocation(lid) {
   persist(); renderTournaments(); renderResEvSel();
 }
 
-// ââ Events âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// Ã¢ÂÂÃ¢ÂÂ Events Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 let evLookupTimer = null;
 
 function showAddEvent(lid) {
@@ -652,7 +658,7 @@ function showAddEvent(lid) {
     <div class="form-row">
       <label>Date</label>
       <input type="date" id="evdate-${lid}" style="max-width:190px;"/>
-      <span style="font-size:12px;color:var(--text3);">auto-filled Â· editable</span>
+      <span style="font-size:12px;color:var(--text3);">auto-filled ÃÂ· editable</span>
     </div>
     <div class="btn-group" style="margin-top:8px;">
       <button class="btn btn-primary btn-sm" onclick="saveEvent(${lid})">Save event</button>
@@ -686,10 +692,10 @@ async function doEvLookup(lid, num) {
       if (dateInput) dateInput.value = m[1];
       statusEl.innerHTML = '<span style="color:var(--green)">&#10003; ' + fmtDate(m[1]) + '</span>';
     } else {
-      statusEl.innerHTML = '<span style="color:var(--amber)">Date not found â enter manually</span>';
+      statusEl.innerHTML = '<span style="color:var(--amber)">Date not found Ã¢ÂÂ enter manually</span>';
     }
   } catch(e) {
-    statusEl.innerHTML = '<span style="color:var(--amber)">Could not look up â enter date manually</span>';
+    statusEl.innerHTML = '<span style="color:var(--amber)">Could not look up Ã¢ÂÂ enter date manually</span>';
   }
 }
 
@@ -714,7 +720,7 @@ function removeEvent(eid) {
   persist(); renderTournaments(); renderResEvSel();
 }
 
-// ââ Render tournaments tree ââââââââââââââââââââââââââââââââââââââââââââââââ
+// Ã¢ÂÂÃ¢ÂÂ Render tournaments tree Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 function renderTournaments() {
   const el = document.getElementById('tournaments-body');
   if (!S.tournaments.length) {
@@ -739,7 +745,7 @@ function renderTournaments() {
           </div>
           <div style="display:flex;gap:6px;flex-shrink:0;">
             <button class="btn btn-sm btn-info" onclick="sw('results');document.getElementById('res-ev-sel').value='${ev.id}';renderResultEntry();">Results</button>
-            <button class="btn btn-sm btn-danger" onclick="removeEvent(${ev.id})">â</button>
+            <button class="btn btn-sm btn-danger" onclick="removeEvent(${ev.id})">Ã¢ÂÂ</button>
           </div>
         </div>`;
       }).join('');
@@ -748,11 +754,11 @@ function renderTournaments() {
         <div class="location-header">
           <div>
             <div class="location-name">${loc.name}</div>
-            <div class="location-meta">parkrun.org.uk/${loc.slug}/ Â· ${locEvents.length} event${locEvents.length!==1?'s':''}</div>
+            <div class="location-meta">parkrun.org.uk/${loc.slug}/ ÃÂ· ${locEvents.length} event${locEvents.length!==1?'s':''}</div>
           </div>
           <div style="display:flex;gap:6px;flex-shrink:0;">
             <button class="btn btn-sm btn-primary" onclick="showAddEvent(${loc.id})">+ Add event</button>
-            <button class="btn btn-sm btn-danger" onclick="removeLocation(${loc.id})">â</button>
+            <button class="btn btn-sm btn-danger" onclick="removeLocation(${loc.id})">Ã¢ÂÂ</button>
           </div>
         </div>
         <div class="location-events" id="evlist-${loc.id}">
@@ -765,7 +771,7 @@ function renderTournaments() {
       <div class="tournament-header">
         <div>
           <div class="tournament-title">${t.name}</div>
-          <div class="tournament-meta">${t.desc?t.desc+' Â· ':''}${tLocs.length} location${tLocs.length!==1?'s':''} Â· ${tEvents.length} event${tEvents.length!==1?'s':''}</div>
+          <div class="tournament-meta">${t.desc?t.desc+' ÃÂ· ':''}${tLocs.length} location${tLocs.length!==1?'s':''} ÃÂ· ${tEvents.length} event${tEvents.length!==1?'s':''}</div>
         </div>
         <div style="display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap;">
           <button class="btn btn-sm btn-primary" onclick="showAddLocation(${t.id})">+ Add location</button>
@@ -773,13 +779,13 @@ function renderTournaments() {
         </div>
       </div>
       <div class="tournament-body" id="tbody-${t.id}">
-        ${locsHtml||'<div style="font-size:13px;color:var(--text3);">No locations yet â add one above.</div>'}
+        ${locsHtml||'<div style="font-size:13px;color:var(--text3);">No locations yet Ã¢ÂÂ add one above.</div>'}
       </div>
     </div>`;
   }).join('');
 }
 
-// ââ Results ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// Ã¢ÂÂÃ¢ÂÂ Results Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 function renderResEvSel() {
   const sel = document.getElementById('res-ev-sel');
   const cur = sel.value;
@@ -788,9 +794,9 @@ function renderResEvSel() {
     S.locations.filter(l=>l.tournamentId===t.id).forEach(loc => {
       const evs = S.events.filter(e=>e.locationId===loc.id).sort((a,b)=>b.runNumber-a.runNumber);
       if (!evs.length) return;
-      html += `<optgroup label="${t.name} â ${loc.name}">`;
+      html += `<optgroup label="${t.name} Ã¢ÂÂ ${loc.name}">`;
       evs.forEach(ev => {
-        html += `<option value="${ev.id}" ${String(ev.id)===cur?'selected':''}>#${ev.runNumber}${ev.date?' Â· '+ev.date:''}</option>`;
+        html += `<option value="${ev.id}" ${String(ev.id)===cur?'selected':''}>#${ev.runNumber}${ev.date?' ÃÂ· '+ev.date:''}</option>`;
       });
       html += '</optgroup>';
     });
@@ -813,7 +819,7 @@ function renderResultEntry() {
         <div style="font-size:12px;color:var(--text2);margin-top:3px;">${fmtDate(ev.date)}</div>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <button class="btn btn-sm btn-info" onclick="fetchAll(${evId})">Fetch all from parkrun â</button>
+        <button class="btn btn-sm btn-info" onclick="fetchAll(${evId})">Fetch all from parkrun Ã¢ÂÂ</button>
         <button class="btn btn-sm" onclick="clearEventResults(${evId})">Clear all</button>
       </div>
     </div>
@@ -851,7 +857,7 @@ function renderResultRows(evId) {
       <td><span class="badge ${bc}">${dStr(diff)}</span></td>
       <td style="font-size:12px;color:var(--text2);">${bp?bp.label:''}</td>
       <td style="font-weight:700;font-size:15px;color:${bp&&bp.pts>0?'var(--green)':bp&&bp.pts<0?'var(--red)':'var(--text)'};">${bp!=null?(bp.pts>0?'+':'')+bp.pts:'--'}</td>
-      <td><button class="btn btn-sm btn-info" onclick="fetchOne(${evId},${r.id})" title="Fetch">â</button></td>
+      <td><button class="btn btn-sm btn-info" onclick="fetchOne(${evId},${r.id})" title="Fetch">Ã¢ÂÂ</button></td>
     </tr>`;
   }).join('');
 }
@@ -914,7 +920,7 @@ function parseRunnerTime(html,runNumber) {
   return null;
 }
 
-// ââ Leaderboard ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// Ã¢ÂÂÃ¢ÂÂ Leaderboard Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 function renderLbSel() {
   const sel=document.getElementById('lb-tournament-sel');
   const cur=sel.value;
@@ -956,7 +962,7 @@ function renderLeaderboard() {
       <div class="pos-circle" style="${posStyles[i]||'color:var(--text2);font-size:12px;'}">${i+1}</div>
       <div>
         <div style="font-weight:600;">${s.runner.name}</div>
-        <div style="font-size:11px;color:var(--text2);">A${s.runner.rid} Â· ${s.runs} run${s.runs!==1?'s':''}</div>
+        <div style="font-size:11px;color:var(--text2);">A${s.runner.rid} ÃÂ· ${s.runs} run${s.runs!==1?'s':''}</div>
       </div>
       <div class="text-right">${s.runs}</div>
       <div class="text-right" style="font-weight:500;color:${s.bandPts>0?'var(--green)':s.bandPts<0?'var(--red)':'var(--text)'};">${s.bandPts>0?'+':''}${s.bandPts}</div>
@@ -965,7 +971,7 @@ function renderLeaderboard() {
     </div>`).join('');
 }
 
-// ââ Settings âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// Ã¢ÂÂÃ¢ÂÂ Settings Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 function getEditingTournament() {
   const sel=document.getElementById('settings-tournament-sel');
   return S.tournaments.find(t=>t.id===parseInt(sel?.value))||null;
@@ -1033,7 +1039,7 @@ function renderSettings() {
             <div class="tier-row">
               <input type="number" id="tier-mr-${i}" value="${tier.minRuns}" min="1" class="text-mono" onchange="updateBonusTier(${i},'minRuns',this.value)"/>
               <input type="number" id="tier-pts-${i}" value="${tier.points}" class="text-mono" onchange="updateBonusTier(${i},'points',this.value)"/>
-              <button class="btn btn-sm btn-danger" onclick="removeBonusTier(${i})">â</button>
+              <button class="btn btn-sm btn-danger" onclick="removeBonusTier(${i})">Ã¢ÂÂ</button>
             </div>`).join('')}
         </div>
         <button class="btn btn-sm" style="margin-top:8px;" onclick="addBonusTier()">+ Add tier</button>
@@ -1049,7 +1055,7 @@ function renderSettings() {
               <input type="number" id="band-t-${i}" value="${b.threshold}" class="text-mono"/>
               <input type="number" id="band-p-${i}" value="${b.points}" class="text-mono"/>
               <input type="text" id="band-l-${i}" value="${b.label}"/>
-              <button class="btn btn-sm btn-danger" onclick="removeBand(${i});renderSettings();">â</button>
+              <button class="btn btn-sm btn-danger" onclick="removeBand(${i});renderSettings();">Ã¢ÂÂ</button>
             </div>`).join('')}
         </div>
         <button class="btn btn-sm" style="margin-top:8px;" onclick="addBand()">+ Add band</button>
@@ -1057,12 +1063,12 @@ function renderSettings() {
     </div>
     <div style="display:flex;gap:8px;margin-top:.5rem;">
       <button class="btn btn-sm btn-primary" onclick="saveSettings()">Save settings</button>
-      <span id="settings-saved" style="font-size:13px;color:var(--green);align-self:center;display:none;">Saved â</span>
+      <span id="settings-saved" style="font-size:13px;color:var(--green);align-self:center;display:none;">Saved Ã¢ÂÂ</span>
     </div>`;
   renderBonusPreview();
 }
 
-// ââ Import / Export ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// Ã¢ÂÂÃ¢ÂÂ Import / Export Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 function openDataModal() {
   document.getElementById('export-textarea').value=JSON.stringify(S,null,2);
   document.getElementById('import-msg').style.display='none';
@@ -1085,13 +1091,13 @@ function importData(){
     S=p;persist();
     renderRunners();renderTournaments();renderResEvSel();renderLbSel();renderSettingsSel();renderSettings();
     const msg=document.getElementById('import-msg');
-    msg.textContent='Imported â '+S.runners.length+' runners, '+S.tournaments.length+' tournaments, '+S.events.length+' events.';
+    msg.textContent='Imported Ã¢ÂÂ '+S.runners.length+' runners, '+S.tournaments.length+' tournaments, '+S.events.length+' events.';
     msg.style.display='block';
   }catch(e){alert('Import failed: invalid JSON or wrong format.');}
 }
 document.getElementById('data-modal').addEventListener('click',function(e){if(e.target===this)closeDataModal();});
 
-// ââ Init âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// Ã¢ÂÂÃ¢ÂÂ Init Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 renderRunners();
 renderTournaments();
 renderResEvSel();
