@@ -257,11 +257,21 @@ table td input[type=time]{width:110px;font-size:13px;padding:5px 8px}
 // ── Constants ──────────────────────────────────────────────────────────────
 // Use our own Netlify function — no CORS issues, no blocked HTML
 async function proxyFetch(url) {
-  const resp = await fetch('/api/fetch-parkrun?url=' + encodeURIComponent(url));
-  if (!resp.ok) throw new Error('HTTP ' + resp.status);
-  const text = await resp.text();
-  if (!text || text.length < 200) throw new Error('empty response');
-  return text;
+  const proxies = [
+    u => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u),
+    u => 'https://corsproxy.io/?' + encodeURIComponent(u),
+    u => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u),
+    u => 'https://thingproxy.freeboard.io/fetch/' + u,
+  ];
+  for (const proxy of proxies) {
+    try {
+      const resp = await fetch(proxy(url), {signal: AbortSignal.timeout(8000)});
+      if (!resp.ok) continue;
+      const text = await resp.text();
+      if (text && text.length > 500 && text.includes('parkrun')) return text;
+    } catch(e) { continue; }
+  }
+  throw new Error('Could not fetch page');
 }
 const STORE_KEY = 'parkrun_league_v3';
 
