@@ -1,36 +1,24 @@
-export default async (request, context) => {
-  const url = new URL(request.url);
-  const target = url.searchParams.get('url');
+const https = require('https');
 
+exports.handler = async (event) => {
+  const target = event.queryStringParameters?.url;
   if (!target || !target.includes('parkrun.org.uk')) {
-    return new Response('Invalid URL', { status: 400 });
+    return { statusCode: 400, body: 'Invalid URL' };
   }
-
-  try {
-    const resp = await fetch(target, {
+  return new Promise((resolve) => {
+    https.get(target, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        'Accept-Language': 'en-GB,en;q=0.9',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120',
+        'Accept': 'text/html'
       }
-    });
-
-    if (!resp.ok) {
-      return new Response('Upstream error: ' + resp.status, { status: resp.status });
-    }
-
-    const html = await resp.text();
-    return new Response(html, {
-      status: 200,
-      headers: {
-        'Content-Type': 'text/html; charset=utf-8',
-        'Access-Control-Allow-Origin': '*',
-        'Cache-Control': 'public, max-age=300',
-      }
-    });
-  } catch (e) {
-    return new Response('Fetch failed: ' + e.message, { status: 500 });
-  }
+    }, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => resolve({
+        statusCode: 200,
+        headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'text/html' },
+        body: data
+      }));
+    }).on('error', (e) => resolve({ statusCode: 500, body: e.message }));
+  });
 };
-
-export const config = { path: '/api/fetch-parkrun' };
