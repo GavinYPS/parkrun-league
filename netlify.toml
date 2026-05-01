@@ -1,6 +1,3 @@
 [build]
   publish = "."
-
-[[edge_functions]]
-  function = "fetch-parkrun"
-  path = "/api/fetch-parkrun"
+  functions = "netlify/functions"
