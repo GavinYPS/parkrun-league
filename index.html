@@ -403,16 +403,28 @@ async function doRunnerLookup(url) {
   const statusEl = document.getElementById('r-url-status');
   statusEl.innerHTML = '<span class="spin"></span> Looking up runner…';
   try {
-    const html = await proxyFetch(url);
-    const info = parseRunnerPage(html);
-    if (!info || !info.name) throw new Error('Could not find runner on this page');
-    document.getElementById('r-name').value = info.name;
-    if (info.suggestedPBSec) {
-      document.getElementById('r-pb').value = sHMS(info.suggestedPBSec);
-      document.getElementById('r-pb-hint').textContent =
-        'Best time from ' + info.suggestedYear + ' — edit if needed';
+    // Fetch parkrun directly from browser (bypasses Cloudflare), then POST HTML to our parser
+    const pageResp = await fetch(url);
+    if (!pageResp.ok) throw new Error('HTTP ' + pageResp.status);
+    const html = await pageResp.text();
+    const resp = await fetch('/.netlify/functions/fetch-parkrun', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ html })
+    });
+    const data = await resp.json();
+    if (!data.name) throw new Error('Could not find runner on this page');
+    document.getElementById('r-name').value = data.name;
+    if (data.bestAnnualTime) {
+      // Convert "00:21:06" to seconds for the PB field
+      const t = data.bestAnnualTime.replace(/^00:/,'');
+      const s = tSec(t);
+      if (s) {
+        document.getElementById('r-pb').value = sHMS(s);
+        document.getElementById('r-pb-hint').textContent = 'Best annual time — edit if needed';
+      }
     }
-    statusEl.innerHTML = '<span style="color:var(--green)">&#10003; Found: ' + info.name + '</span>';
+    statusEl.innerHTML = '<span style="color:var(--green)">&#10003; Found: ' + data.name + '</span>';
   } catch(e) {
     statusEl.innerHTML = '<span style="color:var(--red)">Could not look up — enter name and PB manually</span>';
   }
@@ -869,10 +881,12 @@ async function fetchOne(evId,rId) {
   S.results[evId][rId]={...(S.results[evId][rId]||{}),fetching:true,error:null};
   renderResultRows(evId);
   // Use runner's home location or fall back to the event's location
-  const slug = runner.homeSlug || ev.slug;
+const slug = runner.homeSlug || ev.slug;
   const url  = 'https://www.parkrun.org.uk/'+slug+'/parkrunner/'+runner.rid+'/';
   try {
-    const html = await proxyFetch(url);
+    const pageResp = await fetch(url);
+    if (!pageResp.ok) throw new Error('HTTP ' + pageResp.status);
+    const html = await pageResp.text();
     const time = parseRunnerTime(html, ev.runNumber);
     S.results[evId][rId]={actualSec:time,fetching:false,error:time==null?'Run #'+ev.runNumber+' not found':null};
   } catch(e) {
