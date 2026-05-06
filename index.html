@@ -287,6 +287,30 @@ table td input[type=time]{width:110px;font-size:13px;padding:5px 8px}
     </div>
     <p id="import-file-msg" style="font-size:12px;color:var(--green);margin-top:8px;display:none;"></p>
   </div>
+  <div class="card" style="max-width:520px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;">
+      <div class="card-title" style="margin-bottom:0;">GitHub Sync</div>
+      <div id="gh-sync-status" style="font-size:12px;color:var(--text3);"></div>
+    </div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:1rem;line-height:1.6;">Save data to your GitHub repo so it's never lost if the browser is cleared. Works on any device.</p>
+    <div class="form-row" style="margin-bottom:8px;">
+      <label style="min-width:100px;font-size:13px;">Token</label>
+      <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxx" style="flex:1;max-width:300px;" oninput="ghSaveConfig()"/>
+    </div>
+    <div class="form-row" style="margin-bottom:8px;">
+      <label style="min-width:100px;font-size:13px;">Repo</label>
+      <input type="text" id="gh-repo" placeholder="GavinYPS/parkrun-league" style="flex:1;max-width:300px;" oninput="ghSaveConfig()"/>
+    </div>
+    <div class="form-row" style="margin-bottom:8px;">
+      <label style="min-width:100px;font-size:13px;">File path</label>
+      <input type="text" id="gh-path" placeholder="data.json" style="flex:1;max-width:300px;" oninput="ghSaveConfig()"/>
+    </div>
+    <div class="btn-group" style="margin-top:.75rem;flex-wrap:wrap;">
+      <button class="btn btn-sm btn-primary" onclick="ghPush()">Push to GitHub</button>
+      <button class="btn btn-sm" onclick="ghPull()">Pull from GitHub</button>
+    </div>
+    <p style="font-size:11px;color:var(--text3);margin-top:.75rem;">Create a token at github.com → Settings → Developer settings → Personal access tokens → Fine-grained → Contents: Read &amp; Write on your repo.</p>
+  </div>
 </div>
 
 </main>
@@ -324,7 +348,81 @@ function defaultTournamentSettings(type){
 function defaultState(){return{runners:[],tournaments:[],locations:[],events:[],results:{},activityTypes:['parkrun','10k'],tournamentRunners:{}}}
 const DEFAULT_ACTIVITY_TYPES=['parkrun','10k'];
 let S=(()=>{try{const r=localStorage.getItem(STORE_KEY);if(r){const p=JSON.parse(r);if(!p.tournaments)p.tournaments=[];if(!p.locations)p.locations=[];if(!p.events)p.events=[];if(!p.results)p.results={};if(!p.activityTypes)p.activityTypes=[...DEFAULT_ACTIVITY_TYPES];if(!p.tournamentRunners)p.tournamentRunners={};p.tournaments.forEach(t=>{if(!t.settings)t.settings=defaultTournamentSettings(t.type);});const eu=u=>u&&!u.match(/^https?:\/\//)?'https://'+u:u;p.locations.forEach(l=>{if(l.eventPage)l.eventPage=eu(l.eventPage);if(l.resultsUrl)l.resultsUrl=eu(l.resultsUrl);});return p;}}catch(e){}return defaultState();})();
-function persist(){try{localStorage.setItem(STORE_KEY,JSON.stringify(S));}catch(e){}}
+function persist(){
+  try{localStorage.setItem(STORE_KEY,JSON.stringify(S));}catch(e){}
+  ghAutoPush();
+}
+
+// ── GitHub Sync ──────────────────────────────────────────────
+const GH_CONFIG_KEY='parkrun_gh_config';
+function ghLoadConfig(){
+  try{return JSON.parse(localStorage.getItem(GH_CONFIG_KEY)||'{}');}catch(e){return {};}
+}
+function ghSaveConfig(){
+  const cfg={
+    token:document.getElementById('gh-token')?.value.trim()||'',
+    repo:document.getElementById('gh-repo')?.value.trim()||'',
+    path:document.getElementById('gh-path')?.value.trim()||'data.json'
+  };
+  localStorage.setItem(GH_CONFIG_KEY,JSON.stringify(cfg));
+}
+function ghStatus(msg,ok){
+  const el=document.getElementById('gh-sync-status');
+  if(el){el.textContent=msg;el.style.color=ok===false?'var(--red)':ok===true?'var(--green)':'var(--text3)';}
+}
+async function ghGetSha(cfg){
+  const r=await fetch(`https://api.github.com/repos/${cfg.repo}/contents/${cfg.path}`,{
+    headers:{Authorization:'token '+cfg.token,Accept:'application/vnd.github.v3+json'}
+  });
+  if(r.status===404)return null;
+  if(!r.ok)throw new Error('GitHub API error: '+r.status);
+  const d=await r.json();
+  return d.sha||null;
+}
+async function ghPush(){
+  const cfg=ghLoadConfig();
+  if(!cfg.token||!cfg.repo){alert('Please enter your GitHub token and repo first.');return;}
+  ghStatus('Pushing…');
+  try{
+    const sha=await ghGetSha(cfg);
+    const content=btoa(unescape(encodeURIComponent(JSON.stringify(S,null,2))));
+    const body={message:'Auto-sync: '+new Date().toISOString(),content};
+    if(sha)body.sha=sha;
+    const r=await fetch(`https://api.github.com/repos/${cfg.repo}/contents/${cfg.path}`,{
+      method:'PUT',
+      headers:{Authorization:'token '+cfg.token,Accept:'application/vnd.github.v3+json','Content-Type':'application/json'},
+      body:JSON.stringify(body)
+    });
+    if(!r.ok){const e=await r.json();throw new Error(e.message||r.status);}
+    ghStatus('Synced ✓ '+new Date().toLocaleTimeString(),true);
+  }catch(e){ghStatus('Push failed: '+e.message,false);console.error(e);}
+}
+async function ghPull(){
+  const cfg=ghLoadConfig();
+  if(!cfg.token||!cfg.repo){alert('Please enter your GitHub token and repo first.');return;}
+  ghStatus('Pulling…');
+  try{
+    const r=await fetch(`https://api.github.com/repos/${cfg.repo}/contents/${cfg.path}`,{
+      headers:{Authorization:'token '+cfg.token,Accept:'application/vnd.github.v3+json'}
+    });
+    if(r.status===404){ghStatus('No data file yet — push first.',false);return;}
+    if(!r.ok)throw new Error('GitHub API error: '+r.status);
+    const d=await r.json();
+    const json=decodeURIComponent(escape(atob(d.content.replace(/\n/g,''))));
+    const parsed=JSON.parse(json);
+    S=parsed;
+    localStorage.setItem(STORE_KEY,JSON.stringify(S));
+    ghStatus('Pulled ✓ '+new Date().toLocaleTimeString(),true);
+    renderRunners();renderTournaments();renderResEvSel();renderEnterTimesSel();renderLbSel();renderGlobalSettings();
+  }catch(e){ghStatus('Pull failed: '+e.message,false);console.error(e);}
+}
+let _ghPushTimer=null;
+function ghAutoPush(){
+  const cfg=ghLoadConfig();
+  if(!cfg.token||!cfg.repo)return;
+  clearTimeout(_ghPushTimer);
+  _ghPushTimer=setTimeout(()=>ghPush(),3000); // debounce 3s after last change
+}
 
 function toggleCollapse(bodyId, chevId){
   const body=document.getElementById(bodyId);
@@ -1696,6 +1794,11 @@ function renderGlobalSettings(){
   if(display)display.textContent=name;
   toggleClubEdit(false);
   renderActivityTypes(false);
+  const ghCfg=ghLoadConfig();
+  const ghT=document.getElementById('gh-token');const ghR=document.getElementById('gh-repo');const ghP=document.getElementById('gh-path');
+  if(ghT)ghT.value=ghCfg.token||'';
+  if(ghR)ghR.value=ghCfg.repo||'';
+  if(ghP)ghP.value=ghCfg.path||'data.json';
 }
 function renderActivityTypes(editMode){
   const el=document.getElementById('activity-types-list');if(!el)return;
@@ -1893,6 +1996,8 @@ function copyClubName(btn){
 document.getElementById('parkrun-modal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
 document.getElementById('confirm-modal').addEventListener('click',function(e){if(e.target===this)confirmCancel();});
 renderRunners();renderTournaments();renderResEvSel();renderEnterTimesSel();renderLbSel();renderGlobalSettings();
+// Auto-pull from GitHub on load if configured
+(function(){const cfg=ghLoadConfig();if(cfg.token&&cfg.repo){ghPull();}})();
 </script>
 </body>
 </html>
