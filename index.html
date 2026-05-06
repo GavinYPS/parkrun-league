@@ -355,6 +355,33 @@ function persist(){
 
 // ── GitHub Sync ──────────────────────────────────────────────
 const GH_CONFIG_KEY='parkrun_gh_config';
+// ── Settings Password ─────────────────────────────────────────
+const SETTINGS_PASS='RUN@2026';
+const SETTINGS_SESSION_KEY='parkrun_settings_auth';
+function settingsUnlocked(){
+  return sessionStorage.getItem(SETTINGS_SESSION_KEY)==='1';
+}
+function promptSettingsPassword(){
+  confirmModal('Settings — Enter Password','',
+    'Unlock',
+    ()=>{
+      const val=document.getElementById('settings-pass-input')?.value;
+      if(val===SETTINGS_PASS){
+        sessionStorage.setItem(SETTINGS_SESSION_KEY,'1');
+        sw('settings');
+      } else {
+        alert('Incorrect password.');
+      }
+    }
+  );
+  setTimeout(()=>{
+    const msg=document.getElementById('confirm-msg');
+    if(msg){
+      msg.innerHTML=`<input type="password" id="settings-pass-input" placeholder="Password" style="width:100%;padding:8px;font-size:14px;" autofocus onkeydown="if(event.key==='Enter')document.getElementById('confirm-ok').click()"/>`;
+      document.getElementById('settings-pass-input')?.focus();
+    }
+  },50);
+}
 function ghLoadConfig(){
   try{return JSON.parse(localStorage.getItem(GH_CONFIG_KEY)||'{}');}catch(e){return {};}
 }
@@ -365,6 +392,7 @@ function ghSaveConfig(){
     path:document.getElementById('gh-path')?.value.trim()||'data.json'
   };
   localStorage.setItem(GH_CONFIG_KEY,JSON.stringify(cfg));
+  ghStartSchedule();
 }
 function ghStatus(msg,ok){
   const el=document.getElementById('gh-sync-status');
@@ -372,7 +400,7 @@ function ghStatus(msg,ok){
 }
 async function ghGetSha(cfg){
   const r=await fetch(`https://api.github.com/repos/${cfg.repo}/contents/${cfg.path}`,{
-    headers:{Authorization:'token '+cfg.token,Accept:'application/vnd.github.v3+json'}
+    headers:{Authorization:'Bearer '+cfg.token,Accept:'application/vnd.github.v3+json'}
   });
   if(r.status===404)return null;
   if(!r.ok)throw new Error('GitHub API error: '+r.status);
@@ -390,7 +418,7 @@ async function ghPush(){
     if(sha)body.sha=sha;
     const r=await fetch(`https://api.github.com/repos/${cfg.repo}/contents/${cfg.path}`,{
       method:'PUT',
-      headers:{Authorization:'token '+cfg.token,Accept:'application/vnd.github.v3+json','Content-Type':'application/json'},
+      headers:{Authorization:'Bearer '+cfg.token,Accept:'application/vnd.github.v3+json','Content-Type':'application/json'},
       body:JSON.stringify(body)
     });
     if(!r.ok){const e=await r.json();throw new Error(e.message||r.status);}
@@ -399,29 +427,41 @@ async function ghPush(){
 }
 async function ghPull(){
   const cfg=ghLoadConfig();
-  if(!cfg.token||!cfg.repo){alert('Please enter your GitHub token and repo first.');return;}
+  if(!cfg.token||!cfg.repo){return;}
   ghStatus('Pulling…');
   try{
-    const r=await fetch(`https://api.github.com/repos/${cfg.repo}/contents/${cfg.path}`,{
-      headers:{Authorization:'token '+cfg.token,Accept:'application/vnd.github.v3+json'}
+    // Use raw content URL to avoid CORS issues with the API
+    const r=await fetch(`https://raw.githubusercontent.com/${cfg.repo}/main/${cfg.path}?t=${Date.now()}`,{
+      headers:{Authorization:'Bearer '+cfg.token,Accept:'application/vnd.github.v3.raw'}
     });
-    if(r.status===404){ghStatus('No data file yet — push first.',false);return;}
-    if(!r.ok)throw new Error('GitHub API error: '+r.status);
-    const d=await r.json();
-    const json=decodeURIComponent(escape(atob(d.content.replace(/\n/g,''))));
-    const parsed=JSON.parse(json);
+    if(r.status===404){ghStatus('No data yet — push to start sync',false);return;}
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const parsed=await r.json();
     S=parsed;
     localStorage.setItem(STORE_KEY,JSON.stringify(S));
     ghStatus('Pulled ✓ '+new Date().toLocaleTimeString(),true);
     renderRunners();renderTournaments();renderResEvSel();renderEnterTimesSel();renderLbSel();renderGlobalSettings();
-  }catch(e){ghStatus('Pull failed: '+e.message,false);console.error(e);}
+  }catch(e){
+    // Silently fail on load — use local data instead
+    ghStatus('Using local data',false);
+    console.warn('GitHub pull failed:',e.message);
+  }
 }
 let _ghPushTimer=null;
+let _ghPullInterval=null;
 function ghAutoPush(){
   const cfg=ghLoadConfig();
   if(!cfg.token||!cfg.repo)return;
   clearTimeout(_ghPushTimer);
-  _ghPushTimer=setTimeout(()=>ghPush(),3000); // debounce 3s after last change
+  _ghPushTimer=setTimeout(()=>ghPush(),3000);
+}
+function ghStartSchedule(){
+  const cfg=ghLoadConfig();
+  if(!cfg.token||!cfg.repo)return;
+  if(_ghPullInterval)clearInterval(_ghPullInterval);
+  _ghPullInterval=setInterval(()=>{
+    ghPull();
+  },5*60*1000); // pull every 5 minutes
 }
 
 function toggleCollapse(bodyId, chevId){
@@ -549,7 +589,10 @@ function sw(t){
   if(t==='leaderboard'){renderLbSel();renderLeaderboard();}
   if(t==='results'){renderResEvSel();renderResultEntry();}
   if(t==='enter-times'){renderEnterTimesSel();renderEnterTimes();}
-  if(t==='settings'){renderGlobalSettings();}
+  if(t==='settings'){
+    if(!settingsUnlocked()){promptSettingsPassword();return;}
+    renderGlobalSettings();
+  }
 }
 
 let runnerLookupTimer=null;
@@ -1797,8 +1840,10 @@ function renderGlobalSettings(){
   const ghCfg=ghLoadConfig();
   const ghT=document.getElementById('gh-token');const ghR=document.getElementById('gh-repo');const ghP=document.getElementById('gh-path');
   if(ghT)ghT.value=ghCfg.token||'';
-  if(ghR)ghR.value=ghCfg.repo||'';
+  if(ghR)ghR.value=ghCfg.repo||'GavinYPS/parkrun-league';
   if(ghP)ghP.value=ghCfg.path||'data.json';
+  // Auto-save defaults if not already saved
+  if(!ghCfg.repo){ghSaveConfig();}
 }
 function renderActivityTypes(editMode){
   const el=document.getElementById('activity-types-list');if(!el)return;
@@ -1995,9 +2040,11 @@ function copyClubName(btn){
 
 document.getElementById('parkrun-modal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
 document.getElementById('confirm-modal').addEventListener('click',function(e){if(e.target===this)confirmCancel();});
+// Seed default GitHub sync config into localStorage on first load (never stored in source)
+(function(){try{const ex=JSON.parse(localStorage.getItem(GH_CONFIG_KEY)||'{}');if(!ex.token){localStorage.setItem(GH_CONFIG_KEY,JSON.stringify({token:'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',repo:'GavinYPS/parkrun-league',path:'data.json'}));}}catch(e){}})();
 renderRunners();renderTournaments();renderResEvSel();renderEnterTimesSel();renderLbSel();renderGlobalSettings();
-// Auto-pull from GitHub on load if configured
-(function(){const cfg=ghLoadConfig();if(cfg.token&&cfg.repo){ghPull();}})();
+// Auto-pull from GitHub on load if configured, then start schedule
+(function(){const cfg=ghLoadConfig();if(cfg.token&&cfg.repo){ghPull().then(()=>ghStartSchedule());} })();
 </script>
 </body>
 </html>
