@@ -240,14 +240,12 @@ table td input[type=time]{width:110px;font-size:13px;padding:5px 8px}
     </div>
 
     <div class="card" style="max-width:520px;">
-      <div class="card-title">Export / Import</div>
-      <p style="font-size:13px;color:var(--text2);margin-bottom:1rem;line-height:1.6;">Download your data as CSV files, or restore from a previous backup.</p>
+      <div class="card-title">Export Data</div>
+      <p style="font-size:13px;color:var(--text2);margin-bottom:1rem;line-height:1.6;">Download your data as CSV files for use in spreadsheets.</p>
       <div class="btn-group" style="margin-top:0;flex-wrap:wrap;">
         <button class="btn btn-sm btn-primary" onclick="exportCSV('runners')">Export Club Runners</button>
         <button class="btn btn-sm btn-primary" onclick="exportCSV('results')">Export Results</button>
-        <label class="btn btn-sm" style="cursor:pointer;">Import Backup <input type="file" accept=".json" onchange="importFromFile(this)" style="display:none;"/></label>
       </div>
-      <p id="import-file-msg" style="font-size:12px;color:var(--green);margin-top:8px;display:none;"></p>
     </div>
 
     <div class="card" style="max-width:520px;">
@@ -1263,8 +1261,28 @@ function saveGlobalSettings(){const name=document.getElementById('setting-club-n
 // ── Export / Import ───────────────────────────────────────────
 function downloadFile(filename,content,mime){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type:mime}));a.download=filename;a.click();URL.revokeObjectURL(a.href);}
 function exportCSV(type){
-  if(type==='runners'){const rows=[['Name','Runner ID','Baseline (mm:ss)']];S.runners.forEach(r=>rows.push([r.name,'A'+r.rid,r.pbSec!=null?sTime(r.pbSec):'']));downloadFile('runners.csv',rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n'),'text/csv');}
-  else if(type==='results'){const rows=[['Tournament','Location','Run #','Date','Runner','Runner ID','Baseline','Time','Diff (s)','Points','Attended']];S.events.forEach(ev=>{const t=S.tournaments.find(x=>x.id===ev.tournamentId);const ts=getTournamentSettings(ev.tournamentId);const res=S.results[ev.id]||{};S.runners.forEach(r=>{const rd=res[r.id]||{};const absent=rd.absent===true;const actual=absent?null:(rd.actualSec??null);const baseline=getTournamentBaselinePb(r.id,ev.tournamentId)??r.pbSec;const diff=(actual!=null&&baseline!=null)?actual-baseline:null;const bp=diff!=null?getBandPts(diff,ts):null;rows.push([t?.name||'',ev.locationName,ev.runNumber,ev.date||'',r.name,'A'+r.rid,baseline!=null?sTime(baseline):'',actual!=null?sTime(actual):'',diff!=null?diff:'',bp!=null?bp.pts:'',absent?'No':'Yes']);});});downloadFile('results.csv',rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n'),'text/csv');}
+  const today=new Date().toISOString().substring(0,10);
+  if(type==='runners'){
+    // Build header: Name, Runner ID, global baselines, then per-tournament baselines
+    const types=S.activityTypes||DEFAULT_ACTIVITY_TYPES;
+    const activeTournaments=S.tournaments.filter(t=>!t.archived);
+    const header=['Name','Runner ID',...types.map(t=>t+' Baseline'),...activeTournaments.map(t=>t.name+' Baseline')];
+    const rows=[header];
+    S.runners.forEach(r=>{
+      const globalBaselines=types.map(type=>r.pbs?.[type]!=null?sTime(r.pbs[type]):type==='parkrun'&&r.pbSec!=null?sTime(r.pbSec):'');
+      const tournamentBaselines=activeTournaments.map(t=>{const entry=getTournamentRunnerEntry(t.id,r.id);return entry?.baselineSec!=null?sTime(entry.baselineSec):'';});
+      rows.push([r.name,'A'+r.rid,...globalBaselines,...tournamentBaselines]);
+    });
+    downloadFile('runners.csv',rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n'),'text/csv');
+  }
+  else if(type==='results'){
+    const rows=[['Tournament','Location','Run #','Date','Runner','Runner ID','Baseline','Time','Diff (s)','Points','Attended']];
+    S.events.filter(e=>!e.date||e.date<=today).forEach(ev=>{
+      const t=S.tournaments.find(x=>x.id===ev.tournamentId);const ts=getTournamentSettings(ev.tournamentId);const res=S.results[ev.id]||{};
+      S.runners.forEach(r=>{const rd=res[r.id]||{};const absent=rd.absent===true;const actual=absent?null:(rd.actualSec??null);const baseline=getTournamentBaselinePb(r.id,ev.tournamentId)??r.pbSec;const diff=(actual!=null&&baseline!=null)?actual-baseline:null;const bp=diff!=null?getBandPts(diff,ts):null;rows.push([t?.name||'',ev.locationName,ev.runNumber,ev.date||'',r.name,'A'+r.rid,baseline!=null?sTime(baseline):'',actual!=null?sTime(actual):'',diff!=null?diff:'',bp!=null?bp.pts:'',absent?'No':'Yes']);});
+    });
+    downloadFile('results.csv',rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n'),'text/csv');
+  }
 }
 function importFromFile(input){const file=input.files[0];if(!file)return;const reader=new FileReader();reader.onload=e=>{try{const p=JSON.parse(e.target.result);if(!p.runners)throw new Error('Invalid');if(!p.tournaments)p.tournaments=[];if(!p.locations)p.locations=[];if(!p.events)p.events=[];if(!p.results)p.results={};p.tournaments.forEach(t=>{if(!t.settings)t.settings=defaultTournamentSettings();});S=p;persist();renderRunners();renderTournaments();renderLbSel();renderGlobalSettings();const msg=document.getElementById('import-file-msg');if(msg){msg.textContent=`Imported: ${S.runners.length} runners, ${S.tournaments.length} tournaments, ${S.events.length} events.`;msg.style.display='block';}}catch(ex){alert('Import failed: invalid JSON file.');}};reader.readAsText(file);input.value='';}
 
