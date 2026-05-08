@@ -291,7 +291,7 @@ function defaultTournamentSettings() {
     attendanceBonus: 0,
     wildcardBonus: 2,
     bonusTiers: [{minRuns:7,points:4},{minRuns:3,points:3}],
-    bands: [{threshold:-61,points:4,label:'2+ min faster'},{threshold:-60,points:2,label:'Up to 1 min faster'}]
+    bandTable: JSON.parse(JSON.stringify(DEFAULT_BAND_TABLE))
   };
 }
 
@@ -458,26 +458,31 @@ function ghStatus(msg, ok) {
 
 function ghMerge(local, remote) {
   var m = JSON.parse(JSON.stringify(remote));
-  function merge(ra, la) {
+  // For arrays, prefer local record if it exists (local changes win)
+  function mergeArray(ra, la) {
     var map = {};
     (ra || []).forEach(function(x) { map[x.id] = x; });
-    (la || []).forEach(function(x) { if (!map[x.id]) map[x.id] = x; });
+    // Local records overwrite remote
+    (la || []).forEach(function(x) { map[x.id] = x; });
     return Object.values(map);
   }
-  m.runners = merge(remote.runners, local.runners);
-  m.tournaments = merge(remote.tournaments, local.tournaments);
-  m.locations = merge(remote.locations, local.locations);
-  m.events = merge(remote.events, local.events);
+  m.runners = mergeArray(remote.runners, local.runners);
+  m.tournaments = mergeArray(remote.tournaments, local.tournaments);
+  m.locations = mergeArray(remote.locations, local.locations);
+  m.events = mergeArray(remote.events, local.events);
+  // Results: local wins at the individual result level
   m.results = JSON.parse(JSON.stringify(remote.results || {}));
   Object.keys(local.results || {}).forEach(function(evId) {
     if (!m.results[evId]) m.results[evId] = {};
     Object.keys(local.results[evId] || {}).forEach(function(rId) {
-      if (!m.results[evId][rId]) m.results[evId][rId] = local.results[evId][rId];
+      // Local result always wins
+      m.results[evId][rId] = local.results[evId][rId];
     });
   });
+  // Tournament runners: local wins
   m.tournamentRunners = JSON.parse(JSON.stringify(remote.tournamentRunners || {}));
   Object.keys(local.tournamentRunners || {}).forEach(function(tid) {
-    if (!m.tournamentRunners[tid]) m.tournamentRunners[tid] = local.tournamentRunners[tid];
+    m.tournamentRunners[tid] = local.tournamentRunners[tid];
   });
   m._savedAt = Date.now();
   return m;
@@ -513,8 +518,11 @@ async function ghPush() {
       body: JSON.stringify(body)
     });
     if (!r.ok) { var e = await r.json(); throw new Error(e.message || r.status); }
+    // Update local savedAt to match what we just pushed
+    localStorage.setItem(STORE_KEY, JSON.stringify(S));
     ghStatus('Saved ' + new Date().toLocaleTimeString(), true);
     ghSetSaveEnabled(true);
+    showToast('Data saved to cloud');
   } catch(e) { ghStatus('Save failed: ' + e.message, false); console.error(e); }
 }
 
@@ -627,11 +635,146 @@ function getTournamentBaselinePb(rId, tid) {
   return getRunnerPb(rId, getTournamentActivityType(tid));
 }
 
-function getBandPts(diff, settings) {
-  var s = settings || defaultTournamentSettings();
-  var bands = s.bands.slice().sort(function(a,b) { return a.threshold - b.threshold; });
-  for (var i = 0; i < bands.length; i++) { if (diff <= bands[i].threshold) return {pts:bands[i].points, label:bands[i].label}; }
-  var last = bands[bands.length-1]; return {pts: last ? last.points : 0, label: last ? last.label : ''};
+// ── Band scoring ──────────────────────────────────────────────
+// New banding system. diff = actual - baseline (negative = faster than PR).
+//
+// Each band entry has:
+//   pts        – points awarded
+//   minFaster  – minimum seconds faster than PR (diff <= -minFaster), OR null if this is a "slower" bracket
+//   maxSlower  – if set, award these pts when diff is between 0 and maxSlower (slower than PR but within range)
+//   minSlower  – lower bound for slower bracket (diff >= minSlower)
+//
+// Points lookup order: check fastest brackets first (highest pts), then slower brackets.
+//
+// From the table image:
+//  Band A (21:00-22:29):  8pts ≥81s faster | 7pts 60-80s | 6pts 46-59s | 5pts 31-45s | 4pts 21-30s | 2pts 0-20s off PR | 1pt 0-19s faster | 0.5pt 20-45s off PR
+//  Band B (22:30-23:59):  8pts ≥85s faster | 7pts 63-84s | 6pts 45-62s | 4pts 31-44s | 3pts 22-30s | 2pts 0-21s off PR | 1pt 0-27s faster | 0.5pt 28-60s off PR
+//  Band C (24:00-25:59):  8pts ≥100s faster | 7pts 81-99s | 6pts 72-80s | 5pts 60-71s | 4pts 45-59s | 3pts 30-44s | 2pts 0-29s off PR | 1pt 0-29s faster | 0.5pt 30-70s off PR
+//  Band D (26:00-28:29):  8pts ≥121s faster | 7pts 101-120s | 6pts 86-100s | 5pts 76-85s | 4pts 61-75s | 3pts 40-60s | 2pts 0-39s off PR | 1pt 0-40s faster | 0.5pt 40-60s off PR
+//  Band E (28:30-31:59):  8pts ≥151s faster | 7pts 131-150s | 6pts 100-130s | 5pts 86-99s | 4pts 66-85s | 3pts 46-65s | 2pts 0-45s off PR | 1pt 0-50s faster | 0.5pt 51-70s off PR
+//  Band F (32:00-34:59):  8pts ≥191s faster | 7pts 130-190s | 6pts 111-129s | 5pts 90-110s | 4pts 75-89s | 3pts 61-74s | 2pts 0-60s off PR | 1pt 0-60s faster | 0.5pt 61-80s off PR
+//  Band G (35:00-41:00):  8pts ≥231s faster | 7pts 180-230s | 6pts 161-179s | 5pts 151-160s | 4pts 120-150s | 3pts 80-119s | 2pts 0-79s off PR | 1pt 0-70s faster | 0.5pt 71-90s off PR
+//
+// Each entry: {pts, minFaster} for "faster than PR" brackets
+//             {pts, maxSlower, minSlower} for "slower than PR" brackets (minSlower optional, defaults to 0)
+
+var DEFAULT_BAND_TABLE = {
+  A: [
+    {pts:0.5, slowerFrom:20, slowerTo:45},
+    {pts:1,   slowerFrom:0,  slowerTo:19},
+    {pts:2,   minFaster:0,   maxFaster:20},
+    {pts:4,   minFaster:21,  maxFaster:30},
+    {pts:5,   minFaster:31,  maxFaster:45},
+    {pts:6,   minFaster:46,  maxFaster:59},
+    {pts:7,   minFaster:60,  maxFaster:80},
+    {pts:8,   minFaster:81,  maxFaster:null}
+  ],
+  B: [
+    {pts:0.5, slowerFrom:28, slowerTo:60},
+    {pts:1,   slowerFrom:0,  slowerTo:27},
+    {pts:2,   minFaster:0,   maxFaster:21},
+    {pts:3,   minFaster:22,  maxFaster:30},
+    {pts:4,   minFaster:31,  maxFaster:44},
+    {pts:6,   minFaster:45,  maxFaster:62},
+    {pts:7,   minFaster:63,  maxFaster:84},
+    {pts:8,   minFaster:85,  maxFaster:null}
+  ],
+  C: [
+    {pts:0.5, slowerFrom:30, slowerTo:70},
+    {pts:1,   slowerFrom:0,  slowerTo:29},
+    {pts:2,   minFaster:0,   maxFaster:29},
+    {pts:3,   minFaster:30,  maxFaster:44},
+    {pts:4,   minFaster:45,  maxFaster:59},
+    {pts:5,   minFaster:60,  maxFaster:71},
+    {pts:6,   minFaster:72,  maxFaster:80},
+    {pts:7,   minFaster:81,  maxFaster:99},
+    {pts:8,   minFaster:100, maxFaster:null}
+  ],
+  D: [
+    {pts:0.5, slowerFrom:40, slowerTo:60},
+    {pts:1,   slowerFrom:0,  slowerTo:39},
+    {pts:2,   minFaster:0,   maxFaster:39},
+    {pts:3,   minFaster:40,  maxFaster:60},
+    {pts:4,   minFaster:61,  maxFaster:75},
+    {pts:5,   minFaster:76,  maxFaster:85},
+    {pts:6,   minFaster:86,  maxFaster:100},
+    {pts:7,   minFaster:101, maxFaster:120},
+    {pts:8,   minFaster:121, maxFaster:null}
+  ],
+  E: [
+    {pts:0.5, slowerFrom:51, slowerTo:70},
+    {pts:1,   slowerFrom:0,  slowerTo:50},
+    {pts:2,   minFaster:0,   maxFaster:45},
+    {pts:3,   minFaster:46,  maxFaster:65},
+    {pts:4,   minFaster:66,  maxFaster:85},
+    {pts:5,   minFaster:86,  maxFaster:99},
+    {pts:6,   minFaster:100, maxFaster:130},
+    {pts:7,   minFaster:131, maxFaster:150},
+    {pts:8,   minFaster:151, maxFaster:null}
+  ],
+  F: [
+    {pts:0.5, slowerFrom:61, slowerTo:80},
+    {pts:1,   slowerFrom:0,  slowerTo:60},
+    {pts:2,   minFaster:0,   maxFaster:60},
+    {pts:3,   minFaster:61,  maxFaster:74},
+    {pts:4,   minFaster:75,  maxFaster:89},
+    {pts:5,   minFaster:90,  maxFaster:110},
+    {pts:6,   minFaster:111, maxFaster:129},
+    {pts:7,   minFaster:130, maxFaster:190},
+    {pts:8,   minFaster:191, maxFaster:null}
+  ],
+  G: [
+    {pts:0.5, slowerFrom:71, slowerTo:90},
+    {pts:1,   slowerFrom:0,  slowerTo:70},
+    {pts:2,   minFaster:0,   maxFaster:79},
+    {pts:3,   minFaster:80,  maxFaster:119},
+    {pts:4,   minFaster:120, maxFaster:150},
+    {pts:5,   minFaster:151, maxFaster:160},
+    {pts:6,   minFaster:161, maxFaster:179},
+    {pts:7,   minFaster:180, maxFaster:230},
+    {pts:8,   minFaster:231, maxFaster:null}
+  ]
+};
+
+var BAND_LABELS = ['A','B','C','D','E','F','G'];
+var BAND_TIME_RANGES = {A:'21:00-22:29',B:'22:30-23:59',C:'24:00-25:59',D:'26:00-28:29',E:'28:30-31:59',F:'32:00-34:59',G:'35:00-41:00'};
+// seconds boundaries for each band [minSec, maxSec]
+var BAND_SEC_RANGES = {A:[1260,1349],B:[1350,1439],C:[1440,1559],D:[1560,1709],E:[1710,1919],F:[1920,2099],G:[2100,2460]};
+
+function suggestBand(sec) {
+  if (sec == null) return null;
+  for (var i = 0; i < BAND_LABELS.length; i++) {
+    var b = BAND_LABELS[i]; var r = BAND_SEC_RANGES[b];
+    if (sec >= r[0] && sec <= r[1]) return b;
+  }
+  return null;
+}
+
+function getBandTable(settings) {
+  return (settings && settings.bandTable) ? settings.bandTable : JSON.parse(JSON.stringify(DEFAULT_BAND_TABLE));
+}
+
+function getBandPtsForRunner(diffSecs, band, settings) {
+  // diffSecs = actual - baseline; negative = faster, positive = slower
+  var table = getBandTable(settings);
+  var brackets = table[band];
+  if (!brackets || !brackets.length) return {pts:0, label:'No band set'};
+  if (diffSecs > 0) {
+    // Slower than PB — check slower brackets
+    var slower = diffSecs;
+    var match = brackets.filter(function(b){ return b.slowerFrom != null; })
+      .sort(function(a,b){ return b.pts - a.pts; })
+      .find(function(b){ return slower >= b.slowerFrom && slower <= b.slowerTo; });
+    if (match) return {pts: match.pts, label: match.pts + ' pts (' + slower + 's off baseline)'};
+    return {pts:0, label:'Outside range'};
+  } else {
+    // Faster than PB
+    var faster = -diffSecs;
+    var best = brackets.filter(function(b){ return b.minFaster != null && faster >= b.minFaster && (b.maxFaster == null || faster <= b.maxFaster); })
+      .sort(function(a,b){ return b.pts - a.pts; })[0];
+    if (best) return {pts: best.pts, label: best.pts + ' pts (' + faster + 's faster than baseline)'};
+    return {pts:0, label:'No improvement'};
+  }
 }
 
 function getBonus(runs, settings) {
@@ -743,11 +886,26 @@ function editRunnerPB(id) {
   var html = '';
   types.forEach(function(type) {
     var curVal = r.pbs && r.pbs[type] != null ? sHMS(r.pbs[type]) : (r.pbSec && type === 'parkrun' ? sHMS(r.pbSec) : '');
+    var label = type === 'parkrun' ? 'Baseline' : type + ' Baseline';
     var enrolledT = S.tournaments.filter(function(t) { return getTournamentActivityType(t.id) === type && isEnrolled(t.id, r.id); });
     var tLine = enrolledT.map(function(t) { var entry = getTournamentRunnerEntry(t.id, r.id); return entry && entry.baselineSec != null ? '<div style="font-size:11px;color:var(--text3);margin-top:2px;display:flex;align-items:center;gap:6px;"><span style="font-size:10px;background:var(--bg3);border:1px solid var(--border2);border-radius:3px;padding:1px 5px;color:var(--orange);">' + t.name + '</span><span class="text-mono">' + sTime(entry.baselineSec) + '</span></div>' : ''; }).join('');
     var history = r.pbHistory && r.pbHistory[type] ? r.pbHistory[type].slice().reverse() : [];
     var histHtml = history.length ? '<div style="margin-top:6px;padding:6px 0 2px;border-top:1px solid var(--border);"><div style="font-size:10px;color:var(--text3);margin-bottom:4px;">' + type + ' Previous Times</div>' + history.map(function(h) { return '<div style="font-size:12px;color:var(--text3);display:flex;gap:10px;padding:2px 0;"><span class="text-mono">' + sTime(h.sec) + '</span><span>' + h.date + '</span></div>'; }).join('') + '</div>' : '';
-    html += '<div style="margin-bottom:12px;"><div class="form-row" style="margin-bottom:0;"><label style="min-width:110px;font-size:13px;color:var(--text2);">' + type + ' Reference</label><input type="time" id="pb-input-' + id + '-' + type.replace(/\s+/g,'-') + '" step="1" value="' + curVal + '" style="max-width:150px;"/></div>' + tLine + histHtml + '</div>';
+    html += '<div style="margin-bottom:12px;"><div class="form-row" style="margin-bottom:0;"><label style="min-width:110px;font-size:13px;color:var(--text2);">' + label + '</label><input type="time" id="pb-input-' + id + '-' + type.replace(/\s+/g,'-') + '" step="1" value="' + curVal + '" style="max-width:150px;" ' + (type === 'parkrun' ? 'oninput="updateBandSuggestion(' + id + ')"' : '') + '/></div>' + tLine + histHtml;
+    if (type === 'parkrun') {
+      var suggested = suggestBand(r.pbs && r.pbs['parkrun'] != null ? r.pbs['parkrun'] : r.pbSec);
+      var bandOpts = '<option value="">No band assigned</option>' + BAND_LABELS.map(function(b) { return '<option value="' + b + '" ' + (r.band === b ? 'selected' : '') + '>Band ' + b + ' &mdash; ' + BAND_TIME_RANGES[b] + '</option>'; }).join('');
+      html += '<div class="form-row" style="margin-top:6px;margin-bottom:0;align-items:flex-start;flex-direction:column;gap:4px;">'
+        + '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">'
+        + '<label style="min-width:110px;font-size:13px;color:var(--text2);">Handicap Band</label>'
+        + '<select id="band-input-' + id + '" style="max-width:240px;font-size:13px;">' + bandOpts + '</select>'
+        + '</div>'
+        + '<div id="band-suggestion-' + id + '" style="padding-left:118px;min-height:20px;">'
+        + (suggested && suggested !== r.band ? '<span style="font-size:12px;color:var(--text3);">Suggested from baseline: <button onclick="document.getElementById(\'band-input-' + id + '\').value=\'' + suggested + '\';document.getElementById(\'band-suggestion-' + id + '\').innerHTML=\'\';" style="background:var(--orange-dim);border:1px solid var(--orange);color:var(--orange);font-weight:700;font-size:12px;padding:1px 8px;border-radius:3px;cursor:pointer;">Use Band ' + suggested + '</button></span>' : '')
+        + '</div>'
+        + '</div>';
+    }
+    html += '</div>';
   });
   html += '<div style="display:flex;gap:8px;margin-top:8px;"><button class="btn btn-sm btn-primary" onclick="saveRunnerPB(' + id + ')">Save</button><button class="btn btn-sm" onclick="document.getElementById(\'edit-pb-' + id + '\').remove();showRunnerActions(' + id + ',true)">Cancel</button></div>';
   form.innerHTML = html; card.appendChild(form);
@@ -759,7 +917,22 @@ function saveRunnerPB(id) {
   var types = S.activityTypes || DEFAULT_ACTIVITY_TYPES;
   types.forEach(function(type) { var el = document.getElementById('pb-input-' + id + '-' + type.replace(/\s+/g,'-')); if (!el) return; var s = tSec(el.value); if (s != null) setBaseline(id, type, s, null); else if (r.pbs) delete r.pbs[type]; });
   r.pbSec = r.pbs && r.pbs['parkrun'] != null ? r.pbs['parkrun'] : (Object.values(r.pbs || {})[0] || null);
+  var bandSel = document.getElementById('band-input-' + id); if (bandSel) r.band = bandSel.value || null;
   document.getElementById('edit-pb-' + id).remove(); showRunnerActions(id, true); persist(); renderRunners();
+}
+
+function updateBandSuggestion(id) {
+  var inp = document.getElementById('pb-input-' + id + '-parkrun');
+  var suggEl = document.getElementById('band-suggestion-' + id);
+  var bandSel = document.getElementById('band-input-' + id);
+  if (!inp || !suggEl) return;
+  var sec = tSec(inp.value);
+  var suggested = suggestBand(sec);
+  if (suggested) {
+    suggEl.innerHTML = '<span style="font-size:12px;color:var(--text3);">Suggested from baseline: <button onclick="document.getElementById(\'band-input-' + id + '\').value=\'' + suggested + '\';document.getElementById(\'band-suggestion-' + id + '\').innerHTML=\'<span style=\\\'font-size:12px;color:var(--green);\\\'>&#10003; Band ' + suggested + ' applied</span>\';" style="background:var(--orange-dim);border:1px solid var(--orange);color:var(--orange);font-weight:700;font-size:12px;padding:1px 8px;border-radius:3px;cursor:pointer;">Use Band ' + suggested + '</button></span>';
+  } else {
+    suggEl.innerHTML = sec ? '<span style="font-size:12px;color:var(--text3);">Time outside standard bands — assign manually</span>' : '';
+  }
 }
 
 function renderRunners() {
@@ -771,6 +944,7 @@ function renderRunners() {
   function runnerCard(r, isArchived) {
     var meta = '';
     if (r.rid) meta += '<span style="white-space:nowrap;"><span class="val">A' + r.rid + '</span> <a href="https://www.parkrun.org.uk/parkrunner/' + r.rid + '/" target="_blank" style="font-size:11px;color:var(--text3);text-decoration:none;">Profile &#8599;</a></span>';
+    if (r.band) meta += '<span style="white-space:nowrap;"><span style="font-size:10px;color:var(--text3);">Band</span> <span class="val">' + r.band + '</span></span>';
     types.forEach(function(type) { var pb = r.pbs && r.pbs[type] != null ? r.pbs[type] : (type === 'parkrun' ? r.pbSec : null); if (pb != null) meta += '<span style="white-space:nowrap;color:var(--text3);">' + type + ' <span class="val">' + sTime(pb) + '</span></span>'; });
     var nameDisplay = (r.isLeader ? '\uD83C\uDFBD ' : '') + r.name + (isArchived ? ' <span style="font-size:10px;color:var(--text3);background:var(--bg3);border-radius:4px;padding:1px 5px;">Archived</span>' : '');
     var editBtn = isArchived ? '' : '<button onclick="editRunnerName(' + r.id + ')" style="background:none;border:none;cursor:pointer;padding:2px;color:var(--text3);vertical-align:middle;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>';
@@ -1112,35 +1286,113 @@ function buildSettingsPanel(tid) {
       + '<button class="btn btn-sm btn-danger" onclick="removeTier(' + tid + ',' + i + ')" style="padding:4px 6px;font-size:13px;">&#10005;</button></div>';
   }).join('');
 
-  var bandRows = s.bands.map(function(b, i) {
-    return '<div style="display:grid;grid-template-columns:75px 55px 1fr 28px;gap:5px;align-items:center;margin-bottom:5px;">'
-      + '<input type="number" value="' + b.threshold + '" class="text-mono" style="padding:5px 7px;font-size:13px;" onchange="updateBand(' + tid + ',' + i + ',\'threshold\',this.value)"/>'
-      + '<input type="number" value="' + b.points + '" class="text-mono" style="padding:5px 7px;font-size:13px;" onchange="updateBand(' + tid + ',' + i + ',\'points\',this.value)"/>'
-      + '<input type="text" value="' + b.label + '" style="padding:5px 7px;font-size:13px;" onchange="updateBand(' + tid + ',' + i + ',\'label\',this.value)"/>'
-      + '<button class="btn btn-sm btn-danger" onclick="removeBandItem(' + tid + ',' + i + ')" style="padding:4px 6px;font-size:13px;">&#10005;</button></div>';
+  var bandTable = getBandTable(s);
+  // Number line: slower tiers left (red), 0 anchor centre, faster tiers right (green)
+  // Slower: 0.5pt (needs upper bound only — lower is open), 1pt (upper bound, lower=0)
+  // Faster: 2,3,4,5,6,7,8pt (lower bound only — upper is the next tier's lower - 1, or open for 8pt)
+  var SLOWER_TIERS = [0.5, 1];   // displayed right-to-left (closest to 0 first)
+  var FASTER_TIERS = [2,3,4,5,6,7,8];
+  var slowerBg  = 'var(--red-bg)';           var fasterBg  = 'rgba(106,176,76,.08)';
+  var slowerCol = 'var(--red)';              var fasterCol = 'var(--green)';
+  var inpS = 'padding:3px 4px;font-size:11px;width:100%;text-align:center;font-family:SF Mono,Fira Code,monospace;border-radius:3px;box-sizing:border-box;';
+
+  function mkCell(val, onch, isSlower, readOnly) {
+    var bg  = isSlower ? slowerBg  : fasterBg;
+    var col = isSlower ? slowerCol : fasterCol;
+    var bdr = isSlower ? 'rgba(224,90,90,.25)' : 'rgba(106,176,76,.25)';
+    return '<input type="number" min="0" value="' + (val != null ? val : '') + '" placeholder="—"'
+      + ' style="' + inpS + 'background:' + bg + ';color:' + col + ';border:1px solid ' + bdr + ';' + (readOnly ? 'opacity:.35;' : '') + '"'
+      + (readOnly ? ' disabled' : ' onchange="' + onch + '"') + '/>';
+  }
+
+  // Columns: band | baseline | 0.5pt | 1pt | [0] | 2pt | 3pt | 4pt | 5pt | 6pt | 7pt | 8pt
+  var colT = '24px 70px 1fr 1fr 28px 1fr 1fr 1fr 1fr 1fr 1fr 1fr';
+
+  var bandHdr =
+    // Row 1: direction banners
+    '<div style="display:grid;grid-template-columns:' + colT + ';gap:2px;padding:3px 6px 2px;border-bottom:1px solid var(--border2);align-items:center;">'
+    + '<span></span><span></span>'
+    + '<div style="grid-column:span 2;text-align:center;font-size:9px;font-weight:700;color:' + slowerCol + ';background:' + slowerBg + ';border-radius:3px;padding:2px 0;">▼ Slower</div>'
+    + '<span style="text-align:center;font-size:10px;font-weight:800;color:var(--text3);">0</span>'
+    + '<div style="grid-column:span 7;text-align:center;font-size:9px;font-weight:700;color:' + fasterCol + ';background:' + fasterBg + ';border-radius:3px;padding:2px 0;">▲ Faster</div>'
+    + '</div>'
+    // Row 2: pt labels
+    + '<div style="display:grid;grid-template-columns:' + colT + ';gap:2px;padding:2px 6px;border-bottom:1px solid var(--border2);align-items:center;">'
+    + '<span style="font-size:9px;color:var(--text3);">Band</span>'
+    + '<span style="font-size:9px;color:var(--text3);">Baseline</span>'
+    + SLOWER_TIERS.map(function(p){ return '<span style="text-align:center;font-size:9px;font-weight:700;color:' + slowerCol + ';">' + p + 'pt</span>'; }).join('')
+    + '<span style="text-align:center;font-size:9px;font-weight:800;color:var(--text3);">―</span>'
+    + FASTER_TIERS.map(function(p){ return '<span style="text-align:center;font-size:9px;font-weight:700;color:' + fasterCol + ';">' + p + 'pt</span>'; }).join('')
+    + '</div>'
+    // Row 3: threshold labels
+    + '<div style="display:grid;grid-template-columns:' + colT + ';gap:2px;padding:1px 6px;border-bottom:1px solid var(--border2);align-items:center;">'
+    + '<span></span><span style="font-size:8px;color:var(--text3);">mm:ss–mm:ss</span>'
+    + '<span style="font-size:8px;color:' + slowerCol + ';opacity:.7;text-align:center;">&lt; −s</span>'
+    + '<span style="font-size:8px;color:' + slowerCol + ';opacity:.7;text-align:center;">&lt; −s</span>'
+    + '<span></span>'
+    + FASTER_TIERS.map(function(p){ return '<span style="font-size:8px;color:' + fasterCol + ';opacity:.7;text-align:center;">&gt; +s</span>'; }).join('')
+    + '</div>';
+
+  var bandRows = bandHdr + BAND_LABELS.map(function(band) {
+    var range    = BAND_SEC_RANGES[band];
+    var brackets = bandTable[band] || [];
+    function getB(pts) { return brackets.find(function(b){ return b.pts === pts; }); }
+
+    var h   = getB(0.5) || {};
+    var one = getB(1)   || {};
+
+    var slowerCells =
+      // 0.5pt — upper bound (the most-slower threshold)
+      mkCell(h.slowerTo   != null ? h.slowerTo   : null, 'btSetSlower(\'' + tid + '\',\'' + band + '\',0.5,\'to\',this.value)',   true, false)
+      // 1pt — upper bound (closest to 0)
+    + mkCell(one.slowerTo != null ? one.slowerTo : null, 'btSetSlower(\'' + tid + '\',\'' + band + '\',1,\'to\',this.value)',    true, false);
+
+    var fasterCells = FASTER_TIERS.map(function(p) {
+      var b = getB(p) || {};
+      return mkCell(b.maxFaster != null ? b.maxFaster : null, 'btSetFaster(\'' + tid + '\',\'' + band + '\',' + p + ',\'to\',this.value)', false, false);
+    }).join('');
+
+    return '<div style="display:grid;grid-template-columns:' + colT + ';gap:2px;align-items:center;padding:3px 6px;border-bottom:1px solid var(--border);">'
+      + '<span style="font-family:Barlow Condensed,sans-serif;font-weight:800;font-size:15px;color:var(--orange);">' + band + '</span>'
+      + '<input type="text" value="' + sTime(range[0]) + '–' + sTime(range[1]) + '" class="text-mono"'
+      + ' style="padding:3px 4px;font-size:11px;width:100%;" onchange="updateBandRange(\'' + tid + '\',\'' + band + '\',this.value)"/>'
+      + slowerCells
+      + '<div style="text-align:center;font-size:11px;font-weight:800;color:var(--text3);background:var(--bg3);border-radius:3px;padding:3px 0;">0</div>'
+      + fasterCells
+      + '</div>';
   }).join('');
 
   return '<div class="card card-accent" style="margin-bottom:0;"><div class="card-title">Scoring Settings</div>'
-    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">'
+    + '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.25rem;margin-bottom:1.25rem;">'
+    // Col 1: Attendance + Wildcard
     + '<div>'
-    + '<div class="ss-label">&#9989; Per-Event Attendance Bonus</div>'
-    + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:1rem;"><input type="number" id="attendance-bonus-' + tid + '" value="' + (s.attendanceBonus || 0) + '" min="0" class="text-mono" style="padding:5px 8px;font-size:13px;max-width:70px;" onchange="updateAttendanceBonus(' + tid + ',this.value)"/><span style="font-size:12px;color:var(--text2);">pts per event attended</span></div>'
+    + '<div class="ss-label">&#9989; Attendance Bonus</div>'
+    + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:1rem;"><input type="number" id="attendance-bonus-' + tid + '" value="' + (s.attendanceBonus || 0) + '" min="0" class="text-mono" style="padding:5px 8px;font-size:13px;max-width:70px;" onchange="updateAttendanceBonus(' + tid + ',this.value)"/><span style="font-size:12px;color:var(--text2);">pts per event</span></div>'
     + '<div class="ss-label">&#9889; Wildcard Events</div>'
-    + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:.5rem;"><input type="number" id="wildcard-bonus-' + tid + '" value="' + (s.wildcardBonus || 2) + '" min="0" class="text-mono" style="padding:5px 8px;font-size:13px;max-width:70px;" onchange="updateWildcardBonus(' + tid + ',this.value)"/><span style="font-size:12px;color:var(--text2);">pts per wildcard event</span></div>'
-    + '<div style="max-height:160px;overflow-y:auto;margin-bottom:1rem;">' + wcRows + '</div>'
+    + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:.5rem;"><input type="number" id="wildcard-bonus-' + tid + '" value="' + (s.wildcardBonus || 2) + '" min="0" class="text-mono" style="padding:5px 8px;font-size:13px;max-width:70px;" onchange="updateWildcardBonus(' + tid + ',this.value)"/><span style="font-size:12px;color:var(--text2);">pts per wildcard</span></div>'
+    + '</div>'
+    // Col 2: Wildcard event toggles
+    + '<div>'
+    + '<div class="ss-label">&#9889; Wildcard Event Selection</div>'
+    + '<div style="max-height:160px;overflow-y:auto;">' + wcRows + '</div>'
+    + '</div>'
+    // Col 3: Bonus tiers
+    + '<div>'
     + '<div class="ss-label">&#127919; Attendance Bonus Tiers</div>'
     + '<p style="font-size:11px;color:var(--text3);margin-bottom:.5rem;">Highest qualifying tier is used.</p>'
     + '<div style="display:grid;grid-template-columns:1fr 1fr 28px;gap:5px;font-size:10px;color:var(--text3);margin-bottom:4px;"><span>Min events</span><span>Pts</span><span></span></div>'
     + '<div id="tiers-list-' + tid + '">' + tierRows + '</div>'
     + '<button class="btn btn-sm" style="margin-top:4px;" onclick="addTier(' + tid + ')">+ Add Tier</button>'
     + '</div>'
-    + '<div>'
-    + '<div class="ss-label">&#9201; Time Bands</div>'
-    + '<p style="font-size:11px;color:var(--text3);margin-bottom:.5rem;">Seconds vs baseline. Negative = faster.</p>'
-    + '<div style="display:grid;grid-template-columns:75px 55px 1fr 28px;gap:5px;font-size:10px;color:var(--text3);margin-bottom:4px;"><span>Threshold</span><span>Pts</span><span>Label</span><span></span></div>'
-    + '<div id="bands-list-' + tid + '">' + bandRows + '</div>'
-    + '<button class="btn btn-sm" style="margin-top:4px;" onclick="addBandItem(' + tid + ')">+ Add Band</button>'
-    + '</div></div>'
+    + '</div>'
+    // Band scoring — full width
+    + '<div style="border-top:1px solid var(--border);padding-top:1rem;">'
+    + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;">'
+    + '<div class="ss-label" style="margin-bottom:0;">&#9201; Band Scoring (A–G)</div>'
+    + '<button class="btn btn-sm btn-danger" style="font-size:10px;padding:3px 8px;" onclick="resetBandTable(' + tid + ')">Reset</button>'
+    + '</div>'
+    + '<div style="border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;overflow-x:auto;" id="bands-list-' + tid + '">' + bandRows + '</div>'
+    + '</div>'
     + '<div style="display:flex;gap:8px;margin-top:1rem;align-items:center;">'
     + '<button class="btn btn-sm btn-primary" onclick="saveSettingsInline(' + tid + ')">Save Settings</button>'
     + '<span id="settings-saved-' + tid + '" style="font-size:13px;color:var(--green);display:none;">Saved</span>'
@@ -1148,14 +1400,98 @@ function buildSettingsPanel(tid) {
     + '</div></div>';
 }
 
+function btEnsureTable(tid) {
+  var t = S.tournaments.find(function(x) { return x.id === tid; }); if (!t) return null;
+  if (!t.settings.bandTable) t.settings.bandTable = JSON.parse(JSON.stringify(DEFAULT_BAND_TABLE));
+  return t;
+}
+function btRefresh(tid) {
+  var p = document.getElementById('settings-panel-' + tid); if (p) p.innerHTML = buildSettingsPanel(tid);
+}
+function btUpdate(tid, band, bi, field, val) {
+  var t = btEnsureTable(tid); if (!t) return;
+  var brackets = t.settings.bandTable[band];
+  if (!brackets) return;
+  var sorted = brackets.slice().sort(function(a,b){ return b.pts - a.pts; });
+  var b = sorted[bi]; if (!b) return;
+  var num = parseFloat(val);
+  if (field === 'pts') { b.pts = isNaN(num) ? 0 : num; }
+  else if (field === 'from') {
+    if (b.minFaster != null) b.minFaster = isNaN(num) ? 0 : num;
+    else b.minSlower = isNaN(num) ? 0 : num;
+  } else if (field === 'to') {
+    if (b.maxSlower != null) b.maxSlower = isNaN(num) ? 0 : num;
+  }
+}
+function btRemove(tid, band, bi) {
+  var t = btEnsureTable(tid); if (!t) return;
+  var brackets = t.settings.bandTable[band]; if (!brackets) return;
+  var sorted = brackets.slice().sort(function(a,b){ return b.pts - a.pts; });
+  var target = sorted[bi]; if (!target) return;
+  t.settings.bandTable[band] = brackets.filter(function(b) { return b !== target; });
+  btRefresh(tid);
+}
+function btAdd(tid, band, isFaster) {
+  var t = btEnsureTable(tid); if (!t) return;
+  if (!t.settings.bandTable[band]) t.settings.bandTable[band] = [];
+  if (isFaster) t.settings.bandTable[band].push({pts:1, minFaster:0});
+  else t.settings.bandTable[band].push({pts:0.5, maxSlower:30, minSlower:0});
+  btRefresh(tid);
+}
+function updateBandTable(tid, band, pts, val) {
+  var t = btEnsureTable(tid); if (!t) return;
+  var sec = parseFloat(val);
+  var brackets = t.settings.bandTable[band] || [];
+  brackets = brackets.filter(function(b) { return b.pts !== pts; });
+  if (!isNaN(sec) && sec >= 0 && val !== '') brackets.push({pts:pts, minFaster:sec});
+  t.settings.bandTable[band] = brackets;
+}
+
+function updateBandRange(tid, band, val) {
+  // Accept "mm:ss–mm:ss" or "mm:ss-mm:ss"
+  var parts = val.split(/[–\-]/);
+  var from = tSec(parts[0] && parts[0].trim());
+  var to   = tSec(parts[1] && parts[1].trim());
+  if (from != null) BAND_SEC_RANGES[band][0] = from;
+  if (to   != null) BAND_SEC_RANGES[band][1] = to;
+  BAND_TIME_RANGES[band] = sTime(BAND_SEC_RANGES[band][0]) + '-' + sTime(BAND_SEC_RANGES[band][1]);
+}
+function btSetFaster(tid, band, pts, field, val) {
+  var t = btEnsureTable(tid); if (!t) return;
+  if (!t.settings.bandTable[band]) t.settings.bandTable[band] = [];
+  var existing = t.settings.bandTable[band].find(function(b){ return b.pts === pts && b.minFaster != null; });
+  if (!existing) { existing = {pts: pts, minFaster: null, maxFaster: null}; t.settings.bandTable[band].push(existing); }
+  var sec = parseInt(val);
+  if (field === 'from') existing.minFaster = (!isNaN(sec) && val !== '') ? sec : null;
+  if (field === 'to')   existing.maxFaster = (!isNaN(sec) && val !== '') ? sec : null;
+  // Remove entry entirely if both are null
+  if (existing.minFaster == null && existing.maxFaster == null) {
+    t.settings.bandTable[band] = t.settings.bandTable[band].filter(function(b){ return b !== existing; });
+  }
+}
+function btSetSlower(tid, band, pts, field, val) {
+  var t = btEnsureTable(tid); if (!t) return;
+  if (!t.settings.bandTable[band]) t.settings.bandTable[band] = [];
+  var existing = t.settings.bandTable[band].find(function(b){ return b.pts === pts && b.slowerFrom != null; });
+  if (!existing) { existing = {pts: pts, slowerFrom: 0, slowerTo: 0}; t.settings.bandTable[band].push(existing); }
+  var sec = parseInt(val);
+  if (field === 'from') existing.slowerFrom = isNaN(sec) ? 0 : sec;
+  if (field === 'to')   existing.slowerTo   = isNaN(sec) ? 0 : sec;
+  // 1pt always starts from 0
+  if (pts === 1) existing.slowerFrom = 0;
+}
+function resetBandTable(tid) {
+  if (!confirm('Reset band scoring to defaults?')) return;
+  var t = S.tournaments.find(function(x) { return x.id === tid; }); if (!t) return;
+  t.settings.bandTable = JSON.parse(JSON.stringify(DEFAULT_BAND_TABLE));
+  var p = document.getElementById('settings-panel-' + tid); if (p) p.innerHTML = buildSettingsPanel(tid);
+}
+
 function updateAttendanceBonus(tid, val) { var t = S.tournaments.find(function(x) { return x.id === tid; }); if (t) t.settings.attendanceBonus = parseInt(val) || 0; }
 function updateWildcardBonus(tid, val) { var t = S.tournaments.find(function(x) { return x.id === tid; }); if (t) t.settings.wildcardBonus = parseInt(val) || 0; }
 function updateTier(tid, i, field, val) { var t = S.tournaments.find(function(x) { return x.id === tid; }); if (!t) return; t.settings.bonusTiers[i][field] = parseInt(val) || 0; }
 function removeTier(tid, i) { if (!confirm('Remove this tier?')) return; var t = S.tournaments.find(function(x) { return x.id === tid; }); if (!t) return; t.settings.bonusTiers.splice(i, 1); var p = document.getElementById('settings-panel-' + tid); if (p) p.innerHTML = buildSettingsPanel(tid); }
 function addTier(tid) { var t = S.tournaments.find(function(x) { return x.id === tid; }); if (!t) return; t.settings.bonusTiers.push({minRuns:1,points:1}); var p = document.getElementById('settings-panel-' + tid); if (p) p.innerHTML = buildSettingsPanel(tid); }
-function updateBand(tid, i, field, val) { var t = S.tournaments.find(function(x) { return x.id === tid; }); if (!t) return; t.settings.bands[i][field] = field === 'label' ? val : parseInt(val) || 0; }
-function removeBandItem(tid, i) { if (!confirm('Remove this band?')) return; var t = S.tournaments.find(function(x) { return x.id === tid; }); if (!t) return; t.settings.bands.splice(i, 1); var p = document.getElementById('settings-panel-' + tid); if (p) p.innerHTML = buildSettingsPanel(tid); }
-function addBandItem(tid) { var t = S.tournaments.find(function(x) { return x.id === tid; }); if (!t) return; t.settings.bands.push({threshold:-30,points:1,label:'New band'}); var p = document.getElementById('settings-panel-' + tid); if (p) p.innerHTML = buildSettingsPanel(tid); }
 function saveSettingsInline(tid) { persist(); var msg = document.getElementById('settings-saved-' + tid); if (msg) msg.style.display = 'inline'; setTimeout(function() { var p = document.getElementById('settings-panel-' + tid); if (p) p.remove(); }, 800); }
 
 function showTournamentRunners(tid) {
@@ -1173,29 +1509,57 @@ function renderRunnersPanel(tid, editMode) {
     var rows = enrolledRunners.length ? enrolledRunners.map(function(r) {
       var entry = getTournamentRunnerEntry(tid, r.id); var baseline = (entry && entry.baselineSec != null) ? entry.baselineSec : getRunnerPb(r.id, actType);
       return '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);gap:10px;flex-wrap:wrap;">'
-        + '<div><span style="font-size:15px;font-weight:700;">' + r.name + '</span>' + (showPkId && r.rid ? '<span style="font-size:12px;color:var(--text3);margin-left:6px;">A' + r.rid + '</span>' : '') + '</div>'
+        + '<div><span style="font-size:15px;font-weight:700;">' + r.name + '</span>' + (showPkId && r.rid ? '<span style="font-size:12px;color:var(--text3);margin-left:6px;">A' + r.rid + '</span>' : '') + (r.band ? '<span class="badge badge-orange" style="margin-left:6px;">Band ' + r.band + '</span>' : '') + '</div>'
         + '<span style="font-size:13px;color:var(--text3);">' + label + ' baseline: <span class="text-mono" style="color:var(--orange);">' + (baseline != null ? sTime(baseline) : '--') + '</span></span></div>';
     }).join('') : '<div style="font-size:13px;color:var(--text3);padding:8px 0;">No runners enrolled yet.</div>';
     panel.innerHTML = '<div class="card card-accent" style="margin-bottom:0;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;"><div class="card-title" style="margin-bottom:0;">Club Runners (' + enrolledRunners.length + ')</div><div style="display:flex;gap:6px;"><button class="btn btn-sm btn-info" onclick="renderRunnersPanel(' + tid + ',true)">Edit</button><button class="btn btn-sm" onclick="document.getElementById(\'runners-panel-' + tid + '\').remove()">Close</button></div></div>' + rows + '</div>';
   } else {
     var rows2 = S.runners.filter(function(r) { return !r.archived; }).map(function(r) {
       var isIn = isEnrolled(tid, r.id); var entry = getTournamentRunnerEntry(tid, r.id); var suggested = (entry && entry.baselineSec != null) ? entry.baselineSec : getRunnerPb(r.id, actType);
+      var suggestedBand = isParkrun(tid) ? suggestBand(suggested) : null;
+      var bandOpts = '<option value="">—</option>' + BAND_LABELS.map(function(b) { return '<option value="' + b + '" ' + (r.band === b ? 'selected' : '') + '>Band ' + b + '</option>'; }).join('');
+      var bandHtml = isParkrun(tid)
+        ? '<div style="display:flex;flex-direction:column;gap:3px;align-items:flex-end;">'
+          + '<div style="display:flex;align-items:center;gap:5px;"><span style="font-size:11px;color:var(--text3);">Band</span><select id="enroll-band-' + tid + '-' + r.id + '" style="font-size:12px;padding:3px 6px;max-width:100px;">' + bandOpts + '</select></div>'
+          + (suggestedBand ? '<button onclick="document.getElementById(\'enroll-band-' + tid + '-' + r.id + '\').value=\'' + suggestedBand + '\';this.style.display=\'none\';" style="font-size:10px;background:var(--orange-dim);border:1px solid var(--orange);color:var(--orange);padding:1px 6px;border-radius:3px;cursor:pointer;white-space:nowrap;">Suggested: ' + suggestedBand + ' (' + BAND_TIME_RANGES[suggestedBand] + ')</button>' : '')
+          + '</div>'
+        : '';
       return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);flex-wrap:wrap;">'
         + '<input type="checkbox" id="enroll-cb-' + tid + '-' + r.id + '" ' + (isIn ? 'checked' : '') + ' style="width:16px;height:16px;accent-color:var(--orange);flex-shrink:0;"/>'
         + '<label for="enroll-cb-' + tid + '-' + r.id + '" style="flex:1;font-size:15px;font-weight:700;cursor:pointer;">' + r.name + (showPkId && r.rid ? ' <span style="font-weight:400;font-size:12px;color:var(--text3);">A' + r.rid + '</span>' : '') + '</label>'
-        + '<div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;color:var(--text3);">' + label + ' baseline</span><input type="time" id="enroll-baseline-' + tid + '-' + r.id + '" step="1" value="' + (suggested != null ? sHMS(suggested) : '') + '" style="max-width:130px;" oninput="autoEnrollOnBaseline(' + tid + ',' + r.id + ')"/></div></div>';
+        + '<div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;color:var(--text3);">' + label + ' baseline</span><input type="time" id="enroll-baseline-' + tid + '-' + r.id + '" step="1" value="' + (suggested != null ? sHMS(suggested) : '') + '" style="max-width:130px;" oninput="autoEnrollOnBaseline(' + tid + ',' + r.id + ');updateEnrollBandSuggestion(\'' + tid + '\',' + r.id + ')"/></div>'
+        + bandHtml
+        + '</div>';
     }).join('');
-    panel.innerHTML = '<div class="card card-accent" style="margin-bottom:0;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;"><div class="card-title" style="margin-bottom:0;">Club Runners</div><div style="display:flex;gap:6px;"><button class="btn btn-sm btn-primary" onclick="saveRunnersPanel(' + tid + ')">Save</button><button class="btn btn-sm" onclick="renderRunnersPanel(' + tid + ',false)">Cancel</button></div></div><p style="font-size:12px;color:var(--text3);margin-bottom:.75rem;">Tick runners to include them. Each needs a <strong>' + label + ' baseline</strong>.</p>' + (S.runners.length ? rows2 : '<div class="notice">No runners added yet.</div>') + '</div>';
+    panel.innerHTML = '<div class="card card-accent" style="margin-bottom:0;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;"><div class="card-title" style="margin-bottom:0;">Club Runners</div><div style="display:flex;gap:6px;"><button class="btn btn-sm btn-primary" onclick="saveRunnersPanel(' + tid + ')">Save</button><button class="btn btn-sm" onclick="renderRunnersPanel(' + tid + ',false)">Cancel</button></div></div><p style="font-size:12px;color:var(--text3);margin-bottom:.75rem;">Tick runners to include them. Each needs a <strong>' + label + ' baseline</strong>. Band changes update the global profile.</p>' + (S.runners.length ? rows2 : '<div class="notice">No runners added yet.</div>') + '</div>';
   }
 }
 
 function autoEnrollOnBaseline(tid, rId) { var cb = document.getElementById('enroll-cb-' + tid + '-' + rId); var input = document.getElementById('enroll-baseline-' + tid + '-' + rId); if (cb && input && input.value) cb.checked = true; }
 
+function updateEnrollBandSuggestion(tid, rId) {
+  var input = document.getElementById('enroll-baseline-' + tid + '-' + rId);
+  var btn = document.querySelector('[id="enroll-band-' + tid + '-' + rId + '"]');
+  if (!input || !isParkrun(tid)) return;
+  var sec = tSec(input.value);
+  var suggested = suggestBand(sec);
+  // Update the suggestion button dynamically
+  var suggBtn = document.getElementById('enroll-band-sugg-' + tid + '-' + rId);
+  if (suggBtn) {
+    if (suggested) { suggBtn.textContent = 'Suggested: ' + suggested + ' (' + BAND_TIME_RANGES[suggested] + ')'; suggBtn.style.display = ''; }
+    else { suggBtn.style.display = 'none'; }
+  }
+}
+
 function saveRunnersPanel(tid) {
   var actType = getTournamentActivityType(tid); var errors = [];
   S.runners.forEach(function(r) {
     var cb = document.getElementById('enroll-cb-' + tid + '-' + r.id); var timeInput = document.getElementById('enroll-baseline-' + tid + '-' + r.id);
-    if (cb && cb.checked) { var sec = tSec(timeInput ? timeInput.value : ''); if (!sec) errors.push(r.name + ' needs a ' + actType + ' baseline.'); else { setBaseline(r.id, actType, sec, tid); if (!r.pbs) r.pbs = {}; if (r.pbs[actType] == null) { r.pbs[actType] = sec; if (actType === 'parkrun') r.pbSec = sec; } } }
+    if (cb && cb.checked) { var sec = tSec(timeInput ? timeInput.value : ''); if (!sec) errors.push(r.name + ' needs a ' + actType + ' baseline.'); else { setBaseline(r.id, actType, sec, tid); if (!r.pbs) r.pbs = {}; if (r.pbs[actType] == null) { r.pbs[actType] = sec; if (actType === 'parkrun') r.pbSec = sec; }
+      // Save band to global profile
+      var bandSel = document.getElementById('enroll-band-' + tid + '-' + r.id);
+      if (bandSel && bandSel.value) r.band = bandSel.value;
+    } }
     else unenrollRunner(tid, r.id);
   });
   if (errors.length) { alert('Please fix:\n' + errors.join('\n')); return; }
@@ -1267,8 +1631,8 @@ function renderEtResultRows(evId) {
     var rd = res[r.id] || {}; var actual = rd.actualSec != null ? rd.actualSec : null;
     var baseline = getTournamentBaselinePb(r.id, ev ? ev.tournamentId : null);
     var diff = (actual != null && baseline != null) ? actual - baseline : null;
-    var bp = diff != null ? getBandPts(diff, ts) : null;
-    var bc = diff == null ? 'badge-neu' : diff < 0 ? 'badge-pos' : diff === 0 ? 'badge-neu' : 'badge-neg';
+    var bp = (diff != null && isParkrun(ev ? ev.tournamentId : null) && r.band) ? getBandPtsForRunner(diff, r.band, ts) : (diff != null ? {pts:0, label: r.band ? 'No improvement' : 'No band assigned'} : null);
+    var bc = diff == null ? 'badge-neu' : diff < 0 ? 'badge-pos' : 'badge-neg';
     var ptsColor = bp && bp.pts > 0 ? 'var(--orange)' : bp && bp.pts < 0 ? 'var(--red)' : 'var(--text)';
     var ptsDisplay = bp != null ? ((bp.pts > 0 ? '+' : '') + bp.pts) : '--';
     var baselineDisplay = baseline != null
@@ -1315,7 +1679,15 @@ function toggleAttendanceEt(evId, rId) {
   if (!S.results[evId][rId]) S.results[evId][rId] = {};
   var cur = S.results[evId][rId].attended === true;
   S.results[evId][rId].attended = !cur;
+  // When marking as attended, pre-fill 00:00:00 as default in the DOM if input exists
   renderEnterTimesRows(evId);
+  if (!cur) {
+    // Just enabled — focus the time input
+    setTimeout(function() {
+      var inp = document.getElementById('et-time-' + evId + '-' + rId);
+      if (inp) { inp.value = '00:00:00'; inp.select(); inp.focus(); }
+    }, 30);
+  }
 }
 
 function saveEnterTimes(evId) {
@@ -1392,7 +1764,14 @@ function renderLeaderboard() {
       var ts = getTournamentSettings(ev.tournamentId);
       if (rd.actualSec != null) {
         if (ev.wildcard) { wildcardPts += (ts.wildcardBonus || 2); }
-        else { attendancePts += (ts.attendanceBonus || 0); var baseline = getTournamentBaselinePb(r.id, parseInt(tid)); if (baseline != null) bandPts += getBandPts(rd.actualSec - baseline, ts).pts; }
+        else {
+          attendancePts += (ts.attendanceBonus || 0);
+          var baseline = getTournamentBaselinePb(r.id, parseInt(tid));
+          if (baseline != null && isParkrun(parseInt(tid)) && r.band) {
+            var bResult = getBandPtsForRunner(rd.actualSec - baseline, r.band, ts);
+            bandPts += bResult.pts;
+          }
+        }
         runs++;
       }
     });
