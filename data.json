@@ -167,14 +167,6 @@
           {
             "minRuns": 3,
             "points": 3
-          },
-          {
-            "minRuns": 2,
-            "points": 2
-          },
-          {
-            "minRuns": 1,
-            "points": 1
           }
         ],
         "bands": [
@@ -193,7 +185,8 @@
             "points": 1,
             "label": "30s-1 min faster"
           }
-        ]
+        ],
+        "attendanceBonus": 2
       }
     }
   ],
@@ -373,6 +366,6 @@
       }
     ]
   },
-  "_savedAt": 1778279410210,
+  "_savedAt": 1778282038644,
   "_logo": null
 }
