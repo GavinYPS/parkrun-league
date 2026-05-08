@@ -33,7 +33,8 @@
             "date": "2026-05-06"
           }
         ]
-      }
+      },
+      "isLeader": true
     },
     {
       "id": 1778260052500,
@@ -41,7 +42,8 @@
       "rid": "3332037",
       "homeSlug": "",
       "pbs": {},
-      "pbSec": null
+      "pbSec": null,
+      "isLeader": true
     },
     {
       "id": 1778260069092,
@@ -67,7 +69,8 @@
       "rid": "4545931",
       "homeSlug": "",
       "pbs": {},
-      "pbSec": null
+      "pbSec": null,
+      "isLeader": true
     },
     {
       "id": 1778260130668,
@@ -114,10 +117,11 @@
     {
       "id": 1778260241566,
       "name": "Zoe DICKINSON",
-      "rid": "",
+      "rid": "8243754",
       "homeSlug": "",
       "pbs": {},
-      "pbSec": null
+      "pbSec": null,
+      "isLeader": false
     }
   ],
   "tournaments": [
@@ -253,6 +257,6 @@
       }
     ]
   },
-  "_savedAt": 1778261841429,
+  "_savedAt": 1778263345092,
   "_logo": null
 }
