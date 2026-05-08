@@ -21,7 +21,7 @@
 }
 body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;line-height:1.5}
 header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 1.5rem;display:flex;align-items:center;gap:12px;height:60px;position:sticky;top:0;z-index:100}
-.logo-circle{width:36px;height:36px;border-radius:50%;background:var(--bg3);border:2px solid var(--orange);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:17px;color:var(--orange);flex-shrink:0}
+.logo-circle{width:36px;height:36px;border-radius:50%;background:var(--bg3);border:2px solid var(--orange);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:17px;color:var(--orange);flex-shrink:0;overflow:hidden;}
 .logo-text{display:flex;flex-direction:column;line-height:1.1}
 .logo-name{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;text-transform:uppercase;letter-spacing:.04em}
 .logo-sub{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.12em;color:var(--orange)}
@@ -30,7 +30,8 @@ nav button{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1
 nav button:hover{color:var(--text2)}
 nav button.active{color:var(--orange);border-bottom-color:var(--orange)}
 main{max-width:920px;margin:0 auto;padding:1.5rem}
-.section{display:none}.section.active{display:block}
+.section{display:none}
+.section.active{display:block}
 .page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;gap:8px}
 .page-header h2{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:22px;text-transform:uppercase;letter-spacing:.04em}
 .card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:1rem;box-shadow:var(--shadow)}
@@ -69,7 +70,6 @@ table td{padding:9px 10px;border-bottom:1px solid var(--border);vertical-align:m
 table tbody tr:last-child td{border-bottom:none}
 table tbody tr:hover{background:var(--bg3)}
 table td input[type=time]{width:110px;font-size:13px;padding:5px 8px}
-.metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:1.25rem}
 .metric{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;box-shadow:var(--shadow)}
 .metric-label{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:4px}
 .metric-value{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;color:var(--orange);line-height:1.1}
@@ -79,25 +79,14 @@ table td input[type=time]{width:110px;font-size:13px;padding:5px 8px}
 .pos-num{width:32px;height:32px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:800;flex-shrink:0}
 .lb-name{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;text-transform:uppercase;letter-spacing:.02em}
 .lb-sub{font-size:11px;color:var(--text3)}
-.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-@media(max-width:600px){.settings-grid{grid-template-columns:1fr}}
-.tier-row{display:grid;grid-template-columns:1fr 1fr 36px;gap:8px;align-items:center;margin-bottom:8px}
-.band-row-s{display:grid;grid-template-columns:90px 70px 1fr 36px;gap:8px;align-items:center;margin-bottom:8px}
-.col-labels{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:6px;display:grid;gap:8px}
-.col-labels.tier{grid-template-columns:1fr 1fr 36px}
-.col-labels.band{grid-template-columns:90px 70px 1fr 36px}
-.preview-box{background:var(--bg3);border-radius:var(--radius-sm);padding:.75rem 1rem;margin-top:.75rem}
-.preview-box-title{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px}
-.preview-row{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px solid var(--border)}
-.preview-row:last-child{border-bottom:none}
 .tournament-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:1.25rem;box-shadow:var(--shadow);overflow:hidden}
-.tournament-header{padding:1rem 1.25rem;display:flex;justify-content:space-between;align-items:center;gap:1rem;border-bottom:1px solid var(--border);flex-wrap:wrap;background:linear-gradient(to right,var(--bg3),var(--bg2));cursor:pointer;}
-.tournament-header:hover{background:linear-gradient(to right,var(--bg4),var(--bg3));}
-.chevron{transition:transform .2s;flex-shrink:0;color:var(--text3);}
-.chevron.open{transform:rotate(180deg);}
+.tournament-header{padding:1rem 1.25rem;display:flex;justify-content:space-between;align-items:center;gap:1rem;border-bottom:1px solid var(--border);flex-wrap:wrap;background:linear-gradient(to right,var(--bg3),var(--bg2));cursor:pointer}
+.tournament-header:hover{background:linear-gradient(to right,var(--bg4),var(--bg3))}
+.chevron{transition:transform .2s;flex-shrink:0;color:var(--text3)}
+.chevron.open{transform:rotate(180deg)}
 .location-block{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:.75rem;overflow:hidden}
-.location-header{padding:.75rem 1rem;display:flex;justify-content:space-between;align-items:center;gap:1rem;border-bottom:1px solid var(--border);flex-wrap:wrap;cursor:pointer;}
-.location-header:hover{background:var(--bg4);}
+.location-header{padding:.75rem 1rem;display:flex;justify-content:space-between;align-items:center;gap:1rem;border-bottom:1px solid var(--border);flex-wrap:wrap;cursor:pointer}
+.location-header:hover{background:var(--bg4)}
 .tournament-title{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
 .tournament-meta{font-size:12px;color:var(--text3);margin-top:3px}
 .tournament-body{padding:.75rem 1.25rem 1rem}
@@ -108,29 +97,27 @@ table td input[type=time]{width:110px;font-size:13px;padding:5px 8px}
 .event-row:last-child{border-bottom:none}
 .inline-form{background:var(--bg2);border:1px dashed var(--border2);border-radius:var(--radius-sm);padding:1rem;margin:.5rem 0}
 .url-status{font-size:12px;margin-top:4px;min-height:18px;padding-left:100px}
-.spin{display:inline-block;width:13px;height:13px;border:2px solid var(--border2);border-top-color:var(--orange);border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle}
-@keyframes spin{to{transform:rotate(360deg)}}
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;align-items:center;justify-content:center}
 .modal-overlay.open{display:flex}
 .modal{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);padding:1.5rem;width:100%;max-width:460px;box-shadow:0 8px 48px rgba(0,0,0,.8);margin:1rem}
 .modal h3{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;margin-bottom:1rem}
-.export-area{width:100%;min-height:80px;font-family:'SF Mono','Fira Code',monospace;font-size:12px;padding:8px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--bg3);color:var(--text);resize:vertical}
 .text-right{text-align:right}
 .text-mono{font-family:'SF Mono','Fira Code',monospace}
-/* Token field wrapper */
-.token-wrap{position:relative;flex:1;max-width:300px;display:flex;align-items:center;}
-.token-wrap input{padding-right:38px;font-family:'SF Mono','Fira Code',monospace;font-size:12px;}
-.token-toggle{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text3);padding:2px;display:flex;align-items:center;transition:color .15s;}
-.token-toggle:hover{color:var(--text2);}
+.preview-row{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px solid var(--border)}
+.preview-row:last-child{border-bottom:none}
+.token-wrap{position:relative;flex:1;max-width:300px;display:flex;align-items:center}
+.token-wrap input{padding-right:38px;font-family:'SF Mono','Fira Code',monospace;font-size:12px}
+.token-toggle{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text3);padding:2px;display:flex;align-items:center;transition:color .15s}
+.token-toggle:hover{color:var(--text2)}
 </style>
 </head>
 <body>
 
 <header>
   <div class="logo-circle" id="logo-circle">
-  <img id="logo-img" src="" alt="R" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:none;"/>
-  <span id="logo-fallback">R</span>
-</div>
+    <img id="logo-img" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:none;"/>
+    <span id="logo-fallback">R</span>
+  </div>
   <div class="logo-text">
     <span class="logo-name">Rundamentalist Run Club</span>
     <span class="logo-sub">Tournament Tracker</span>
@@ -139,206 +126,176 @@ table td input[type=time]{width:110px;font-size:13px;padding:5px 8px}
   <div id="header-auth"></div>
 </header>
 
-<nav id="main-nav">
-  <!-- populated by renderNav() -->
-</nav>
+<nav id="main-nav"></nav>
 
 <main>
 
-<!-- RUNNERS -->
-<div class="section active" id="tab-runners">
-  <div class="page-header">
-    <h2>Club Runners</h2>
-    <button class="btn btn-primary" onclick="tog('f-runner');renderPbFields('r-pb-fields',{})">+ Add Runner</button>
-  </div>
-  <div id="f-runner" class="card card-accent" style="display:none;">
-    <div class="card-title">New Runner</div>
-    <div class="form-row">
-      <label>Name</label>
-      <input type="text" id="r-name" placeholder="Enter name"/>
+  <div class="section" id="tab-runners">
+    <div class="page-header">
+      <h2>Club Runners</h2>
+      <button class="btn btn-primary" onclick="tog('f-runner');renderPbFields('r-pb-fields',{})">+ Add Runner</button>
     </div>
-    <div class="form-row">
-      <label>Parkrun ID</label>
-      <input type="text" id="r-url" placeholder="e.g. 8416304" oninput="scheduleRunnerLookup()" style="max-width:180px;font-family:'SF Mono','Fira Code',monospace;"/>
-    </div>
-    <div class="form-row" id="r-profile-row" style="display:none;">
-      <label></label>
-      <a id="r-profile-link" href="#" target="_blank" class="btn btn-sm btn-info">Open Parkrun profile &#8599;</a>
-    </div>
-    <div class="url-status" id="r-url-status"></div>
-    <div id="r-pb-fields"></div>
-    <p class="form-hint">Only a name is required. Optionally enter a Parkrun ID to link to their profile, and baseline times for scoring.</p>
-    <div class="btn-group">
-      <button class="btn btn-primary" onclick="addRunner()">Save Runner</button>
-      <button class="btn" onclick="tog('f-runner');clearRunnerForm()">Cancel</button>
-    </div>
-  </div>
-  <div id="runners-body"></div>
-</div>
-
-<!-- TOURNAMENTS -->
-<div class="section" id="tab-events">
-  <div class="page-header">
-    <h2>Tournaments</h2>
-    <button class="btn btn-primary" onclick="tog('f-tournament');populateTypeSelect('t-type')">+ New Tournament</button>
-  </div>
-  <div id="f-tournament" class="card card-accent" style="display:none;">
-    <div class="card-title">New Tournament</div>
-    <div class="form-row"><label>Name</label><input type="text" id="t-name" placeholder="e.g. Spring League 2026"/></div>
-    <div class="form-row"><label>Description</label><input type="text" id="t-desc" placeholder="Optional"/></div>
-    <div class="form-row">
-      <label>Type</label>
-      <select id="t-type" style="max-width:220px;"></select>
-    </div>
-    <div class="btn-group">
-      <button class="btn btn-primary" onclick="addTournament()">Save</button>
-      <button class="btn" onclick="tog('f-tournament')">Cancel</button>
-    </div>
-  </div>
-  <div id="tournaments-body"></div>
-</div>
-
-<!-- ENTER TIMES -->
-<div class="section" id="tab-enter-times">
-  <div class="page-header">
-    <h2>Enter Times</h2>
-    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-      <span style="font-size:13px;color:var(--text2);">Event</span>
-      <select id="et-ev-sel" style="width:280px;" onchange="etViewMode=false;renderEnterTimes()"><option value="">-- select event --</option></select>
-    </div>
-  </div>
-  <div id="enter-times-area"><div class="notice">Select an event above.</div></div>
-</div>
-
-<!-- RESULTS -->
-<div class="section" id="tab-results">
-  <div class="page-header">
-    <h2>Results</h2>
-    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-      <span style="font-size:13px;color:var(--text2);">Event</span>
-      <select id="res-ev-sel" style="width:280px;" onchange="renderResultEntry()"><option value="">-- select event --</option></select>
-    </div>
-  </div>
-  <div id="result-entry-area"><div class="notice">Select an event above.</div></div>
-</div>
-
-<!-- LEADERBOARD -->
-<div class="section" id="tab-leaderboard">
-  <div class="page-header">
-    <h2 id="lb-heading">Leaderboard</h2>
-    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-      <span style="font-size:13px;color:var(--text2);">Tournament</span>
-      <select id="lb-tournament-sel" style="width:220px;" onchange="renderLeaderboard()"><option value="">-- select tournament --</option></select>
-    </div>
-  </div>
-  <div id="lb-area"></div>
-</div>
-
-<!-- SETTINGS -->
-<div class="section" id="tab-settings">
-  <div class="page-header"><h2>Global Settings</h2></div>
-  <div class="card card-accent" style="max-width:520px;">
-    <div class="card-title">Club Logo</div>
-    <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;">
-      <div id="logo-preview" style="width:60px;height:60px;border-radius:50%;background:var(--bg3);border:2px solid var(--border2);overflow:hidden;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:24px;color:var(--orange);flex-shrink:0;">
-        <img id="logo-preview-img" src="" style="width:100%;height:100%;object-fit:cover;display:none;"/>
-        <span id="logo-preview-fallback">R</span>
-      </div>
-      <div>
-        <div class="btn-group" style="margin-top:0;">
-          <label class="btn btn-sm btn-primary" style="cursor:pointer;">Upload Logo <input type="file" accept="image/*" onchange="handleLogoUpload(this);syncLogoPreview()" style="display:none;"/></label>
-          <button class="btn btn-sm btn-danger" onclick="removeLogo();syncLogoPreview()">Remove</button>
-        </div>
-        <p id="logo-upload-msg" style="font-size:12px;color:var(--green);margin-top:6px;display:none;">Logo updated ✓</p>
-        <p style="font-size:12px;color:var(--text3);margin-top:6px;">Displayed in the header. PNG or SVG with a transparent or dark background works best.</p>
-      </div>
-    </div>
-  </div>
-      <button id="club-edit-btn" class="btn btn-sm" onclick="toggleClubEdit()">Edit</button>
-    </div>
-    <div id="club-view-state">
-      <div class="form-row" style="margin-bottom:4px;">
-        <label>Club name</label>
-        <span id="club-name-display" style="font-size:14px;color:var(--text);font-weight:500;"></span>
-      </div>
-      <p class="form-hint">Used for the club filter on Parkrun results pages.</p>
-    </div>
-    <div id="club-edit-state" style="display:none;">
-      <div class="form-row">
-        <label>Club name</label>
-        <input type="text" id="setting-club-name" placeholder="e.g. Rundamentalist Run Club" style="max-width:320px;"/>
-      </div>
-      <p class="form-hint">Used for the club filter on Parkrun results pages.</p>
+    <div id="f-runner" class="card card-accent" style="display:none;">
+      <div class="card-title">New Runner</div>
+      <div class="form-row"><label>Name</label><input type="text" id="r-name" placeholder="Enter name"/></div>
+      <div class="form-row"><label>Parkrun ID</label><input type="text" id="r-url" placeholder="e.g. 8416304" oninput="scheduleRunnerLookup()" style="max-width:180px;font-family:'SF Mono','Fira Code',monospace;"/></div>
+      <div class="form-row" id="r-profile-row" style="display:none;"><label></label><a id="r-profile-link" href="#" target="_blank" class="btn btn-sm btn-info">Open Parkrun profile &#8599;</a></div>
+      <div class="url-status" id="r-url-status"></div>
+      <div id="r-pb-fields"></div>
+      <p class="form-hint">Only a name is required. Optionally enter a Parkrun ID and baseline times for scoring.</p>
       <div class="btn-group">
-        <button class="btn btn-primary btn-sm" onclick="saveGlobalSettings()">Save</button>
-        <button class="btn btn-sm" onclick="toggleClubEdit(false)">Cancel</button>
-        <span id="global-settings-saved" style="font-size:13px;color:var(--green);align-self:center;display:none;">Saved &#10003;</span>
+        <button class="btn btn-primary" onclick="addRunner()">Save Runner</button>
+        <button class="btn" onclick="tog('f-runner');clearRunnerForm()">Cancel</button>
       </div>
     </div>
+    <div id="runners-body"></div>
   </div>
-  <div class="card" style="max-width:520px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;">
-      <div class="card-title" style="margin-bottom:0;">Activity Types</div>
-      <div id="activity-types-header"></div>
+
+  <div class="section" id="tab-events">
+    <div class="page-header">
+      <h2>Tournaments</h2>
+      <button class="btn btn-primary" onclick="tog('f-tournament');populateTypeSelect('t-type')">+ New Tournament</button>
     </div>
-    <p style="font-size:13px;color:var(--text2);margin-bottom:1rem;line-height:1.6;">Types used for per-activity baselines on runner profiles. Each tournament type maps to one of these.</p>
-    <div id="activity-types-list"></div>
-    <div id="activity-type-add-row" class="form-row" style="margin-top:.75rem;gap:8px;display:none;">
-      <input type="text" id="new-activity-type" placeholder="e.g. 5 Mile, Half Marathon" style="max-width:240px;"/>
-      <button class="btn btn-sm btn-primary" onclick="addActivityType()">+ Add</button>
-    </div>
-  </div>
-  <div class="card" style="max-width:520px;">
-    <div class="card-title">Export / Import</div>
-    <p style="font-size:13px;color:var(--text2);margin-bottom:1rem;line-height:1.6;">Download your data as CSV files, or restore from a previous backup.</p>
-    <div class="btn-group" style="margin-top:0;flex-wrap:wrap;">
-      <button class="btn btn-sm btn-primary" onclick="exportCSV('runners')">Export Club Runners</button>
-      <button class="btn btn-sm btn-primary" onclick="exportCSV('results')">Export Results</button>
-      <label class="btn btn-sm" style="cursor:pointer;">Import Backup <input type="file" accept=".json" onchange="importFromFile(this)" style="display:none;"/></label>
-    </div>
-    <p id="import-file-msg" style="font-size:12px;color:var(--green);margin-top:8px;display:none;"></p>
-  </div>
-  <div class="card" style="max-width:520px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;">
-      <div class="card-title" style="margin-bottom:0;">Data Sync</div>
-      <div id="gh-sync-status" style="font-size:12px;color:var(--text3);"></div>
-    </div>
-    <p style="font-size:13px;color:var(--text2);margin-bottom:1rem;line-height:1.6;">Keep your data backed up and in sync across all devices.</p>
-    <div class="form-row" style="margin-bottom:8px;">
-      <label style="min-width:100px;font-size:13px;">Token</label>
-      <div class="token-wrap">
-        <input type="password" id="gh-token" placeholder="github_pat_xxxx" onblur="ghOnTokenBlur()"/>
-        <button class="token-toggle" id="gh-token-toggle" onclick="toggleTokenVisibility()" title="Show/hide token">
-          <!-- Eye icon (show) -->
-          <svg id="icon-eye" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          <!-- Eye-off icon (hide) — hidden initially -->
-          <svg id="icon-eye-off" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-        </button>
+    <div id="f-tournament" class="card card-accent" style="display:none;">
+      <div class="card-title">New Tournament</div>
+      <div class="form-row"><label>Name</label><input type="text" id="t-name" placeholder="e.g. Spring League 2026"/></div>
+      <div class="form-row"><label>Description</label><input type="text" id="t-desc" placeholder="Optional"/></div>
+      <div class="form-row"><label>Type</label><select id="t-type" style="max-width:220px;"></select></div>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="addTournament()">Save</button>
+        <button class="btn" onclick="tog('f-tournament')">Cancel</button>
       </div>
     </div>
-    <div class="form-row" style="margin-bottom:8px;">
-      <label style="min-width:100px;font-size:13px;">Repo</label>
-      <input type="text" id="gh-repo" placeholder="GavinYPS/parkrun-league" style="flex:1;max-width:300px;" onblur="ghSaveConfig()"/>
-    </div>
-    <div class="form-row" style="margin-bottom:8px;">
-      <label style="min-width:100px;font-size:13px;">File path</label>
-      <input type="text" id="gh-path" placeholder="data.json" style="flex:1;max-width:300px;" onblur="ghSaveConfig()"/>
-    </div>
-    <div class="btn-group" style="margin-top:.75rem;flex-wrap:wrap;">
-      <button id="gh-save-btn" class="btn btn-sm btn-primary" onclick="ghPush()" disabled>Save Data</button>
-      <button class="btn btn-sm" onclick="ghPull()">Load Data</button>
-    </div>
-    <p style="font-size:11px;color:var(--text3);margin-top:.75rem;">Create a token at github.com → Settings → Developer settings → Personal access tokens → Fine-grained → Contents: Read &amp; Write on your repo.</p>
+    <div id="tournaments-body"></div>
   </div>
-</div>
+
+  <div class="section" id="tab-enter-times">
+    <div class="page-header">
+      <h2>Enter Times</h2>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <span style="font-size:13px;color:var(--text2);">Event</span>
+        <select id="et-ev-sel" style="width:280px;" onchange="etViewMode=false;renderEnterTimes()"><option value="">-- select event --</option></select>
+      </div>
+    </div>
+    <div id="enter-times-area"><div class="notice">Select an event above.</div></div>
+  </div>
+
+  <div class="section" id="tab-leaderboard">
+    <div class="page-header">
+      <h2 id="lb-heading">Leaderboard</h2>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <span style="font-size:13px;color:var(--text2);">Tournament</span>
+        <select id="lb-tournament-sel" style="width:220px;" onchange="renderLeaderboard()"><option value="">-- select tournament --</option></select>
+      </div>
+    </div>
+    <div id="lb-area"></div>
+  </div>
+
+  <div class="section" id="tab-settings">
+    <div class="page-header"><h2>Global Settings</h2></div>
+
+    <div class="card card-accent" style="max-width:520px;">
+      <div class="card-title">Club Logo</div>
+      <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;">
+        <div style="width:60px;height:60px;border-radius:50%;background:var(--bg3);border:2px solid var(--border2);overflow:hidden;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:24px;color:var(--orange);flex-shrink:0;">
+          <img id="logo-preview-img" src="" style="width:100%;height:100%;object-fit:cover;display:none;"/>
+          <span id="logo-preview-fallback">R</span>
+        </div>
+        <div>
+          <div class="btn-group" style="margin-top:0;">
+            <label class="btn btn-sm btn-primary" style="cursor:pointer;">Upload Logo <input type="file" accept="image/*" onchange="handleLogoUpload(this)" style="display:none;"/></label>
+            <button class="btn btn-sm btn-danger" onclick="removeLogo()">Remove</button>
+          </div>
+          <p id="logo-upload-msg" style="font-size:12px;color:var(--green);margin-top:6px;display:none;">Logo updated ✓</p>
+          <p style="font-size:12px;color:var(--text3);margin-top:6px;">PNG or SVG with a dark background works best.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card card-accent" style="max-width:520px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+        <div class="card-title" style="margin-bottom:0;">Club Details</div>
+        <button id="club-edit-btn" class="btn btn-sm" onclick="toggleClubEdit()">Edit</button>
+      </div>
+      <div id="club-view-state">
+        <div class="form-row" style="margin-bottom:4px;"><label>Club name</label><span id="club-name-display" style="font-size:14px;color:var(--text);font-weight:500;"></span></div>
+        <p class="form-hint">Used for the club filter on Parkrun results pages.</p>
+      </div>
+      <div id="club-edit-state" style="display:none;">
+        <div class="form-row"><label>Club name</label><input type="text" id="setting-club-name" placeholder="e.g. Rundamentalist Run Club" style="max-width:320px;"/></div>
+        <p class="form-hint">Used for the club filter on Parkrun results pages.</p>
+        <div class="btn-group">
+          <button class="btn btn-primary btn-sm" onclick="saveGlobalSettings()">Save</button>
+          <button class="btn btn-sm" onclick="toggleClubEdit(false)">Cancel</button>
+          <span id="global-settings-saved" style="font-size:13px;color:var(--green);align-self:center;display:none;">Saved &#10003;</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="max-width:520px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;">
+        <div class="card-title" style="margin-bottom:0;">Activity Types</div>
+        <div id="activity-types-header"></div>
+      </div>
+      <p style="font-size:13px;color:var(--text2);margin-bottom:1rem;line-height:1.6;">Types used for per-activity baselines on runner profiles.</p>
+      <div id="activity-types-list"></div>
+      <div id="activity-type-add-row" class="form-row" style="margin-top:.75rem;gap:8px;display:none;">
+        <input type="text" id="new-activity-type" placeholder="e.g. 5 Mile, Half Marathon" style="max-width:240px;"/>
+        <button class="btn btn-sm btn-primary" onclick="addActivityType()">+ Add</button>
+      </div>
+    </div>
+
+    <div class="card" style="max-width:520px;">
+      <div class="card-title">Export / Import</div>
+      <p style="font-size:13px;color:var(--text2);margin-bottom:1rem;line-height:1.6;">Download your data as CSV files, or restore from a previous backup.</p>
+      <div class="btn-group" style="margin-top:0;flex-wrap:wrap;">
+        <button class="btn btn-sm btn-primary" onclick="exportCSV('runners')">Export Club Runners</button>
+        <button class="btn btn-sm btn-primary" onclick="exportCSV('results')">Export Results</button>
+        <label class="btn btn-sm" style="cursor:pointer;">Import Backup <input type="file" accept=".json" onchange="importFromFile(this)" style="display:none;"/></label>
+      </div>
+      <p id="import-file-msg" style="font-size:12px;color:var(--green);margin-top:8px;display:none;"></p>
+    </div>
+
+    <div class="card" style="max-width:520px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;">
+        <div class="card-title" style="margin-bottom:0;">Data Sync</div>
+        <div id="gh-sync-status" style="font-size:12px;color:var(--text3);"></div>
+      </div>
+      <p style="font-size:13px;color:var(--text2);margin-bottom:1rem;line-height:1.6;">Keep your data backed up and in sync across all devices.</p>
+      <div class="form-row" style="margin-bottom:8px;">
+        <label style="min-width:100px;font-size:13px;">Token</label>
+        <div class="token-wrap">
+          <input type="password" id="gh-token" placeholder="github_pat_xxxx" onblur="ghOnTokenBlur()"/>
+          <button class="token-toggle" onclick="toggleTokenVisibility()" title="Show/hide token">
+            <svg id="icon-eye" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg id="icon-eye-off" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="form-row" style="margin-bottom:8px;">
+        <label style="min-width:100px;font-size:13px;">Repo</label>
+        <input type="text" id="gh-repo" placeholder="GavinYPS/parkrun-league" style="flex:1;max-width:300px;" onblur="ghSaveConfig()"/>
+      </div>
+      <div class="form-row" style="margin-bottom:8px;">
+        <label style="min-width:100px;font-size:13px;">File path</label>
+        <input type="text" id="gh-path" placeholder="data.json" style="flex:1;max-width:300px;" onblur="ghSaveConfig()"/>
+      </div>
+      <div class="btn-group" style="margin-top:.75rem;flex-wrap:wrap;">
+        <button id="gh-save-btn" class="btn btn-sm btn-primary" onclick="ghPush()" disabled>Save Data</button>
+        <button class="btn btn-sm" onclick="ghPull()">Load Data</button>
+      </div>
+      <p style="font-size:11px;color:var(--text3);margin-top:.75rem;">Create a token at github.com → Settings → Developer settings → Personal access tokens → Fine-grained → Contents: Read &amp; Write on your repo.</p>
+    </div>
+
+  </div><!-- end tab-settings -->
 
 </main>
 
-<!-- Parkrun Link Modal -->
+<!-- Parkrun Modal -->
 <div class="modal-overlay" id="parkrun-modal">
   <div class="modal" style="max-width:400px;">
     <h3>Parkrun Results</h3>
-    <p style="font-size:13px;color:var(--text2);margin-bottom:1.25rem;line-height:1.6;">Your club name has been copied to clipboard. Open the results page then paste it into the search box to filter by your club.</p>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:1.25rem;line-height:1.6;">Your club name has been copied to clipboard. Paste it into the search box to filter by your club.</p>
     <a id="parkrun-modal-link" href="#" target="_blank" class="btn btn-primary" style="margin-bottom:1rem;width:100%;justify-content:center;" onclick="document.getElementById('parkrun-modal').classList.remove('open')">Open Parkrun Results &#8599;</a>
     <button class="btn btn-sm" onclick="document.getElementById('parkrun-modal').classList.remove('open')" style="width:100%;justify-content:center;">Close</button>
   </div>
@@ -348,7 +305,7 @@ table td input[type=time]{width:110px;font-size:13px;padding:5px 8px}
 <div class="modal-overlay" id="confirm-modal">
   <div class="modal" style="max-width:380px;">
     <h3 id="confirm-title">Are you sure?</h3>
-    <p id="confirm-msg" style="font-size:14px;color:var(--text2);margin-bottom:1.25rem;line-height:1.6;"></p>
+    <p id="confirm-msg" style="font-size:14px;color:var(--text2);margin-bottom:1.25rem;line-height:1.6;white-space:pre-line;"></p>
     <div style="display:flex;gap:8px;justify-content:flex-end;">
       <button class="btn" id="confirm-cancel" onclick="confirmCancel()">Cancel</button>
       <button class="btn btn-danger" id="confirm-ok-btn" onclick="confirmOK()">Remove</button>
@@ -357,7 +314,7 @@ table td input[type=time]{width:110px;font-size:13px;padding:5px 8px}
 </div>
 
 <script>
-// ── Token visibility toggle ───────────────────────────────────
+// ── Token toggle ──────────────────────────────────────────────
 function toggleTokenVisibility(){
   const inp=document.getElementById('gh-token');
   const eyeOn=document.getElementById('icon-eye');
@@ -369,27 +326,44 @@ function toggleTokenVisibility(){
   eyeOff.style.display=isHidden?'block':'none';
 }
 
+// ── Storage ───────────────────────────────────────────────────
 const STORE_KEY='parkrun_league_v3';
+const DEFAULT_ACTIVITY_TYPES=['parkrun','10k'];
+const DEFAULT_LOGO='https://raw.githubusercontent.com/GavinYPS/parkrun-league/main/logo.png';
+
 function defaultTournamentSettings(type){
   if(type&&type!=='parkrun'){
     return{bonusTiers:[{minRuns:4,points:4},{minRuns:3,points:3},{minRuns:2,points:2},{minRuns:1,points:1}],bands:[{threshold:-300,points:4,label:'5+ min faster'},{threshold:-120,points:3,label:'2+ min faster'},{threshold:-60,points:2,label:'1+ min faster'},{threshold:-30,points:1,label:'30s+ faster'}]};
   }
   return{bonusTiers:[{minRuns:4,points:4},{minRuns:3,points:3},{minRuns:2,points:2},{minRuns:1,points:1}],bands:[{threshold:-120,points:4,label:'2+ min faster'},{threshold:-60,points:2,label:'1-2 min faster'},{threshold:-30,points:1,label:'30s-1 min faster'}]};
 }
-function defaultState(){return{runners:[],tournaments:[],locations:[],events:[],results:{},activityTypes:['parkrun','10k'],tournamentRunners:{}}}
-const DEFAULT_ACTIVITY_TYPES=['parkrun','10k'];
-let S=(()=>{try{const r=localStorage.getItem(STORE_KEY);if(r){const p=JSON.parse(r);if(!p.tournaments)p.tournaments=[];if(!p.locations)p.locations=[];if(!p.events)p.events=[];if(!p.results)p.results={};if(!p.activityTypes)p.activityTypes=[...DEFAULT_ACTIVITY_TYPES];if(!p.tournamentRunners)p.tournamentRunners={};p.tournaments.forEach(t=>{if(!t.settings)t.settings=defaultTournamentSettings(t.type);});const eu=u=>u&&!u.match(/^https?:\/\//)?'https://'+u:u;p.locations.forEach(l=>{if(l.eventPage)l.eventPage=eu(l.eventPage);if(l.resultsUrl)l.resultsUrl=eu(l.resultsUrl);});return p;}}catch(e){}return defaultState();})();
-function persist(){
-  try{localStorage.setItem(STORE_KEY,JSON.stringify(S));}catch(e){}
-  warnLocalMode();
-}
+function defaultState(){return{runners:[],tournaments:[],locations:[],events:[],results:{},activityTypes:[...DEFAULT_ACTIVITY_TYPES],tournamentRunners:{}}}
 
-// ── GitHub Sync ──────────────────────────────────────────────
-const GH_CONFIG_KEY='parkrun_gh_config_v2';
-// ── Settings Password ─────────────────────────────────────────
+let S=(()=>{
+  try{
+    const r=localStorage.getItem(STORE_KEY);
+    if(r){
+      const p=JSON.parse(r);
+      if(!p.tournaments)p.tournaments=[];
+      if(!p.locations)p.locations=[];
+      if(!p.events)p.events=[];
+      if(!p.results)p.results={};
+      if(!p.activityTypes)p.activityTypes=[...DEFAULT_ACTIVITY_TYPES];
+      if(!p.tournamentRunners)p.tournamentRunners={};
+      p.tournaments.forEach(t=>{if(!t.settings)t.settings=defaultTournamentSettings(t.type);});
+      const eu=u=>u&&!u.match(/^https?:\/\//)?'https://'+u:u;
+      p.locations.forEach(l=>{if(l.eventPage)l.eventPage=eu(l.eventPage);if(l.resultsUrl)l.resultsUrl=eu(l.resultsUrl);});
+      return p;
+    }
+  }catch(e){}
+  return defaultState();
+})();
+
+function persist(){try{localStorage.setItem(STORE_KEY,JSON.stringify(S));}catch(e){}}
+
+// ── Auth ──────────────────────────────────────────────────────
 const SETTINGS_PASS='RUN@2026';
 const SETTINGS_SESSION_KEY='parkrun_settings_auth';
-
 function isLoggedIn(){return sessionStorage.getItem(SETTINGS_SESSION_KEY)==='1';}
 function settingsUnlocked(){return isLoggedIn();}
 
@@ -398,15 +372,14 @@ function renderNav(){
   const nav=document.getElementById('main-nav');
   if(!nav)return;
   const tabs=loggedIn
-    ?[['runners','Club Runners'],['events','Tournaments'],['leaderboard','Leaderboard'],['settings','Settings']]
+    ?[['runners','Club Runners'],['events','Tournaments'],['leaderboard','Leaderboard'],['settings','Global Settings']]
     :[['leaderboard','Leaderboard']];
   nav.innerHTML=tabs.map(([id,label])=>`<button onclick="sw('${id}')">${label}</button>`).join('');
-  // Auth button in header
   const authEl=document.getElementById('header-auth');
   if(authEl){
     authEl.innerHTML=loggedIn
-      ?`<button class="btn btn-sm btn-danger" onclick="doLogout()" style="font-size:11px;">Log out</button>`
-      :`<button class="btn btn-sm btn-primary" onclick="promptLogin()" style="font-size:11px;">Admin login</button>`;
+      ?`<button class="btn btn-sm btn-danger" onclick="doLogout()">Log out</button>`
+      :`<button class="btn btn-sm btn-primary" onclick="promptLogin()">Admin login</button>`;
   }
 }
 
@@ -444,32 +417,71 @@ function promptLogin(){
   },30);
 }
 
-function promptSettingsPassword(){promptLogin();}
-function ghLoadConfig(){
-  try{return JSON.parse(localStorage.getItem(GH_CONFIG_KEY)||'{}');}catch(e){return {};}
+// ── Nav / tabs ────────────────────────────────────────────────
+function sw(t){
+  if(!isLoggedIn()&&t!=='leaderboard'){promptLogin();return;}
+  document.querySelectorAll('#main-nav button').forEach(el=>{
+    el.classList.toggle('active',el.getAttribute('onclick')===`sw('${t}')`);
+  });
+  document.querySelectorAll('.section').forEach(el=>el.classList.remove('active'));
+  const target=document.getElementById('tab-'+t);
+  if(target)target.classList.add('active');
+  if(t==='leaderboard'){renderLbSel();renderLeaderboard();}
+  if(t==='enter-times'){renderEnterTimesSel();renderEnterTimes();}
+  if(t==='settings'){renderGlobalSettings();syncLogoPreview();}
 }
-function ghSaveConfig(){
-  const cfg={
-    token:document.getElementById('gh-token')?.value.trim()||'',
-    repo:document.getElementById('gh-repo')?.value.trim()||'',
-    path:document.getElementById('gh-path')?.value.trim()||'data.json'
+
+// ── Logo ──────────────────────────────────────────────────────
+function loadLogo(){
+  const src=localStorage.getItem('parkrun_logo')||DEFAULT_LOGO;
+  const img=document.getElementById('logo-img');
+  const fallback=document.getElementById('logo-fallback');
+  const circle=document.getElementById('logo-circle');
+  if(!img)return;
+  img.onload=()=>{img.style.display='block';if(fallback)fallback.style.display='none';if(circle){circle.style.border='none';circle.style.background='transparent';}};
+  img.onerror=()=>{img.style.display='none';if(fallback)fallback.style.display='block';};
+  img.src=src;
+}
+function syncLogoPreview(){
+  const src=localStorage.getItem('parkrun_logo')||DEFAULT_LOGO;
+  const img=document.getElementById('logo-preview-img');
+  const fallback=document.getElementById('logo-preview-fallback');
+  if(!img)return;
+  img.onload=()=>{img.style.display='block';if(fallback)fallback.style.display='none';};
+  img.onerror=()=>{img.style.display='none';if(fallback)fallback.style.display='block';};
+  img.src=src;
+}
+function handleLogoUpload(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    localStorage.setItem('parkrun_logo',e.target.result);
+    loadLogo();syncLogoPreview();
+    const msg=document.getElementById('logo-upload-msg');
+    if(msg){msg.style.display='block';setTimeout(()=>msg.style.display='none',2000);}
   };
+  reader.readAsDataURL(file);
+  input.value='';
+}
+function removeLogo(){
+  localStorage.removeItem('parkrun_logo');
+  loadLogo();syncLogoPreview();
+}
+
+// ── GitHub Sync ───────────────────────────────────────────────
+const GH_CONFIG_KEY='parkrun_gh_config_v2';
+function ghLoadConfig(){try{return JSON.parse(localStorage.getItem(GH_CONFIG_KEY)||'{}');}catch(e){return{};}}
+function ghSaveConfig(){
+  const cfg={token:document.getElementById('gh-token')?.value.trim()||'',repo:document.getElementById('gh-repo')?.value.trim()||'',path:document.getElementById('gh-path')?.value.trim()||'data.json'};
   localStorage.setItem(GH_CONFIG_KEY,JSON.stringify(cfg));
 }
 function ghIsConfigured(){const cfg=ghLoadConfig();return !!(cfg.token&&cfg.repo);}
 function ghHasRetrieved(){return sessionStorage.getItem('parkrun_gh_retrieved')==='1';}
 function ghMarkRetrieved(){sessionStorage.setItem('parkrun_gh_retrieved','1');}
-function ghSetSaveEnabled(enabled){
-  const btn=document.getElementById('gh-save-btn');
-  if(btn){btn.disabled=!enabled;btn.style.opacity=enabled?'1':'0.45';}
-}
-function ghOnTokenBlur(){
-  ghSaveConfig();
-}
-function ghStatus(msg,ok){
-  const el=document.getElementById('gh-sync-status');
-  if(el){el.textContent=msg;el.style.color=ok===false?'var(--red)':ok===true?'var(--green)':'var(--text3)';}
-}
+function ghSetSaveEnabled(enabled){const btn=document.getElementById('gh-save-btn');if(btn){btn.disabled=!enabled;btn.style.opacity=enabled?'1':'0.45';}}
+function ghOnTokenBlur(){ghSaveConfig();}
+function ghStatus(msg,ok){const el=document.getElementById('gh-sync-status');if(el){el.textContent=msg;el.style.color=ok===false?'var(--red)':ok===true?'var(--green)':'var(--text3)';}}
+
 function ghMerge(local,remote){
   const m={...remote};
   const merge=(ra,la)=>{const map={};(ra||[]).forEach(x=>map[x.id]=x);(la||[]).forEach(x=>{if(!map[x.id])map[x.id]=x;});return Object.values(map);};
@@ -478,61 +490,44 @@ function ghMerge(local,remote){
   m.locations=merge(remote.locations,local.locations);
   m.events=merge(remote.events,local.events);
   m.results={...remote.results};
-  Object.keys(local.results||{}).forEach(evId=>{
-    if(!m.results[evId])m.results[evId]={};
-    Object.keys(local.results[evId]||{}).forEach(rId=>{if(!m.results[evId][rId])m.results[evId][rId]=local.results[evId][rId];});
-  });
+  Object.keys(local.results||{}).forEach(evId=>{if(!m.results[evId])m.results[evId]={};Object.keys(local.results[evId]||{}).forEach(rId=>{if(!m.results[evId][rId])m.results[evId][rId]=local.results[evId][rId];});});
   m.tournamentRunners={...remote.tournamentRunners};
   Object.keys(local.tournamentRunners||{}).forEach(tid=>{if(!m.tournamentRunners[tid])m.tournamentRunners[tid]=local.tournamentRunners[tid];});
   m._savedAt=Date.now();
   return m;
 }
+
 async function ghGetSha(cfg){
-  const r=await fetch(`https://api.github.com/repos/${cfg.repo}/contents/${cfg.path}`,{
-    headers:{Authorization:'Bearer '+cfg.token,Accept:'application/vnd.github.v3+json','X-GitHub-Api-Version':'2022-11-28'}
-  });
+  const r=await fetch(`https://api.github.com/repos/${cfg.repo}/contents/${cfg.path}`,{headers:{Authorization:'Bearer '+cfg.token,Accept:'application/vnd.github.v3+json','X-GitHub-Api-Version':'2022-11-28'}});
   if(r.status===404)return null;
   if(!r.ok)throw new Error('GitHub API error: '+r.status);
-  return (await r.json()).sha||null;
+  return(await r.json()).sha||null;
 }
+
 async function ghPush(){
   const cfg=ghLoadConfig();
-  if(!cfg.token||!cfg.repo){alert('Configure GitHub Sync in Settings first.');return;}
-  if(!ghHasRetrieved()){
-    ghStatus('Retrieve first before saving',false);
-    alert('You must retrieve the latest data from GitHub before saving. This prevents overwriting changes made elsewhere.');
-    return;
-  }
+  if(!cfg.token||!cfg.repo){alert('Configure Data Sync in Settings first.');return;}
+  if(!ghHasRetrieved()){ghStatus('Load data first before saving',false);alert('Load the latest data first before saving.');return;}
   ghStatus('Saving…');
   try{
     const sha=await ghGetSha(cfg);
-    S._savedAt=Date.now();
-    persist();
+    S._savedAt=Date.now();persist();
     const content=btoa(unescape(encodeURIComponent(JSON.stringify(S,null,2))));
     const body={message:'Sync '+new Date().toISOString(),content};
     if(sha)body.sha=sha;
-    const r=await fetch(`https://api.github.com/repos/${cfg.repo}/contents/${cfg.path}`,{
-      method:'PUT',
-      headers:{Authorization:'Bearer '+cfg.token,Accept:'application/vnd.github.v3+json','Content-Type':'application/json','X-GitHub-Api-Version':'2022-11-28'},
-      body:JSON.stringify(body)
-    });
+    const r=await fetch(`https://api.github.com/repos/${cfg.repo}/contents/${cfg.path}`,{method:'PUT',headers:{Authorization:'Bearer '+cfg.token,Accept:'application/vnd.github.v3+json','Content-Type':'application/json','X-GitHub-Api-Version':'2022-11-28'},body:JSON.stringify(body)});
     if(!r.ok){const e=await r.json();throw new Error(e.message||r.status);}
-    ghStatus('Saved ✓ '+new Date().toLocaleTimeString(),true);
-    ghSetSaveEnabled(true);
-  }catch(e){ghStatus('Save failed: '+e.message,false);ghSetSaveEnabled(false);console.error(e);}
+    ghStatus('Saved ✓ '+new Date().toLocaleTimeString(),true);ghSetSaveEnabled(true);
+  }catch(e){ghStatus('Save failed: '+e.message,false);console.error(e);}
 }
+
 async function ghPull(){
   const cfg=ghLoadConfig();
   if(!cfg.token||!cfg.repo){ghStatus('No token configured',false);return;}
-  ghStatus('Retrieving…');
+  ghStatus('Loading…');
   try{
-    const r=await fetch(`https://api.github.com/repos/${cfg.repo}/contents/${cfg.path}`,{
-      headers:{Authorization:'Bearer '+cfg.token,Accept:'application/vnd.github.v3+json','X-GitHub-Api-Version':'2022-11-28'}
-    });
-    if(r.status===404){
-      ghMarkRetrieved();ghSetSaveEnabled(true);
-      ghStatus('No data on GitHub yet — save to create it',false);return;
-    }
+    const r=await fetch(`https://api.github.com/repos/${cfg.repo}/contents/${cfg.path}`,{headers:{Authorization:'Bearer '+cfg.token,Accept:'application/vnd.github.v3+json','X-GitHub-Api-Version':'2022-11-28'}});
+    if(r.status===404){ghMarkRetrieved();ghSetSaveEnabled(true);ghStatus('No data saved yet',false);return;}
     if(!r.ok){const e=await r.json();throw new Error(e.message||'HTTP '+r.status);}
     const d=await r.json();
     const raw=d.content.replace(/\n/g,'');
@@ -544,9 +539,7 @@ async function ghPull(){
       const ls=localTime?new Date(localTime).toLocaleString():'unsaved';
       const rs=remoteTime?new Date(remoteTime).toLocaleString():'unknown';
       const choice=await new Promise(resolve=>{
-        confirmModal('Data Conflict',
-          `Local: ${ls}\nCloud: ${rs}\n\nMerge keeps both sets of data (recommended). Overwrite replaces local with cloud data.`,
-          'Merge',()=>resolve('merge'));
+        confirmModal('Data Conflict',`Local: ${ls}\nCloud: ${rs}\n\nMerge keeps both sets of data (recommended).\nOverwrite replaces local with cloud data.`,'Merge',()=>resolve('merge'));
         setTimeout(()=>{
           const b=document.getElementById('confirm-cancel');
           if(b){b.textContent='Overwrite';b.onclick=()=>{resolve('overwrite');confirmCancel();};}
@@ -558,142 +551,63 @@ async function ghPull(){
     }
     localStorage.setItem(STORE_KEY,JSON.stringify(S));
     ghMarkRetrieved();ghSetSaveEnabled(true);
-    ghStatus('Retrieved ✓ '+new Date().toLocaleTimeString(),true);
-    renderRunners();renderTournaments();renderResEvSel();renderEnterTimesSel();renderLbSel();renderGlobalSettings();
-  }catch(e){ghStatus('Retrieve failed: '+e.message,false);console.warn('GitHub retrieve failed:',e.message);}
-}
-let _localWarnShown=false;
-function warnLocalMode(){
-  if(_localWarnShown||ghIsConfigured())return;
-  _localWarnShown=true;
-  setTimeout(()=>{
-    confirmModal('No GitHub Sync','Your data is stored locally only. If your browser data is cleared or you use a different device, data will be lost.\n\nConfigure GitHub Sync in Settings to keep your data safe.','Go to Settings',()=>sw('settings'));
-  },400);
+    ghStatus('Loaded ✓ '+new Date().toLocaleTimeString(),true);
+    renderRunners();renderTournaments();renderLbSel();renderGlobalSettings();
+  }catch(e){ghStatus('Load failed: '+e.message,false);console.warn(e);}
 }
 
-function toggleCollapse(bodyId, chevId){
-  const body=document.getElementById(bodyId);
-  const chev=document.getElementById(chevId);
-  if(!body)return;
-  const collapsed=body.style.display==='none';
-  body.style.display=collapsed?'':'none';
-  if(chev)chev.classList.toggle('open',collapsed);
-}
-
+// ── Confirm modal ─────────────────────────────────────────────
 let _confirmCb=null;
 function confirmModal(title,msg,okLabel,cb){
   document.getElementById('confirm-title').textContent=title;
   document.getElementById('confirm-msg').textContent=msg;
-  document.getElementById('confirm-ok-btn').textContent=okLabel||'Remove';
+  document.getElementById('confirm-ok-btn').textContent=okLabel||'OK';
+  document.getElementById('confirm-cancel').textContent='Cancel';
+  document.getElementById('confirm-cancel').onclick=confirmCancel;
   _confirmCb=cb;
   document.getElementById('confirm-modal').classList.add('open');
 }
 function confirmOK(){document.getElementById('confirm-modal').classList.remove('open');if(_confirmCb){_confirmCb();_confirmCb=null;}}
 function confirmCancel(){document.getElementById('confirm-modal').classList.remove('open');_confirmCb=null;}
 
+// ── Helpers ───────────────────────────────────────────────────
 function uid(){return Date.now()+Math.floor(Math.random()*9999)}
-function tog(id){const el=document.getElementById(id);el.style.display=el.style.display==='none'?'block':'none'}
-function tSec(t){if(!t)return null;const p=t.split(':').map(Number);if(p.length===3)return p[0]*3600+p[1]*60+p[2];if(p.length===2)return p[0]*60+p[1];return null}
-function sTime(s){if(s==null||isNaN(s))return'--';return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
-function sHMS(s){if(s==null)return'';const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;return[h,m,sec].map(v=>String(v).padStart(2,'0')).join(':')}
-function dStr(d){if(d==null)return'--';const a=Math.abs(d),m=Math.floor(a/60),s=a%60;return(d<0?'-':'+')+(m>0?m+'m ':'')+s+'s'}
-function fmtDate(ds){if(!ds)return'';return new Date(ds+'T00:00:00').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'})}
-function slugFromUrl(url){const m=url.match(/parkrun\.org\.uk\/([a-z0-9-]+)\//i);return m?m[1].toLowerCase():null}
+function tog(id){const el=document.getElementById(id);if(el)el.style.display=el.style.display==='none'?'block':'none';}
+function tSec(t){if(!t)return null;const p=t.split(':').map(Number);if(p.length===3)return p[0]*3600+p[1]*60+p[2];if(p.length===2)return p[0]*60+p[1];return null;}
+function sTime(s){if(s==null||isNaN(s))return'--';return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
+function sHMS(s){if(s==null)return'';const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;return[h,m,sec].map(v=>String(v).padStart(2,'0')).join(':');}
+function dStr(d){if(d==null)return'--';const a=Math.abs(d),m=Math.floor(a/60),s=a%60;return(d<0?'-':'+')+(m>0?m+'m ':'')+s+'s';}
+function fmtDate(ds){if(!ds)return'';return new Date(ds+'T00:00:00').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'});}
+function slugFromUrl(url){const m=url.match(/parkrun\.org\.uk\/([a-z0-9-]+)\//i);return m?m[1].toLowerCase():null;}
 function getTournamentSettings(tid){const t=S.tournaments.find(t=>t.id===tid);return(t&&t.settings)?t.settings:defaultTournamentSettings();}
 function isParkrun(tid){const t=S.tournaments.find(t=>t.id===tid);return!t||!t.type||t.type==='parkrun';}
-
-function getTournamentActivityType(tid){
-  const t=S.tournaments.find(x=>x.id===tid);
-  const type=t?.type||'parkrun';
-  if(type==='generic'){
-    const types=S.activityTypes||DEFAULT_ACTIVITY_TYPES;
-    return types.find(t=>t!=='parkrun')||'10k';
-  }
-  return type;
-}
-
-function getRunnerPb(rId, activityType){
-  const r=S.runners.find(x=>x.id===rId);if(!r)return null;
-  if(r.pbs&&r.pbs[activityType]!=null)return r.pbs[activityType];
-  if(activityType==='parkrun'&&r.pbSec!=null)return r.pbSec;
-  return null;
-}
-function getTournamentRunners(tid){
-  if(!tid)return S.runners.filter(r=>!r.archived);
-  const key=String(tid);
-  const enrolled=S.tournamentRunners[key]||[];
-  return S.runners.filter(r=>!r.archived&&enrolled.some(e=>String(e.rId)===String(r.id)));
-}
-function getTournamentRunnerEntry(tid,rId){
-  const key=String(tid);
-  return(S.tournamentRunners[key]||[]).find(e=>String(e.rId)===String(rId))||null;
-}
-function isEnrolled(tid,rId){
-  const key=String(tid);
-  return(S.tournamentRunners[key]||[]).some(e=>String(e.rId)===String(rId));
-}
-function enrollRunner(tid,rId,baselineSec){
-  const key=String(tid);
-  if(!S.tournamentRunners[key])S.tournamentRunners[key]=[];
-  S.tournamentRunners[key]=S.tournamentRunners[key].filter(e=>String(e.rId)!==String(rId));
-  S.tournamentRunners[key].push({rId,baselineSec,enrolledDate:new Date().toISOString().substring(0,10)});
-}
-
-function setBaseline(rId, actType, sec, tid){
+function getTournamentActivityType(tid){const t=S.tournaments.find(x=>x.id===tid);const type=t?.type||'parkrun';if(type==='generic'){const types=S.activityTypes||DEFAULT_ACTIVITY_TYPES;return types.find(t=>t!=='parkrun')||'10k';}return type;}
+function getRunnerPb(rId,activityType){const r=S.runners.find(x=>x.id===rId);if(!r)return null;if(r.pbs&&r.pbs[activityType]!=null)return r.pbs[activityType];if(activityType==='parkrun'&&r.pbSec!=null)return r.pbSec;return null;}
+function getTournamentRunners(tid){if(!tid)return S.runners.filter(r=>!r.archived);const key=String(tid);const enrolled=S.tournamentRunners[key]||[];return S.runners.filter(r=>!r.archived&&enrolled.some(e=>String(e.rId)===String(r.id)));}
+function getTournamentRunnerEntry(tid,rId){const key=String(tid);return(S.tournamentRunners[key]||[]).find(e=>String(e.rId)===String(rId))||null;}
+function isEnrolled(tid,rId){const key=String(tid);return(S.tournamentRunners[key]||[]).some(e=>String(e.rId)===String(rId));}
+function enrollRunner(tid,rId,baselineSec){const key=String(tid);if(!S.tournamentRunners[key])S.tournamentRunners[key]=[];S.tournamentRunners[key]=S.tournamentRunners[key].filter(e=>String(e.rId)!==String(rId));S.tournamentRunners[key].push({rId,baselineSec,enrolledDate:new Date().toISOString().substring(0,10)});}
+function unenrollRunner(tid,rId){const key=String(tid);if(!S.tournamentRunners[key])return;S.tournamentRunners[key]=S.tournamentRunners[key].filter(e=>String(e.rId)!==String(rId));}
+function setBaseline(rId,actType,sec,tid){
   const r=S.runners.find(x=>x.id===rId);if(!r)return;
-  if(tid!=null){
-    const prev=getTournamentRunnerEntry(tid,rId)?.baselineSec??null;
-    if(prev!=null&&prev!==sec){
-      if(!r.pbHistory)r.pbHistory={};
-      const key=actType+'_t'+tid;
-      if(!r.pbHistory[key])r.pbHistory[key]=[];
-      r.pbHistory[key].push({sec:prev,date:new Date().toISOString().substring(0,10)});
-    }
-    enrollRunner(tid,rId,sec);
-  } else {
-    if(!r.pbs)r.pbs={};
-    const prev=r.pbs[actType]??null;
-    if(prev!=null&&prev!==sec){
-      if(!r.pbHistory)r.pbHistory={};
-      if(!r.pbHistory[actType])r.pbHistory[actType]=[];
-      r.pbHistory[actType].push({sec:prev,date:new Date().toISOString().substring(0,10)});
-    }
-    r.pbs[actType]=sec;
-    if(actType==='parkrun')r.pbSec=sec;
-  }
-}
-function unenrollRunner(tid,rId){
-  const key=String(tid);
-  if(!S.tournamentRunners[key])return;
-  S.tournamentRunners[key]=S.tournamentRunners[key].filter(e=>String(e.rId)!==String(rId));
+  if(tid!=null){const prev=getTournamentRunnerEntry(tid,rId)?.baselineSec??null;if(prev!=null&&prev!==sec){if(!r.pbHistory)r.pbHistory={};const key=actType+'_t'+tid;if(!r.pbHistory[key])r.pbHistory[key]=[];r.pbHistory[key].push({sec:prev,date:new Date().toISOString().substring(0,10)});}enrollRunner(tid,rId,sec);}
+  else{if(!r.pbs)r.pbs={};const prev=r.pbs[actType]??null;if(prev!=null&&prev!==sec){if(!r.pbHistory)r.pbHistory={};if(!r.pbHistory[actType])r.pbHistory[actType]=[];r.pbHistory[actType].push({sec:prev,date:new Date().toISOString().substring(0,10)});}r.pbs[actType]=sec;if(actType==='parkrun')r.pbSec=sec;}
 }
 function getTournamentBaselinePb(rId,tid){
   const entry=getTournamentRunnerEntry(tid,rId);
   const tevs=S.events.filter(e=>e.tournamentId===tid&&e.date).sort((a,b)=>a.date.localeCompare(b.date));
-  for(const ev of tevs){
-    const rd=S.results[ev.id]?.[rId];
-    if(rd&&rd.baselinePbSec!=null)return rd.baselinePbSec;
-  }
+  for(const ev of tevs){const rd=S.results[ev.id]?.[rId];if(rd&&rd.baselinePbSec!=null)return rd.baselinePbSec;}
   if(entry&&entry.baselineSec!=null)return entry.baselineSec;
   return getRunnerPb(rId,getTournamentActivityType(tid));
 }
-function getBandPts(diff,settings){const bands=[...(settings||defaultTournamentSettings()).bands].sort((a,b)=>a.threshold-b.threshold);for(const b of bands)if(diff<=b.threshold)return{pts:b.points,label:b.label};const last=bands[bands.length-1];return{pts:last?.points??0,label:last?.label??''}}
-function getBonus(runs,settings){const tiers=[...(settings||defaultTournamentSettings()).bonusTiers].sort((a,b)=>b.minRuns-a.minRuns);for(const t of tiers)if(runs>=t.minRuns)return t.points;return 0}
+function getBandPts(diff,settings){const bands=[...(settings||defaultTournamentSettings()).bands].sort((a,b)=>a.threshold-b.threshold);for(const b of bands)if(diff<=b.threshold)return{pts:b.points,label:b.label};const last=bands[bands.length-1];return{pts:last?.points??0,label:last?.label??''};}
+function getBonus(runs,settings){const tiers=[...(settings||defaultTournamentSettings()).bonusTiers].sort((a,b)=>b.minRuns-a.minRuns);for(const t of tiers)if(runs>=t.minRuns)return t.points;return 0;}
+function getClubName(){return S.clubName||'Rundamentalist Run Club';}
 
-function sw(t){
-  if(!isLoggedIn()&&t!=='leaderboard'){promptLogin();return;}
-  document.querySelectorAll('#main-nav button').forEach(el=>el.classList.toggle('active',el.getAttribute('onclick')===`sw('${t}')`));
-  document.querySelectorAll('.section').forEach(el=>el.classList.toggle('active',el.id==='tab-'+t));
-  if(t==='leaderboard'){renderLbSel();renderLeaderboard();}
-  if(t==='results'){renderResEvSel();renderResultEntry();}
-  if(t==='enter-times'){renderEnterTimesSel();renderEnterTimes();}
-  if(t==='settings'){renderGlobalSettings();syncLogoPreview();}
-}
-
+// ── Runners ───────────────────────────────────────────────────
 let runnerLookupTimer=null;
 function scheduleRunnerLookup(){
   clearTimeout(runnerLookupTimer);
-  document.getElementById('r-url-status').innerHTML='';
   const val=document.getElementById('r-url').value.trim();
   const row=document.getElementById('r-profile-row');
   const link=document.getElementById('r-profile-link');
@@ -703,45 +617,33 @@ function scheduleRunnerLookup(){
   link.href='https://www.parkrun.org.uk/parkrunner/'+m[1]+'/';
   row.style.display='flex';
 }
-function renderPbFields(containerId, currentPbs){
+function renderPbFields(containerId,currentPbs){
   const container=document.getElementById(containerId);if(!container)return;
   const types=S.activityTypes||DEFAULT_ACTIVITY_TYPES;
-  container.innerHTML=types.map(type=>`
-    <div class="form-row">
-      <label>${type} Baseline</label>
-      <input type="time" id="r-pb-${type.replace(/\s+/g,'-')}" step="1" style="max-width:160px;" value="${currentPbs&&currentPbs[type]!=null?sHMS(currentPbs[type]):''}"/>
-    </div>`).join('');
+  container.innerHTML=types.map(type=>`<div class="form-row"><label>${type} Baseline</label><input type="time" id="r-pb-${type.replace(/\s+/g,'-')}" step="1" style="max-width:160px;" value="${currentPbs&&currentPbs[type]!=null?sHMS(currentPbs[type]):''}"/></div>`).join('');
 }
 function clearRunnerForm(){
   ['r-url','r-name'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('r-url-status').innerHTML='';
-  const row=document.getElementById('r-profile-row');
-  if(row)row.style.display='none';
+  const row=document.getElementById('r-profile-row');if(row)row.style.display='none';
   renderPbFields('r-pb-fields',{});
 }
 function addRunner(){
   const url=document.getElementById('r-url').value.trim();
   const name=document.getElementById('r-name').value.trim();
-  const ridM=url.match(/\b(\d{4,9})\b/);
-  const rid=ridM?ridM[1]:'';
+  const ridM=url.match(/\b(\d{4,9})\b/);const rid=ridM?ridM[1]:'';
   if(!name){alert('Please enter a name.');return;}
   if(rid&&S.runners.some(r=>r.rid===rid)){alert('Runner A'+rid+' is already added.');return;}
-  const types=S.activityTypes||DEFAULT_ACTIVITY_TYPES;
-  const pbs={};
-  types.forEach(type=>{
-    const el=document.getElementById('r-pb-'+type.replace(/\s+/g,'-'));
-    if(el&&el.value)pbs[type]=tSec(el.value);
-  });
+  const types=S.activityTypes||DEFAULT_ACTIVITY_TYPES;const pbs={};
+  types.forEach(type=>{const el=document.getElementById('r-pb-'+type.replace(/\s+/g,'-'));if(el&&el.value)pbs[type]=tSec(el.value);});
   S.runners.push({id:uid(),name,rid,homeSlug:'',pbs,pbSec:pbs['parkrun']??Object.values(pbs)[0]??null});
-  clearRunnerForm();
-  document.getElementById('f-runner').style.display='none';
+  clearRunnerForm();document.getElementById('f-runner').style.display='none';
   persist();renderRunners();
 }
 function editRunnerName(id){
   const r=S.runners.find(x=>x.id===id);if(!r)return;
   const h3=document.getElementById('runner-name-'+id);if(!h3)return;
-  const current=r.name;
-  h3.innerHTML=`<input type="text" id="runner-name-input-${id}" value="${current.replace(/"/g,'&quot;')}" style="font-size:inherit;font-family:inherit;font-weight:inherit;padding:2px 6px;max-width:220px;" onkeydown="if(event.key==='Enter')saveRunnerName(${id});if(event.key==='Escape')renderRunners();"/>
+  h3.innerHTML=`<input type="text" id="runner-name-input-${id}" value="${r.name.replace(/"/g,'&quot;')}" style="font-size:inherit;font-family:inherit;font-weight:inherit;padding:2px 6px;max-width:220px;" onkeydown="if(event.key==='Enter')saveRunnerName(${id});if(event.key==='Escape')renderRunners();"/>
     <button class="btn btn-sm btn-primary" onclick="saveRunnerName(${id})" style="margin-left:6px;">Save</button>
     <button class="btn btn-sm" onclick="renderRunners()" style="margin-left:4px;">Cancel</button>`;
   document.getElementById('runner-name-input-'+id)?.select();
@@ -750,152 +652,89 @@ function saveRunnerName(id){
   const r=S.runners.find(x=>x.id===id);if(!r)return;
   const val=document.getElementById('runner-name-input-'+id)?.value.trim();
   if(!val){alert('Name cannot be empty.');return;}
-  r.name=val;
-  persist();renderRunners();
+  r.name=val;persist();renderRunners();
 }
 function showRunnerActions(id,show){
   const card=document.querySelector(`[data-runner-id="${id}"]`);if(!card)return;
-  const actions=card.querySelector('.runner-actions');
-  if(actions)actions.style.visibility=show?'visible':'hidden';
+  const actions=card.querySelector('.runner-actions');if(actions)actions.style.visibility=show?'visible':'hidden';
 }
 function editRunnerPB(id){
   const r=S.runners.find(x=>x.id===id);if(!r)return;
   const cardId='edit-pb-'+id;
-  const existing=document.getElementById(cardId);
-  if(existing){existing.remove();showRunnerActions(id,true);return;}
+  const existing=document.getElementById(cardId);if(existing){existing.remove();showRunnerActions(id,true);return;}
   const card=document.querySelector(`[data-runner-id="${id}"]`);if(!card)return;
   showRunnerActions(id,false);
   const types=S.activityTypes||DEFAULT_ACTIVITY_TYPES;
-  const form=document.createElement('div');
-  form.id=cardId;
+  const form=document.createElement('div');form.id=cardId;
   form.style.cssText='background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:.75rem 1rem;margin-top:.5rem;';
   const pbRows=types.map(type=>{
     const curVal=r.pbs&&r.pbs[type]!=null?sHMS(r.pbs[type]):r.pbSec&&type==='parkrun'?sHMS(r.pbSec):'';
     const enrolledT=S.tournaments.filter(t=>getTournamentActivityType(t.id)===type&&isEnrolled(t.id,r.id));
-    const tournamentCurrentLine=enrolledT.map(t=>{
-      const entry=getTournamentRunnerEntry(t.id,r.id);
-      return entry?.baselineSec!=null
-        ?`<div style="font-size:11px;color:var(--text3);margin-top:2px;display:flex;align-items:center;gap:6px;">
-            <span style="font-size:10px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.04em;background:var(--bg3);border:1px solid var(--border2);border-radius:3px;padding:1px 5px;color:var(--orange);">${t.name}</span>
-            <span class="text-mono">${sTime(entry.baselineSec)}</span>
-          </div>`
-        :'';
-    }).join('');
+    const tournamentCurrentLine=enrolledT.map(t=>{const entry=getTournamentRunnerEntry(t.id,r.id);return entry?.baselineSec!=null?`<div style="font-size:11px;color:var(--text3);margin-top:2px;display:flex;align-items:center;gap:6px;"><span style="font-size:10px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.04em;background:var(--bg3);border:1px solid var(--border2);border-radius:3px;padding:1px 5px;color:var(--orange);">${t.name}</span><span class="text-mono">${sTime(entry.baselineSec)}</span></div>`:''}).join('');
     const history=(r.pbHistory?.[type]||[]).slice().reverse();
-    const histHtml=history.length?`
-      <div style="margin-top:6px;padding:6px 0 2px;border-top:1px solid var(--border);">
-        <div style="font-size:10px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:4px;">${type==='parkrun'?'Parkrun':type} — Previous Reference Times</div>
-        ${history.map(h=>`<div style="font-size:12px;color:var(--text3);display:flex;gap:10px;padding:2px 0;">
-          <span class="text-mono">${sTime(h.sec)}</span>
-          <span>${h.date}</span>
-        </div>`).join('')}
-      </div>`:'';
-    return`<div style="margin-bottom:12px;">
-      <div class="form-row" style="margin-bottom:0;">
-        <label style="min-width:110px;font-size:13px;color:var(--text2);">${type==='parkrun'?'Parkrun':type} Reference</label>
-        <input type="time" id="pb-input-${id}-${type.replace(/\s+/g,'-')}" step="1" value="${curVal}" style="max-width:150px;"/>
-      </div>
-      ${tournamentCurrentLine}
-      ${histHtml}
-    </div>`;
+    const histHtml=history.length?`<div style="margin-top:6px;padding:6px 0 2px;border-top:1px solid var(--border);"><div style="font-size:10px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:4px;">${type} — Previous Times</div>${history.map(h=>`<div style="font-size:12px;color:var(--text3);display:flex;gap:10px;padding:2px 0;"><span class="text-mono">${sTime(h.sec)}</span><span>${h.date}</span></div>`).join('')}</div>`:'';
+    return`<div style="margin-bottom:12px;"><div class="form-row" style="margin-bottom:0;"><label style="min-width:110px;font-size:13px;color:var(--text2);">${type} Reference</label><input type="time" id="pb-input-${id}-${type.replace(/\s+/g,'-')}" step="1" value="${curVal}" style="max-width:150px;"/></div>${tournamentCurrentLine}${histHtml}</div>`;
   }).join('');
-  form.innerHTML=pbRows+`
-    <div style="display:flex;gap:8px;margin-top:8px;">
-      <button class="btn btn-sm btn-primary" onclick="saveRunnerPB(${id})">Save</button>
-      <button class="btn btn-sm" onclick="document.getElementById('edit-pb-${id}').remove();showRunnerActions(${id},true)">Cancel</button>
-    </div>`;
+  form.innerHTML=pbRows+`<div style="display:flex;gap:8px;margin-top:8px;"><button class="btn btn-sm btn-primary" onclick="saveRunnerPB(${id})">Save</button><button class="btn btn-sm" onclick="document.getElementById('edit-pb-${id}').remove();showRunnerActions(${id},true)">Cancel</button></div>`;
   card.appendChild(form);
   setTimeout(()=>form.querySelector('input[type=time]')?.focus(),50);
 }
 function saveRunnerPB(id){
   const r=S.runners.find(x=>x.id===id);if(!r)return;
   const types=S.activityTypes||DEFAULT_ACTIVITY_TYPES;
-  types.forEach(type=>{
-    const el=document.getElementById('pb-input-'+id+'-'+type.replace(/\s+/g,'-'));
-    if(!el)return;
-    const s=tSec(el.value);
-    if(s!=null){
-      setBaseline(id,type,s,null);
-    } else {
-      if(r.pbs)delete r.pbs[type];
-    }
-  });
+  types.forEach(type=>{const el=document.getElementById('pb-input-'+id+'-'+type.replace(/\s+/g,'-'));if(!el)return;const s=tSec(el.value);if(s!=null)setBaseline(id,type,s,null);else if(r.pbs)delete r.pbs[type];});
   r.pbSec=r.pbs?.['parkrun']??Object.values(r.pbs||{})[0]??null;
-  document.getElementById('edit-pb-'+id)?.remove();
-  showRunnerActions(id,true);
-  persist();renderRunners();
+  document.getElementById('edit-pb-'+id)?.remove();showRunnerActions(id,true);persist();renderRunners();
 }
 function renderRunners(){
   const el=document.getElementById('runners-body');
   const types=S.activityTypes||DEFAULT_ACTIVITY_TYPES;
   const active=S.runners.filter(r=>!r.archived);
   const archived=S.runners.filter(r=>r.archived);
-
-  const runnerCard=(r,isArchived)=>`
-    <div class="runner-card" data-runner-id="${r.id}" style="${isArchived?'opacity:.5;':''}">
-      <div class="runner-info">
-        <h3 id="runner-name-${r.id}">${r.name}${isArchived?` <span style="font-size:11px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);background:var(--bg3);border-radius:4px;padding:2px 6px;">Archived</span>`:''} ${!isArchived?`<button onclick="editRunnerName(${r.id})" style="background:none;border:none;cursor:pointer;padding:2px 4px;color:var(--text3);vertical-align:middle;" title="Edit name"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>`:''}</h3>
-        <div class="runner-meta">
-          ${r.rid?`<span style="white-space:nowrap;"><span class="val">A${r.rid}</span> <a href="https://www.parkrun.org.uk/parkrunner/${r.rid}/" target="_blank" style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);text-decoration:none;">Profile &#8599;</a></span>`:''}
-          ${types.map(type=>{
-            const pb=r.pbs?.[type]??(type==='parkrun'?r.pbSec:null);
-            const label=type==='parkrun'?'Parkrun Baseline':type+' Baseline';
-            return pb!=null?`<span style="white-space:nowrap;"><span style="color:var(--text3);font-size:11px;">${label}</span> <span class="val">${sTime(pb)}</span></span>`:'';
-          }).filter(Boolean).join('<span style="color:var(--border2);">·</span>')}
-        </div>
+  const runnerCard=(r,isArchived)=>`<div class="runner-card" data-runner-id="${r.id}" style="${isArchived?'opacity:.5;':''}">
+    <div class="runner-info">
+      <h3 id="runner-name-${r.id}">${r.name}${isArchived?` <span style="font-size:11px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;color:var(--text3);background:var(--bg3);border-radius:4px;padding:2px 6px;">Archived</span>`:''}
+        ${!isArchived?`<button onclick="editRunnerName(${r.id})" style="background:none;border:none;cursor:pointer;padding:2px 4px;color:var(--text3);vertical-align:middle;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>`:''}</h3>
+      <div class="runner-meta">
+        ${r.rid?`<span style="white-space:nowrap;"><span class="val">A${r.rid}</span> <a href="https://www.parkrun.org.uk/parkrunner/${r.rid}/" target="_blank" style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text3);text-decoration:none;">Profile &#8599;</a></span>`:''}
+        ${types.map(type=>{const pb=r.pbs?.[type]??(type==='parkrun'?r.pbSec:null);return pb!=null?`<span style="white-space:nowrap;"><span style="color:var(--text3);font-size:11px;">${type} Baseline</span> <span class="val">${sTime(pb)}</span></span>`:''}).filter(Boolean).join('<span style="color:var(--border2);">·</span>')}
       </div>
-      <div class="runner-actions">
-        ${isArchived
-          ?`<button class="btn btn-sm" onclick="restoreRunner(${r.id})">Restore</button>
-            <button class="btn btn-sm btn-danger" onclick="deleteRunner(${r.id})">Delete</button>`
-          :`<button class="btn btn-sm btn-info" onclick="editRunnerPB(${r.id})">Enter Baseline Times</button>
-            <button class="btn btn-sm btn-danger" onclick="removeRunner(${r.id})">Archive</button>`
-        }
-      </div>
-    </div>`;
-
-  if(!active.length&&!archived.length){
-    el.innerHTML='<div class="notice">No runners yet. Add one above.</div>';
-    return;
-  }
-
-  let html=active.length
-    ?active.map(r=>runnerCard(r,false)).join('')
-    :'<div class="notice" style="margin-bottom:1rem;">No active runners.</div>';
-
+    </div>
+    <div class="runner-actions">
+      ${isArchived
+        ?`<button class="btn btn-sm" onclick="restoreRunner(${r.id})">Restore</button><button class="btn btn-sm btn-danger" onclick="deleteRunner(${r.id})">Delete</button>`
+        :`<button class="btn btn-sm btn-info" onclick="editRunnerPB(${r.id})">Enter Baseline Times</button><button class="btn btn-sm btn-danger" onclick="removeRunner(${r.id})">Archive</button>`}
+    </div>
+  </div>`;
+  if(!active.length&&!archived.length){el.innerHTML='<div class="notice">No runners yet. Add one above.</div>';return;}
+  let html=active.length?active.map(r=>runnerCard(r,false)).join(''):'<div class="notice" style="margin-bottom:1rem;">No active runners.</div>';
   if(archived.length){
-    html+=`<div style="margin-top:1.5rem;">
-      <div onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none';this.querySelector('.arch-chev').style.transform=this.nextElementSibling.style.display==='none'?'rotate(-90deg)':'rotate(0deg)'" style="display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;padding:6px 0;border-top:1px solid var(--border);">
-        <svg class="arch-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .2s;transform:rotate(-90deg)"><polyline points="6 9 12 15 18 9"/></svg>
-        <span style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);">Archived Runners (${archived.length})</span>
-      </div>
-      <div style="display:none;">
-        ${archived.map(r=>runnerCard(r,true)).join('')}
-      </div>
-    </div>`;
+    html+=`<div style="margin-top:1.5rem;"><div onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none';this.querySelector('.arch-chev').style.transform=this.nextElementSibling.style.display==='none'?'rotate(-90deg)':'rotate(0deg)'" style="display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;padding:6px 0;border-top:1px solid var(--border);">
+      <svg class="arch-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .2s;transform:rotate(-90deg)"><polyline points="6 9 12 15 18 9"/></svg>
+      <span style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);">Archived Runners (${archived.length})</span></div>
+      <div style="display:none;">${archived.map(r=>runnerCard(r,true)).join('')}</div></div>`;
   }
   el.innerHTML=html;
 }
 function removeRunner(id){
   const r=S.runners.find(x=>x.id===id);
-  confirmModal('Archive Runner',`Archive ${r?.name||'this runner'}? They will be hidden from all views but their data is kept. You can restore them later.`,'Archive',()=>{
+  confirmModal('Archive Runner',`Archive ${r?.name||'this runner'}? They will be hidden but their data is kept.`,'Archive',()=>{
     const runner=S.runners.find(x=>x.id===id);
     if(runner){runner.archived=true;persist();renderRunners();}
   });
 }
-function restoreRunner(id){
-  const r=S.runners.find(x=>x.id===id);
-  if(r){r.archived=false;persist();renderRunners();}
-}
+function restoreRunner(id){const r=S.runners.find(x=>x.id===id);if(r){r.archived=false;persist();renderRunners();}}
 function deleteRunner(id){
   const r=S.runners.find(x=>x.id===id);
-  confirmModal('Permanently Delete Runner',`Permanently delete ${r?.name||'this runner'}? All their results and history will be removed. This cannot be undone.`,'Delete',()=>{
+  confirmModal('Permanently Delete',`Delete ${r?.name||'this runner'}? All their data will be removed. Cannot be undone.`,'Delete',()=>{
     S.runners=S.runners.filter(x=>x.id!==id);
     for(const evId in S.results)delete S.results[evId][id];
     for(const tid in S.tournamentRunners)S.tournamentRunners[tid]=S.tournamentRunners[tid].filter(e=>e.rId!==id);
     persist();renderRunners();
   });
 }
+
+// ── Tournaments ───────────────────────────────────────────────
 function addTournament(){
   const name=document.getElementById('t-name').value.trim();
   const desc=document.getElementById('t-desc').value.trim();
@@ -908,42 +747,22 @@ function addTournament(){
 }
 function archiveTournament(tid){
   const t=S.tournaments.find(x=>x.id===tid);if(!t)return;
-  confirmModal('Archive Tournament',`Archive "${t.name}"? It will be hidden from all views. Club Runners baselines for this tournament will be removed. You can restore it later.`,'Archive',()=>{
-    t.archived=true;
-    delete S.tournamentRunners[String(tid)];
-    persist();renderTournaments();renderResEvSel();renderEnterTimesSel();renderLbSel();
+  confirmModal('Archive Tournament',`Archive "${t.name}"?`,'Archive',()=>{
+    t.archived=true;delete S.tournamentRunners[String(tid)];
+    persist();renderTournaments();renderLbSel();
   });
 }
-function restoreTournament(tid){
-  const t=S.tournaments.find(x=>x.id===tid);if(!t)return;
-  t.archived=false;
-  persist();renderTournaments();renderResEvSel();renderEnterTimesSel();renderLbSel();
-}
-
+function restoreTournament(tid){const t=S.tournaments.find(x=>x.id===tid);if(!t)return;t.archived=false;persist();renderTournaments();renderLbSel();}
 function editTournament(tid){
   const t=S.tournaments.find(x=>x.id===tid);if(!t)return;
-  const formId='f-edit-t-'+tid;
-  const existing=document.getElementById(formId);
-  if(existing){existing.remove();return;}
-  const form=document.createElement('div');
-  form.id=formId;
-  form.className='inline-form card-accent';
-  form.style.marginBottom='.75rem';
-  form.innerHTML=`
-    <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.75rem;">Edit Tournament</div>
+  const formId='f-edit-t-'+tid;const existing=document.getElementById(formId);if(existing){existing.remove();return;}
+  const form=document.createElement('div');form.id=formId;form.className='inline-form card-accent';form.style.marginBottom='.75rem';
+  form.innerHTML=`<div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.75rem;">Edit Tournament</div>
     <div class="form-row"><label>Name</label><input type="text" id="edit-t-name-${tid}" value="${t.name.replace(/"/g,'&quot;')}"/></div>
     <div class="form-row"><label>Description</label><input type="text" id="edit-t-desc-${tid}" value="${(t.desc||'').replace(/"/g,'&quot;')}"/></div>
-    <div class="form-row"><label>Type</label>
-      <select id="edit-t-type-${tid}" style="max-width:220px;">
-        ${(S.activityTypes||DEFAULT_ACTIVITY_TYPES).map(type=>`<option value="${type}" ${(t.type||'parkrun')===type?'selected':''}>${type}</option>`).join('')}
-      </select>
-    </div>
-    <div class="btn-group" style="margin-top:8px;">
-      <button class="btn btn-primary btn-sm" onclick="saveTournamentEdit(${tid})">Save</button>
-      <button class="btn btn-sm" onclick="document.getElementById('f-edit-t-${tid}').remove()">Cancel</button>
-    </div>`;
-  const tbody=document.getElementById('tbody-'+tid);
-  if(tbody)tbody.prepend(form);
+    <div class="form-row"><label>Type</label><select id="edit-t-type-${tid}" style="max-width:220px;">${(S.activityTypes||DEFAULT_ACTIVITY_TYPES).map(type=>`<option value="${type}" ${(t.type||'parkrun')===type?'selected':''}>${type}</option>`).join('')}</select></div>
+    <div class="btn-group" style="margin-top:8px;"><button class="btn btn-primary btn-sm" onclick="saveTournamentEdit(${tid})">Save</button><button class="btn btn-sm" onclick="document.getElementById('f-edit-t-${tid}').remove()">Cancel</button></div>`;
+  const tbody=document.getElementById('tbody-'+tid);if(tbody)tbody.prepend(form);
   setTimeout(()=>document.getElementById('edit-t-name-'+tid)?.focus(),50);
 }
 function saveTournamentEdit(tid){
@@ -954,45 +773,29 @@ function saveTournamentEdit(tid){
   if(!name){alert('Name is required.');return;}
   t.name=name;t.desc=desc;t.type=type;
   document.getElementById('f-edit-t-'+tid)?.remove();
-  persist();renderTournaments();renderLbSel();renderResEvSel();
+  persist();renderTournaments();renderLbSel();
 }
 
 let locLookupTimer=null;
 function showAddLocation(tid){
-  const formId='f-loc-'+tid;
-  const existing=document.getElementById(formId);
-  if(existing){existing.remove();return;}
-  const form=document.createElement('div');
-  form.id=formId;form.className='inline-form';
-
+  const formId='f-loc-'+tid;const existing=document.getElementById(formId);if(existing){existing.remove();return;}
+  const form=document.createElement('div');form.id=formId;form.className='inline-form';
   if(isParkrun(tid)){
-    form.innerHTML=`
-      <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.75rem;">Add Location</div>
+    form.innerHTML=`<div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.75rem;">Add Location</div>
       <div class="form-row"><label>Parkrun URL</label><input type="url" id="loc-url-${tid}" placeholder="https://www.parkrun.org.uk/macclesfield/" oninput="scheduleLocLookup(${tid})"/></div>
       <div class="url-status" id="loc-status-${tid}"></div>
-      <div class="btn-group" style="margin-top:8px;">
-        <button class="btn btn-primary btn-sm" onclick="addLocation(${tid})">Add Location</button>
-        <button class="btn btn-sm" onclick="document.getElementById('f-loc-${tid}').remove()">Cancel</button>
-      </div>`;
+      <div class="btn-group" style="margin-top:8px;"><button class="btn btn-primary btn-sm" onclick="addLocation(${tid})">Add Location</button><button class="btn btn-sm" onclick="document.getElementById('f-loc-${tid}').remove()">Cancel</button></div>`;
   } else {
-    form.innerHTML=`
-      <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.75rem;">Add Event</div>
+    form.innerHTML=`<div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.75rem;">Add Event</div>
       <div class="form-row"><label>Name</label><input type="text" id="loc-name-${tid}" placeholder="e.g. Heaton Park 10k"/></div>
       <div class="form-row"><label>Date</label><input type="date" id="loc-date-${tid}" style="max-width:190px;"/></div>
-      <div class="form-row"><label>Event page</label><input type="url" id="loc-eventpage-${tid}" placeholder="https://www.runthrough.co.uk/venues/heaton-park"/></div>
-      <div class="form-row"><label>Results URL</label><input type="url" id="loc-results-${tid}" placeholder="https://results.runthrough.co.uk/..."/></div>
-      <p class="form-hint">Event page and results URL are optional.</p>
-      <div class="btn-group" style="margin-top:8px;">
-        <button class="btn btn-primary btn-sm" onclick="addLocationGeneric(${tid})">Add Event</button>
-        <button class="btn btn-sm" onclick="document.getElementById('f-loc-${tid}').remove()">Cancel</button>
-      </div>`;
+      <div class="form-row"><label>Event page</label><input type="url" id="loc-eventpage-${tid}" placeholder="https://..."/></div>
+      <div class="form-row"><label>Results URL</label><input type="url" id="loc-results-${tid}" placeholder="https://..."/></div>
+      <div class="btn-group" style="margin-top:8px;"><button class="btn btn-primary btn-sm" onclick="addLocationGeneric(${tid})">Add Event</button><button class="btn btn-sm" onclick="document.getElementById('f-loc-${tid}').remove()">Cancel</button></div>`;
   }
-
-  const tbody=document.getElementById('tbody-'+tid);
-  if(tbody)tbody.prepend(form);
+  const tbody=document.getElementById('tbody-'+tid);if(tbody)tbody.prepend(form);
   setTimeout(()=>(document.getElementById('loc-url-'+tid)||document.getElementById('loc-name-'+tid))?.focus(),50);
 }
-
 function addLocationGeneric(tid){
   const name=document.getElementById('loc-name-'+tid)?.value.trim();
   const date=document.getElementById('loc-date-'+tid)?.value||'';
@@ -1001,35 +804,26 @@ function addLocationGeneric(tid){
   if(!name){alert('Please enter a location name.');return;}
   if(S.locations.some(l=>l.tournamentId===tid&&l.name===name)){alert(name+' is already in this tournament.');return;}
   const slug=name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-  const ensureUrl=u=>u&&!u.match(/^https?:\/\//)?'https://'+u:u;
+  const eu=u=>u&&!u.match(/^https?:\/\//)?'https://'+u:u;
   const locId=uid();
-  S.locations.push({id:locId,tournamentId:tid,slug,name,date,eventPage:ensureUrl(eventPage),resultsUrl:ensureUrl(resultsUrl)});
+  S.locations.push({id:locId,tournamentId:tid,slug,name,date,eventPage:eu(eventPage),resultsUrl:eu(resultsUrl)});
   S.events.push({id:uid(),locationId:locId,tournamentId:tid,slug,locationName:name,runNumber:1,date});
   document.getElementById('f-loc-'+tid)?.remove();
-  persist();renderTournaments();renderResEvSel();renderEnterTimesSel();
+  persist();renderTournaments();renderEnterTimesSel();
 }
-
 function editLocationGeneric(lid){
   const loc=S.locations.find(l=>l.id===lid);if(!loc)return;
-  const formId='f-edit-loc-'+lid;
-  const existing=document.getElementById(formId);
-  if(existing){existing.remove();return;}
-  const form=document.createElement('div');
-  form.id=formId;form.className='inline-form';
-  form.style.cssText='margin:.5rem 0;';
-  form.innerHTML=`
-    <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.75rem;">Edit Event</div>
+  const formId='f-edit-loc-'+lid;const existing=document.getElementById(formId);if(existing){existing.remove();return;}
+  const form=document.createElement('div');form.id=formId;form.className='inline-form';form.style.cssText='margin:.5rem 0;';
+  form.innerHTML=`<div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.75rem;">Edit Event</div>
     <div class="form-row"><label>Name</label><input type="text" id="edit-loc-name-${lid}" value="${loc.name.replace(/"/g,'&quot;')}"/></div>
     <div class="form-row"><label>Date</label><input type="date" id="edit-loc-date-${lid}" value="${loc.date||''}" style="max-width:190px;"/></div>
     <div class="form-row"><label>Event page</label><input type="url" id="edit-loc-eventpage-${lid}" value="${(loc.eventPage||'').replace(/"/g,'&quot;')}"/></div>
     <div class="form-row"><label>Results URL</label><input type="url" id="edit-loc-results-${lid}" value="${(loc.resultsUrl||'').replace(/"/g,'&quot;')}"/></div>
-    <div class="btn-group" style="margin-top:8px;">
-      <button class="btn btn-primary btn-sm" onclick="saveLocationGeneric(${lid})">Save</button>
-      <button class="btn btn-sm" onclick="document.getElementById('f-edit-loc-${lid}').remove()">Cancel</button>
-    </div>`;
+    <div class="btn-group" style="margin-top:8px;"><button class="btn btn-primary btn-sm" onclick="saveLocationGeneric(${lid})">Save</button><button class="btn btn-sm" onclick="document.getElementById('f-edit-loc-${lid}').remove()">Cancel</button></div>`;
   const allBlocks=document.querySelectorAll('.location-block');
   let targetBlock=null;
-  allBlocks.forEach(b=>{if(b.innerHTML.includes('editLocationGeneric('+lid+')')||b.innerHTML.includes("editLocationGeneric("+lid+")"))targetBlock=b;});
+  allBlocks.forEach(b=>{if(b.innerHTML.includes('editLocationGeneric('+lid+')'))targetBlock=b;});
   if(targetBlock)targetBlock.insertAdjacentElement('afterend',form);
   else document.getElementById('tbody-'+loc.tournamentId)?.prepend(form);
   setTimeout(()=>document.getElementById('edit-loc-name-'+lid)?.focus(),50);
@@ -1041,24 +835,21 @@ function saveLocationGeneric(lid){
   const eventPage=document.getElementById('edit-loc-eventpage-'+lid)?.value.trim()||'';
   const resultsUrl=document.getElementById('edit-loc-results-'+lid)?.value.trim()||'';
   if(!name){alert('Name is required.');return;}
-  const ensureUrl=u=>u&&!u.match(/^https?:\/\//)?'https://'+u:u;
-  loc.name=name;loc.date=date;loc.eventPage=ensureUrl(eventPage);loc.resultsUrl=ensureUrl(resultsUrl);
-  const ev=S.events.find(e=>e.locationId===lid);
-  if(ev){ev.locationName=name;ev.date=date;}
+  const eu=u=>u&&!u.match(/^https?:\/\//)?'https://'+u:u;
+  loc.name=name;loc.date=date;loc.eventPage=eu(eventPage);loc.resultsUrl=eu(resultsUrl);
+  const ev=S.events.find(e=>e.locationId===lid);if(ev){ev.locationName=name;ev.date=date;}
   document.getElementById('f-edit-loc-'+lid)?.remove();
-  persist();renderTournaments();renderResEvSel();renderEnterTimesSel();
+  persist();renderTournaments();renderEnterTimesSel();
 }
 function scheduleLocLookup(tid){
   clearTimeout(locLookupTimer);
   document.getElementById('loc-status-'+tid).innerHTML='';
   const url=document.getElementById('loc-url-'+tid)?.value.trim();
-  const slug=slugFromUrl(url||'');
-  if(!slug)return;
+  const slug=slugFromUrl(url||'');if(!slug)return;
   locLookupTimer=setTimeout(()=>doLocLookup(tid,slug),400);
 }
 function doLocLookup(tid,slug){
-  const statusEl=document.getElementById('loc-status-'+tid);
-  if(!statusEl)return;
+  const statusEl=document.getElementById('loc-status-'+tid);if(!statusEl)return;
   const name=slug.split('-').map(w=>w?w[0].toUpperCase()+w.slice(1):'').join(' ')+' Parkrun';
   statusEl.innerHTML='<span style="color:var(--green)">&#10003; '+name+'</span>';
   statusEl.dataset.name=name;statusEl.dataset.slug=slug;
@@ -1073,128 +864,79 @@ function addLocation(tid){
   if(S.locations.some(l=>l.tournamentId===tid&&l.slug===slug)){alert(name+' is already in this tournament.');return;}
   S.locations.push({id:uid(),tournamentId:tid,slug,name});
   document.getElementById('f-loc-'+tid)?.remove();
-  persist();renderTournaments();renderResEvSel();
+  persist();renderTournaments();
 }
 function removeLocation(lid){
   const loc=S.locations.find(l=>l.id===lid);
-  confirmModal('Remove Location',`Remove "${loc?.name||'this location'}" and all its events? This cannot be undone.`,'Remove',()=>{
+  confirmModal('Remove Location',`Remove "${loc?.name||'this location'}" and all its events?`,'Remove',()=>{
     S.events.filter(e=>e.locationId===lid).forEach(e=>delete S.results[e.id]);
     S.events=S.events.filter(e=>e.locationId!==lid);
     S.locations=S.locations.filter(l=>l.id!==lid);
-    persist();renderTournaments();renderResEvSel();renderEnterTimesSel();
+    persist();renderTournaments();renderEnterTimesSel();
   });
 }
-
-function prevSaturday(fromDate){
-  const d=fromDate?new Date(fromDate+'T12:00:00'):new Date();
-  const day=d.getDay();
-  const daysBack=day===6?0:day+1;
-  d.setDate(d.getDate()-daysBack);
-  return d.toISOString().substring(0,10);
-}
-function suggestNextDate(locEvents, suggestedRun){
+function prevSaturday(){const d=new Date();const day=d.getDay();d.setDate(d.getDate()-(day===6?0:day+1));return d.toISOString().substring(0,10);}
+function suggestNextDate(locEvents,suggestedRun){
   const sorted=[...locEvents].sort((a,b)=>b.runNumber-a.runNumber);
-  const last=sorted[0];
-  const prev=sorted[1];
-  if(!last||!last.date) return prevSaturday(null);
+  const last=sorted[0];const prev=sorted[1];
+  if(!last||!last.date)return prevSaturday();
   if(prev&&prev.date&&prev.runNumber){
     const gap=last.runNumber-prev.runNumber;
     if(gap>0){
-      const lastD=new Date(last.date+'T12:00:00');
-      const prevD=new Date(prev.date+'T12:00:00');
-      const daysPerRun=Math.round((lastD-prevD)/(gap*86400000))*gap;
       const runsAhead=(suggestedRun||last.runNumber+1)-last.runNumber;
-      const result=new Date(last.date+'T12:00:00');
-      result.setDate(result.getDate()+runsAhead*7);
+      const result=new Date(last.date+'T12:00:00');result.setDate(result.getDate()+runsAhead*7);
       return result.toISOString().substring(0,10);
     }
   }
   const runsAhead=(suggestedRun||last.runNumber+1)-last.runNumber;
-  const result=new Date(last.date+'T12:00:00');
-  result.setDate(result.getDate()+runsAhead*7);
+  const result=new Date(last.date+'T12:00:00');result.setDate(result.getDate()+runsAhead*7);
   return result.toISOString().substring(0,10);
 }
-
 function showAddEvent(lid){
-  const formId='f-ev-'+lid;
-  const existing=document.getElementById(formId);
-  if(existing){existing.remove();return;}
-
-  const loc=S.locations.find(l=>l.id===lid);
-  const parkrun=isParkrun(loc?.tournamentId);
-
+  const formId='f-ev-'+lid;const existing=document.getElementById(formId);if(existing){existing.remove();return;}
+  const loc=S.locations.find(l=>l.id===lid);const parkrun=isParkrun(loc?.tournamentId);
   const locEvents=S.events.filter(e=>e.locationId===lid).sort((a,b)=>b.runNumber-a.runNumber);
-  const lastEv=locEvents[0];
-  const suggestedRun=lastEv?lastEv.runNumber+1:'';
-  const suggestedDate=parkrun?suggestNextDate(locEvents, suggestedRun||undefined):prevSaturday(null);
-  const runLabel=parkrun?'Run number':'Event number';
-  const dateTip=parkrun?'<span id="evdate-hint-'+lid+'" style="font-size:11px;color:var(--text3);margin-left:4px;">calculated from run number</span>':'';
-  const dateTipText=parkrun?'<p style="font-size:11px;color:var(--text3);margin-bottom:8px;padding-left:100px;">Enter the run number and the date will be estimated based on previous events</p>':'';
-
-  const form=document.createElement('div');
-  form.id=formId;form.className='inline-form';
-  form.innerHTML=`
-    <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.75rem;">Add Event</div>
-    <div class="form-row"><label>${runLabel}</label><input type="number" min="1" id="evnum-${lid}" placeholder="e.g. 333" value="${suggestedRun}" oninput="${parkrun?`autoDateFromRun(${lid})`:''}" onkeydown="if(event.key==='Enter')saveEvent(${lid})" style="max-width:130px;font-family:'SF Mono','Fira Code',monospace;"/></div>
-    <div class="form-row"><label>Date</label><input type="date" id="evdate-${lid}" value="${suggestedDate}" style="max-width:190px;"/>${dateTip}</div>
-    ${dateTipText}
-    <div class="btn-group" style="margin-top:8px;">
-      <button class="btn btn-primary btn-sm" onclick="saveEvent(${lid})">Save Event</button>
-      <button class="btn btn-sm" onclick="document.getElementById('f-ev-${lid}').remove()">Cancel</button>
-    </div>`;
-  const evlist=document.getElementById('loc-body-'+lid);
-  if(evlist)evlist.prepend(form);
+  const lastEv=locEvents[0];const suggestedRun=lastEv?lastEv.runNumber+1:'';
+  const suggestedDate=parkrun?suggestNextDate(locEvents,suggestedRun||undefined):prevSaturday();
+  const form=document.createElement('div');form.id=formId;form.className='inline-form';
+  form.innerHTML=`<div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.75rem;">Add Event</div>
+    <div class="form-row"><label>${parkrun?'Run number':'Event number'}</label><input type="number" min="1" id="evnum-${lid}" value="${suggestedRun}" oninput="${parkrun?`autoDateFromRun(${lid})`:''}" style="max-width:130px;font-family:'SF Mono','Fira Code',monospace;"/></div>
+    <div class="form-row"><label>Date</label><input type="date" id="evdate-${lid}" value="${suggestedDate}" style="max-width:190px;"/></div>
+    <div class="btn-group" style="margin-top:8px;"><button class="btn btn-primary btn-sm" onclick="saveEvent(${lid})">Save Event</button><button class="btn btn-sm" onclick="document.getElementById('f-ev-${lid}').remove()">Cancel</button></div>`;
+  const evlist=document.getElementById('loc-body-'+lid);if(evlist)evlist.prepend(form);
   setTimeout(()=>document.getElementById('evnum-'+lid)?.focus(),50);
 }
 function autoDateFromRun(lid){
-  const numEl=document.getElementById('evnum-'+lid);
-  const dateEl=document.getElementById('evdate-'+lid);
-  const hintEl=document.getElementById('evdate-hint-'+lid);
-  if(!numEl||!dateEl)return;
-  const num=parseInt(numEl.value);
-  if(!num)return;
-  const locEvents=S.events.filter(e=>e.locationId===lid);
-  const suggested=suggestNextDate(locEvents,num);
-  dateEl.value=suggested;
-  if(hintEl)hintEl.textContent='est. Saturday';
+  const numEl=document.getElementById('evnum-'+lid);const dateEl=document.getElementById('evdate-'+lid);if(!numEl||!dateEl)return;
+  const num=parseInt(numEl.value);if(!num)return;
+  dateEl.value=suggestNextDate(S.events.filter(e=>e.locationId===lid),num);
 }
-
 function saveEvent(lid){
   const loc=S.locations.find(l=>l.id===lid);if(!loc)return;
   const num=parseInt(document.getElementById('evnum-'+lid)?.value);
   const date=document.getElementById('evdate-'+lid)?.value||'';
   if(!num||num<1){alert('Run number must be 1 or greater.');return;}
-  if(S.events.some(e=>e.locationId===lid&&e.runNumber===num)){alert('Run #'+num+' already exists for this location.');return;}
+  if(S.events.some(e=>e.locationId===lid&&e.runNumber===num)){alert('Run #'+num+' already exists.');return;}
   S.events.push({id:uid(),locationId:lid,tournamentId:loc.tournamentId,slug:loc.slug,locationName:loc.name,runNumber:num,date});
-  document.getElementById('f-ev-'+lid)?.remove();
-  persist();renderTournaments();renderResEvSel();
+  document.getElementById('f-ev-'+lid)?.remove();persist();renderTournaments();renderEnterTimesSel();
 }
 function removeEvent(eid){
   const ev=S.events.find(e=>e.id===eid);
-  confirmModal('Remove Event',`Remove run #${ev?.runNumber||'this event'} and all its results? This cannot be undone.`,'Remove',()=>{
+  confirmModal('Remove Event',`Remove run #${ev?.runNumber||'this event'} and all its results?`,'Remove',()=>{
     S.events=S.events.filter(e=>e.id!==eid);delete S.results[eid];
-    persist();renderTournaments();renderResEvSel();renderEnterTimesSel();
+    persist();renderTournaments();renderEnterTimesSel();
   });
 }
 function editEvent(eid){
   const ev=S.events.find(e=>e.id===eid);if(!ev)return;
-  const formId='f-edit-ev-'+eid;
-  const existing=document.getElementById(formId);
-  if(existing){existing.remove();return;}
+  const formId='f-edit-ev-'+eid;const existing=document.getElementById(formId);if(existing){existing.remove();return;}
   const row=document.getElementById('evrow-'+eid);if(!row)return;
-  const form=document.createElement('div');
-  form.id=formId;
-  form.className='inline-form';
-  form.style.marginTop='6px';
-  form.innerHTML=`
-    <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.75rem;">Edit Event</div>
+  const form=document.createElement('div');form.id=formId;form.className='inline-form';form.style.marginTop='6px';
+  form.innerHTML=`<div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.75rem;">Edit Event</div>
     <div class="form-row"><label>Run number</label><input type="number" min="1" id="edit-evnum-${eid}" value="${ev.runNumber}" style="max-width:130px;font-family:'SF Mono','Fira Code',monospace;"/></div>
     <div class="form-row"><label>Date</label><input type="date" id="edit-evdate-${eid}" value="${ev.date||''}" style="max-width:190px;"/></div>
-    <div class="btn-group" style="margin-top:8px;">
-      <button class="btn btn-primary btn-sm" onclick="saveEventEdit(${eid})">Save</button>
-      <button class="btn btn-sm" onclick="document.getElementById('f-edit-ev-${eid}').remove()">Cancel</button>
-    </div>`;
-  row.insertAdjacentElement('afterend', form);
+    <div class="btn-group" style="margin-top:8px;"><button class="btn btn-primary btn-sm" onclick="saveEventEdit(${eid})">Save</button><button class="btn btn-sm" onclick="document.getElementById('f-edit-ev-${eid}').remove()">Cancel</button></div>`;
+  row.insertAdjacentElement('afterend',form);
   setTimeout(()=>document.getElementById('edit-evnum-'+eid)?.focus(),50);
 }
 function saveEventEdit(eid){
@@ -1202,42 +944,41 @@ function saveEventEdit(eid){
   const num=parseInt(document.getElementById('edit-evnum-'+eid)?.value);
   const date=document.getElementById('edit-evdate-'+eid)?.value||'';
   if(!num||num<1){alert('Run number must be 1 or greater.');return;}
-  if(S.events.some(e=>e.id!==eid&&e.locationId===ev.locationId&&e.runNumber===num)){alert('Run #'+num+' already exists for this location.');return;}
+  if(S.events.some(e=>e.id!==eid&&e.locationId===ev.locationId&&e.runNumber===num)){alert('Run #'+num+' already exists.');return;}
   ev.runNumber=num;ev.date=date;
-  document.getElementById('f-edit-ev-'+eid)?.remove();
-  persist();renderTournaments();renderResEvSel();renderEnterTimesSel();
+  document.getElementById('f-edit-ev-'+eid)?.remove();persist();renderTournaments();renderEnterTimesSel();
+}
+
+function toggleCollapse(bodyId,chevId){
+  const body=document.getElementById(bodyId);const chev=document.getElementById(chevId);if(!body)return;
+  const collapsed=body.style.display==='none';body.style.display=collapsed?'':'none';
+  if(chev)chev.classList.toggle('open',collapsed);
 }
 
 function renderTournaments(){
   const el=document.getElementById('tournaments-body');
   const active=S.tournaments.filter(t=>!t.archived);
   const archived=S.tournaments.filter(t=>t.archived);
-  if(!active.length&&!archived.length){el.innerHTML='<div class="notice">No tournaments yet. Create one above.</div>';return;}
+  if(!active.length&&!archived.length){el.innerHTML='<div class="notice">No tournaments yet.</div>';return;}
 
-  const renderTournamentCard=(t,isArchived)=>{
+  const renderCard=(t,isArchived)=>{
     const tLocs=S.locations.filter(l=>l.tournamentId===t.id);
     const tEvents=S.events.filter(e=>e.tournamentId===t.id);
     const locsHtml=tLocs.map(loc=>{
       if(!isParkrun(t.id)){
-        const locEv=S.events.find(e=>e.locationId===loc.id);
-        const evId=locEv?.id;
-        const ensureUrl=u=>u&&!u.match(/^https?:\/\//)?'https://'+u:u;
-        const resultsLink=loc.resultsUrl?`<a href="${ensureUrl(loc.resultsUrl)}" target="_blank" style="color:var(--text3);text-decoration:none;border-bottom:1px solid var(--border2);">Results &#8599;</a>`:'';
-        const eventPageLink=loc.eventPage?`<a href="${ensureUrl(loc.eventPage)}" target="_blank" style="color:var(--text3);text-decoration:none;border-bottom:1px solid var(--border2);">Event page &#8599;</a>`:'';
+        const locEv=S.events.find(e=>e.locationId===loc.id);const evId=locEv?.id;
+        const eu=u=>u&&!u.match(/^https?:\/\//)?'https://'+u:u;
+        const resultsLink=loc.resultsUrl?`<a href="${eu(loc.resultsUrl)}" target="_blank" style="color:var(--text3);text-decoration:none;border-bottom:1px solid var(--border2);">Results &#8599;</a>`:'';
+        const eventPageLink=loc.eventPage?`<a href="${eu(loc.eventPage)}" target="_blank" style="color:var(--text3);text-decoration:none;border-bottom:1px solid var(--border2);">Event page &#8599;</a>`:'';
         const meta=[eventPageLink,resultsLink,loc.date?fmtDate(loc.date):'<em style="color:var(--text3)">no date</em>'].filter(Boolean).join(' &middot; ');
-        return`<div class="location-block">
-          <div class="location-header" style="cursor:default;">
-            <div><div class="location-name">${loc.name}</div><div class="location-meta">${meta}</div></div>
-            <div style="display:flex;gap:6px;flex-shrink:0;align-items:center;flex-wrap:wrap;">
-              ${evId?`<button class="btn btn-sm btn-info" onclick="etViewMode=false;sw('enter-times');document.getElementById('et-ev-sel').value='${evId}';renderEnterTimes();">Enter Times</button>`:''}
-              ${evId?`<button class="btn btn-sm" onclick="etViewMode=true;sw('enter-times');document.getElementById('et-ev-sel').value='${evId}';renderEnterTimes();">Results</button>`:''}
-              <button class="btn btn-sm" onclick="editLocationGeneric(${loc.id})">Edit</button>
-              <button class="btn btn-sm btn-danger" onclick="removeLocation(${loc.id})">Remove</button>
-            </div>
-          </div>
-        </div>`;
+        return`<div class="location-block"><div class="location-header" style="cursor:default;"><div><div class="location-name">${loc.name}</div><div class="location-meta">${meta}</div></div>
+          <div style="display:flex;gap:6px;flex-shrink:0;align-items:center;flex-wrap:wrap;">
+            ${evId?`<button class="btn btn-sm btn-info" onclick="etViewMode=false;sw('enter-times');document.getElementById('et-ev-sel').value='${evId}';renderEnterTimes();">Enter Times</button>`:''}
+            ${evId?`<button class="btn btn-sm" onclick="etViewMode=true;sw('enter-times');document.getElementById('et-ev-sel').value='${evId}';renderEnterTimes();">Results</button>`:''}
+            <button class="btn btn-sm" onclick="editLocationGeneric(${loc.id})">Edit</button>
+            <button class="btn btn-sm btn-danger" onclick="removeLocation(${loc.id})">Remove</button>
+          </div></div></div>`;
       }
-
       const locEvents=S.events.filter(e=>e.locationId===loc.id).sort((a,b)=>b.runNumber-a.runNumber);
       const evRows=locEvents.map(ev=>{
         const evUrl=ev.date?`https://www.parkrun.org.uk/${loc.slug}/results/${ev.date}/`:'';
@@ -1245,19 +986,18 @@ function renderTournaments(){
           <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
             <span class="badge badge-orange">#${ev.runNumber}</span>
             <span style="font-size:13px;color:var(--text2);">${ev.date?fmtDate(ev.date):'<em style="color:var(--text3)">no date</em>'}</span>
-            ${evUrl?`<button onclick="openParkrunModal('${evUrl}')" class="btn btn-sm" style="padding:2px 8px;font-size:11px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.06em;">parkrun.org.uk &#8599;</button>`:''}
+            ${evUrl?`<button onclick="openParkrunModal('${evUrl}')" class="btn btn-sm" style="padding:2px 8px;font-size:11px;">parkrun.org.uk &#8599;</button>`:''}
           </div>
           <div style="display:flex;gap:6px;flex-shrink:0;">
             <button class="btn btn-sm" onclick="editEvent(${ev.id})">Edit</button>
             <button class="btn btn-sm btn-info" onclick="etViewMode=false;sw('enter-times');document.getElementById('et-ev-sel').value='${ev.id}';renderEnterTimes();">Enter Times</button>
             <button class="btn btn-sm" onclick="etViewMode=true;sw('enter-times');document.getElementById('et-ev-sel').value='${ev.id}';renderEnterTimes();">Results</button>
             <button class="btn btn-sm btn-danger" onclick="removeEvent(${ev.id})">Remove</button>
-          </div>
-        </div>`;
+          </div></div>`;
       }).join('');
       return`<div class="location-block">
         <div class="location-header" onclick="toggleCollapse('loc-body-${loc.id}','loc-chev-${loc.id}')">
-          <div><div class="location-name">${loc.name}</div><div class="location-meta"><a href="https://www.parkrun.org.uk/${loc.slug}/results/eventhistory/" target="_blank" onclick="window.open(this.href,'_blank');event.stopPropagation();return false;" style="color:var(--text3);text-decoration:none;border-bottom:1px solid var(--border2);">Location Results &#8599;</a> &middot; ${locEvents.length} event${locEvents.length!==1?'s':''}</div></div>
+          <div><div class="location-name">${loc.name}</div><div class="location-meta"><a href="https://www.parkrun.org.uk/${loc.slug}/results/eventhistory/" target="_blank" onclick="event.stopPropagation();" style="color:var(--text3);text-decoration:none;border-bottom:1px solid var(--border2);">Location Results &#8599;</a> &middot; ${locEvents.length} event${locEvents.length!==1?'s':''}</div></div>
           <div style="display:flex;gap:6px;flex-shrink:0;align-items:center;">
             <button class="btn btn-sm btn-primary" onclick="event.stopPropagation();showAddEvent(${loc.id})">+ Add Event</button>
             <button class="btn btn-sm btn-danger" onclick="event.stopPropagation();removeLocation(${loc.id})">Remove</button>
@@ -1269,7 +1009,8 @@ function renderTournaments(){
     }).join('');
     return`<div class="tournament-card">
       <div class="tournament-header" onclick="toggleCollapse('tbody-${t.id}','t-chev-${t.id}')">
-        <div><div class="tournament-title">${t.name}${isArchived?` <span style="font-size:11px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);background:var(--bg3);border-radius:4px;padding:2px 6px;margin-left:6px;">Archived</span>`:''}</div><div class="tournament-meta">${t.desc?t.desc+' &middot; ':''}${tLocs.length} ${isParkrun(t.id)?'location'+( tLocs.length!==1?'s':'')+' &middot; '+tEvents.length+' event'+(tEvents.length!==1?'s':''):'event'+(tLocs.length!==1?'s':'')}</div></div>
+        <div><div class="tournament-title">${t.name}${isArchived?` <span style="font-size:11px;color:var(--text3);background:var(--bg3);border-radius:4px;padding:2px 6px;margin-left:6px;">Archived</span>`:''}</div>
+          <div class="tournament-meta">${t.desc?t.desc+' &middot; ':''}${tLocs.length} ${isParkrun(t.id)?'location'+(tLocs.length!==1?'s':'')+' &middot; '+tEvents.length+' event'+(tEvents.length!==1?'s':''):'event'+(tLocs.length!==1?'s':'')}</div></div>
         <div style="display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap;align-items:center;">
           ${isArchived
             ?`<button class="btn btn-sm" onclick="event.stopPropagation();restoreTournament(${t.id})">Restore</button>`
@@ -1277,109 +1018,84 @@ function renderTournaments(){
               <button class="btn btn-sm" onclick="event.stopPropagation();showTournamentRunners(${t.id})">Club Runners</button>
               <button class="btn btn-sm" onclick="event.stopPropagation();toggleTournamentSettings(${t.id})">Settings</button>
               <button class="btn btn-sm btn-primary" onclick="event.stopPropagation();showAddLocation(${t.id})">+ Add ${isParkrun(t.id)?'Location':'Event'}</button>
-              <button class="btn btn-sm btn-danger" onclick="event.stopPropagation();archiveTournament(${t.id})">Archive</button>`
-          }
+              <button class="btn btn-sm btn-danger" onclick="event.stopPropagation();archiveTournament(${t.id})">Archive</button>`}
           <svg id="t-chev-${t.id}" class="chevron open" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
       </div>
-      <div class="tournament-body" id="tbody-${t.id}">${isArchived?'':(locsHtml||'<div style="font-size:13px;color:var(--text3);">No locations yet &mdash; add one above.</div>')}</div>
+      <div class="tournament-body" id="tbody-${t.id}">${isArchived?'':(locsHtml||'<div style="font-size:13px;color:var(--text3);">No locations yet.</div>')}</div>
     </div>`;
   };
 
-  let html=active.map(t=>renderTournamentCard(t,false)).join('');
-
+  let html=active.map(t=>renderCard(t,false)).join('');
   if(archived.length){
-    html+=`<div style="margin-top:1.5rem;">
-      <div onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none';this.querySelector('.arch-t-chev').style.transform=this.nextElementSibling.style.display==='none'?'rotate(-90deg)':'rotate(0deg)'" style="display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;padding:6px 0;border-top:1px solid var(--border);">
-        <svg class="arch-t-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .2s;transform:rotate(-90deg)"><polyline points="6 9 12 15 18 9"/></svg>
-        <span style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);">Archived Tournaments (${archived.length})</span>
-      </div>
-      <div style="display:none;">
-        ${archived.map(t=>renderTournamentCard(t,true)).join('')}
-      </div>
-    </div>`;
+    html+=`<div style="margin-top:1.5rem;"><div onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'" style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:6px 0;border-top:1px solid var(--border);">
+      <span style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);">Archived Tournaments (${archived.length})</span></div>
+      <div style="display:none;">${archived.map(t=>renderCard(t,true)).join('')}</div></div>`;
   }
   el.innerHTML=html;
 }
 
+// ── Enter Times ───────────────────────────────────────────────
 function renderEnterTimesSel(){
   const sel=document.getElementById('et-ev-sel');if(!sel)return;
-  const cur=sel.value;
-  let html='<option value="">-- select event --</option>';
+  const cur=sel.value;let html='<option value="">-- select event --</option>';
   S.tournaments.filter(t=>!t.archived).forEach(t=>{
     S.locations.filter(l=>l.tournamentId===t.id).forEach(loc=>{
       const evs=S.events.filter(e=>e.locationId===loc.id).sort((a,b)=>b.runNumber-a.runNumber);
       if(!evs.length)return;
-      html+=`<optgroup label="${t.name} &mdash; ${loc.name}">`;
-      evs.forEach(ev=>{html+=`<option value="${ev.id}" ${String(ev.id)===cur?'selected':''}>#${ev.runNumber}${ev.date?' &middot; '+ev.date:''}</option>`;});
+      html+=`<optgroup label="${t.name} — ${loc.name}">`;
+      evs.forEach(ev=>{html+=`<option value="${ev.id}" ${String(ev.id)===cur?'selected':''}>#${ev.runNumber}${ev.date?' · '+ev.date:''}</option>`;});
       html+='</optgroup>';
     });
   });
   sel.innerHTML=html;
 }
-let etViewMode = false;
-
+let etViewMode=false;
 function renderEnterTimes(){
   const evId=parseInt(document.getElementById('et-ev-sel').value);
   const area=document.getElementById('enter-times-area');
   if(!evId){area.innerHTML='<div class="notice">Select an event above.</div>';return;}
-  if(!S.runners.length){area.innerHTML='<div class="notice">Add runners on the Runners tab first.</div>';return;}
   const ev=S.events.find(e=>e.id===evId);if(!ev)return;
   if(!S.results[evId])S.results[evId]={};
-
-  const parkrunLink = ev.date && isParkrun(ev.tournamentId) ? `https://www.parkrun.org.uk/${ev.slug}/results/${ev.date}/` : '';
-  const modeBtn = etViewMode
-    ? `<button class="btn btn-sm btn-info" onclick="etViewMode=false;renderEnterTimes();">&larr; Edit Times</button>`
-    : `<button class="btn btn-sm btn-primary" onclick="viewResultsValidated(${evId})">View Results &rarr;</button>`;
-
-  const tableHead = etViewMode
-    ? `<tr><th>Runner</th><th>Baseline</th><th>Time</th><th>Difference</th><th>Band</th><th>Points</th></tr>`
-    : `<tr><th>Runner</th><th>Attended</th><th>Time</th><th></th></tr>`;
-
+  const parkrunLink=ev.date&&isParkrun(ev.tournamentId)?`https://www.parkrun.org.uk/${ev.slug}/results/${ev.date}/`:'';
+  const modeBtn=etViewMode
+    ?`<button class="btn btn-sm btn-info" onclick="etViewMode=false;renderEnterTimes();">&larr; Edit Times</button>`
+    :`<button class="btn btn-sm btn-primary" onclick="viewResultsValidated(${evId})">View Results &rarr;</button>`;
+  const tableHead=etViewMode
+    ?`<tr><th>Runner</th><th>Baseline</th><th>Time</th><th>Difference</th><th>Band</th><th>Points</th></tr>`
+    :`<tr><th>Runner</th><th>Attended</th><th>Time</th><th></th></tr>`;
   area.innerHTML=`<div class="card">
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:1rem;">
       <div>
-        <span style="font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:800;text-transform:uppercase;letter-spacing:.02em;">${ev.locationName} <span class="badge badge-orange">#${ev.runNumber}</span></span>
+        <span style="font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:800;text-transform:uppercase;">${ev.locationName} <span class="badge badge-orange">#${ev.runNumber}</span></span>
         <div style="font-size:12px;color:var(--text2);margin-top:3px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
           ${fmtDate(ev.date)}
-          ${parkrunLink?`<a href="${parkrunLink}" target="_blank" style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--orange);text-decoration:none;">Open Parkrun Results &#8599;</a>`:''}
+          ${parkrunLink?`<a href="${parkrunLink}" target="_blank" style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--orange);text-decoration:none;">Open Parkrun Results &#8599;</a>`:''}
         </div>
       </div>
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-        ${modeBtn}
-      </div>
+      <div style="display:flex;gap:8px;align-items:center;">${modeBtn}</div>
     </div>
-    <div class="results-table-wrap">
-      <table>
-        <thead>${tableHead}</thead>
-        <tbody id="et-tbody-${evId}"></tbody>
-      </table>
-    </div>
+    <div class="results-table-wrap"><table><thead>${tableHead}</thead><tbody id="et-tbody-${evId}"></tbody></table></div>
   </div>`;
-
-  etViewMode ? renderEtResultRows(evId) : renderEnterTimesRows(evId);
+  etViewMode?renderEtResultRows(evId):renderEnterTimesRows(evId);
 }
-
 function renderEtResultRows(evId){
   const tbody=document.getElementById('et-tbody-'+evId);if(!tbody)return;
-  const ev=S.events.find(e=>e.id===evId);
-  const res=S.results[evId]||{};
-  const ts=getTournamentSettings(ev?.tournamentId);
-  const showParkrunId=isParkrun(ev?.tournamentId);
+  const ev=S.events.find(e=>e.id===evId);const res=S.results[evId]||{};
+  const ts=getTournamentSettings(ev?.tournamentId);const showPkId=isParkrun(ev?.tournamentId);
   const attending=getTournamentRunners(ev?.tournamentId).filter(r=>res[r.id]?.absent!==true);
-  if(!attending.length){tbody.innerHTML=`<tr><td colspan="7" style="text-align:center;color:var(--text3);padding:1.5rem;">No attending runners.</td></tr>`;return;}
+  if(!attending.length){tbody.innerHTML=`<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:1.5rem;">No attending runners.</td></tr>`;return;}
   tbody.innerHTML=attending.map(r=>{
-    const rd=res[r.id]||{};
-    const actual=rd.actualSec??null;
+    const rd=res[r.id]||{};const actual=rd.actualSec??null;
     const baseline=getTournamentBaselinePb(r.id,ev?.tournamentId);
     const diff=(actual!=null&&baseline!=null)?actual-baseline:null;
     const bp=diff!=null?getBandPts(diff,ts):null;
     const bc=diff==null?'badge-neu':diff<0?'badge-pos':diff===0?'badge-neu':'badge-neg';
     const baselineDisplay=baseline!=null
-      ?`<span class="text-mono" style="color:var(--orange);">${sTime(baseline)}</span> <button onclick="editBaseline(${evId},${r.id})" style="background:none;border:none;cursor:pointer;padding:2px 4px;font-size:10px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);">Edit</button>`
-      :`<span style="color:var(--text3);">--</span> <button onclick="editBaseline(${evId},${r.id})" style="background:none;border:none;cursor:pointer;padding:2px 4px;font-size:10px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--orange);">Set</button>`;
+      ?`<span class="text-mono" style="color:var(--orange);">${sTime(baseline)}</span> <button onclick="editBaseline(${evId},${r.id})" style="background:none;border:none;cursor:pointer;padding:2px 4px;font-size:10px;color:var(--text3);">Edit</button>`
+      :`<span style="color:var(--text3);">--</span> <button onclick="editBaseline(${evId},${r.id})" style="background:none;border:none;cursor:pointer;padding:2px 4px;font-size:10px;color:var(--orange);">Set</button>`;
     return`<tr>
-      <td><strong style="font-family:'Barlow Condensed',sans-serif;font-size:15px;text-transform:uppercase;letter-spacing:.02em;">${r.name}</strong>${showParkrunId&&r.rid?'<br><span style="font-size:11px;color:var(--text3);">A'+r.rid+'</span>':''}</td>
+      <td><strong style="font-family:'Barlow Condensed',sans-serif;font-size:15px;text-transform:uppercase;">${r.name}</strong>${showPkId&&r.rid?'<br><span style="font-size:11px;color:var(--text3);">A'+r.rid+'</span>':''}</td>
       <td style="white-space:nowrap;">${baselineDisplay}</td>
       <td class="text-mono">${actual!=null?sTime(actual):'<span style="color:var(--text3)">--</span>'}</td>
       <td>${diff!=null?`<span class="badge ${bc}">${dStr(diff)}</span>`:''}</td>
@@ -1390,33 +1106,23 @@ function renderEtResultRows(evId){
 }
 function renderEnterTimesRows(evId){
   const tbody=document.getElementById('et-tbody-'+evId);if(!tbody)return;
-  const ev=S.events.find(e=>e.id===evId);
-  const actType=getTournamentActivityType(ev?.tournamentId);
-  const showParkrunId=isParkrun(ev?.tournamentId);
-  const res=S.results[evId]||{};
-  const eligible=getTournamentRunners(ev?.tournamentId);
-  if(!eligible.length){
-    tbody.innerHTML=`<tr><td colspan="4" style="text-align:center;color:var(--text3);padding:1.5rem;">No runners enrolled in this tournament. Add runners via the tournament settings.</td></tr>`;
-    return;
-  }
+  const ev=S.events.find(e=>e.id===evId);const showPkId=isParkrun(ev?.tournamentId);
+  const res=S.results[evId]||{};const eligible=getTournamentRunners(ev?.tournamentId);
+  if(!eligible.length){tbody.innerHTML=`<tr><td colspan="4" style="text-align:center;color:var(--text3);padding:1.5rem;">No runners enrolled. Add runners via tournament settings.</td></tr>`;return;}
   tbody.innerHTML=eligible.map(r=>{
-    const rd=res[r.id]||{};
-    const absent=rd.absent===true;
-    const missingTime=!absent&&!rd.actualSec;
+    const rd=res[r.id]||{};const absent=rd.absent===true;
     const mVal=(!absent&&rd.actualSec!=null)?sHMS(rd.actualSec):'';
-    const rowStyle=absent?'opacity:.35;':'';
-    const timeInput=absent
-      ?'<span style="font-size:12px;color:var(--text3);">DNS</span>'
-      :`<input type="time" step="1" value="${mVal}" onchange="manualResEt(${evId},${r.id},this.value)" style="max-width:140px;border-color:${missingTime?'var(--amber)':'var(--border2)'};box-shadow:${missingTime?'0 0 0 2px var(--amber-bg)':'none'};"/>${missingTime?`<span style="font-size:11px;color:var(--amber);margin-left:6px;">required</span>`:''}`;
+    const timeInput=absent?'<span style="font-size:12px;color:var(--text3);">DNS</span>'
+      :`<input type="time" step="1" value="${mVal}" onchange="manualResEt(${evId},${r.id},this.value)" style="max-width:140px;"/>`;
     const toggleIcon=absent
       ?`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg>`
-      :`<svg width="15" height="15" viewBox="0 0 24 24" fill="fill:var(--orange)" stroke="var(--orange)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><polyline points="9 12 11 14 15 10" stroke="#fff" stroke-width="2.5" fill="none"/></svg>`;
+      :`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><polyline points="9 12 11 14 15 10" stroke="#fff" stroke-width="2.5" fill="none"/></svg>`;
     const hasData=rd.actualSec!=null||rd.absent;
     return`<tr>
-      <td style="${rowStyle}"><strong style="font-family:'Barlow Condensed',sans-serif;font-size:15px;text-transform:uppercase;letter-spacing:.02em;">${r.name}</strong>${showParkrunId&&r.rid?'<br><span style="font-size:11px;color:var(--text3);">A'+r.rid+'</span>':''}</td>
-      <td><button onclick="toggleAttendanceEt(${evId},${r.id})" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;opacity:1;" title="${absent?'Click to mark as attended':'Click to mark as absent'}">${toggleIcon}</button></td>
-      <td style="${rowStyle}">${timeInput}</td>
-      <td>${hasData?`<button onclick="clearRunnerResult(${evId},${r.id})" style="background:none;border:none;cursor:pointer;padding:4px;color:var(--text3);" title="Clear this runner"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>`:''}
+      <td style="${absent?'opacity:.35;':''}"><strong style="font-family:'Barlow Condensed',sans-serif;font-size:15px;text-transform:uppercase;">${r.name}</strong>${showPkId&&r.rid?'<br><span style="font-size:11px;color:var(--text3);">A'+r.rid+'</span>':''}</td>
+      <td><button onclick="toggleAttendanceEt(${evId},${r.id})" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;">${toggleIcon}</button></td>
+      <td style="${absent?'opacity:.35;':''}">${timeInput}</td>
+      <td>${hasData?`<button onclick="clearRunnerResult(${evId},${r.id})" style="background:none;border:none;cursor:pointer;padding:4px;color:var(--text3);"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>`:''}
       </td>
     </tr>`;
   }).join('');
@@ -1438,650 +1144,296 @@ function toggleAttendanceEt(evId,rId){
 }
 function editBaseline(evId,rId){
   const r=S.runners.find(x=>x.id===rId);if(!r)return;
-  const ev=S.events.find(e=>e.id===evId);
-  const tid=ev?.tournamentId;
-  const actType=getTournamentActivityType(tid);
-  const parkrun=isParkrun(tid);
-
-  const current=parkrun
-    ? (S.results[evId]?.[rId]?.baselinePbSec ?? getTournamentBaselinePb(rId,tid))
-    : getTournamentBaselinePb(rId,tid);
-
-  const scopeLabel=parkrun?'for this event':'for this tournament';
-  const titleLabel=parkrun?'Edit Event Baseline':'Edit Tournament Baseline';
-
-  confirmModal(
-    titleLabel+' — '+r.name,
-    '',
-    'Update',
-    ()=>{
-      const val=document.getElementById('baseline-edit-input')?.value;
-      const s=tSec(val);
-      if(!s){alert('Invalid time format.');return;}
-      setBaseline(rId,actType,s,tid);
-      if(parkrun){
-        if(!S.results[evId])S.results[evId]={};
-        S.results[evId][rId]={...(S.results[evId][rId]||{}),baselinePbSec:s};
-      }
-      persist();renderEtResultRows(evId);
-    }
-  );
+  const ev=S.events.find(e=>e.id===evId);const tid=ev?.tournamentId;
+  const actType=getTournamentActivityType(tid);const parkrun=isParkrun(tid);
+  const current=parkrun?(S.results[evId]?.[rId]?.baselinePbSec??getTournamentBaselinePb(rId,tid)):getTournamentBaselinePb(rId,tid);
+  confirmModal((parkrun?'Edit Event Baseline':'Edit Tournament Baseline')+' — '+r.name,'','Update',()=>{
+    const val=document.getElementById('baseline-edit-input')?.value;const s=tSec(val);
+    if(!s){alert('Invalid time.');return;}
+    setBaseline(rId,actType,s,tid);
+    if(parkrun){if(!S.results[evId])S.results[evId]={};S.results[evId][rId]={...(S.results[evId][rId]||{}),baselinePbSec:s};}
+    persist();renderEtResultRows(evId);
+  });
   setTimeout(()=>{
     const msg=document.getElementById('confirm-msg');
-    if(msg){
-      msg.innerHTML=`
-        <span style="display:block;margin-bottom:.5rem;font-size:13px;color:var(--text2);">
-          Current ${actType} baseline ${scopeLabel}: <strong style="color:var(--orange);">${current!=null?sTime(current):'not set'}</strong>
-        </span>
-        <input type="time" id="baseline-edit-input" step="1" value="${current!=null?sHMS(current):''}" style="width:100%;padding:8px;font-size:14px;font-family:'SF Mono','Fira Code',monospace;margin-top:.5rem;"/>`;
-      document.getElementById('baseline-edit-input')?.focus();
-    }
+    if(msg){msg.innerHTML=`<span style="display:block;margin-bottom:.5rem;font-size:13px;color:var(--text2);">Current: <strong style="color:var(--orange);">${current!=null?sTime(current):'not set'}</strong></span><input type="time" id="baseline-edit-input" step="1" value="${current!=null?sHMS(current):''}" style="width:100%;padding:8px;font-size:14px;font-family:'SF Mono','Fira Code',monospace;margin-top:.5rem;"/>`;
+    document.getElementById('baseline-edit-input')?.focus();}
   },50);
 }
-function clearRunnerResult(evId,rId){
-  if(!S.results[evId])return;
-  delete S.results[evId][rId];
-  persist();renderEnterTimesRows(evId);
-}
+function clearRunnerResult(evId,rId){if(!S.results[evId])return;delete S.results[evId][rId];persist();renderEnterTimesRows(evId);}
 function viewResultsValidated(evId){
-  const res=S.results[evId]||{};
-  const ev=S.events.find(e=>e.id===evId);
+  const res=S.results[evId]||{};const ev=S.events.find(e=>e.id===evId);
   const eligible=getTournamentRunners(ev?.tournamentId);
-  const missing=eligible.filter(r=>{
-    const rd=res[r.id]||{};
-    return rd.absent!==true && !rd.actualSec;
-  });
+  const missing=eligible.filter(r=>{const rd=res[r.id]||{};return rd.absent!==true&&!rd.actualSec;});
   if(missing.length){
-    const names=missing.map(r=>r.name).join(', ');
-    confirmModal(
-      'Missing Times',
-      `${missing.length} attended runner${missing.length>1?'s have':' has'} no time entered: ${names}. Continue to results anyway?`,
-      'View Results',
-      ()=>{etViewMode=true;renderEnterTimes();}
-    );
-    // Override the ok button to not get swallowed by confirmOK's modal-close-then-cb flow
+    confirmModal('Missing Times',`${missing.length} runner${missing.length>1?'s have':' has'} no time: ${missing.map(r=>r.name).join(', ')}. Continue anyway?`,'View Results',()=>{});
     setTimeout(()=>{
       const ok=document.getElementById('confirm-ok-btn');
-      if(ok){
-        const orig=ok.onclick;
-        ok.onclick=()=>{confirmCancel();etViewMode=true;renderEnterTimes();};
-      }
+      if(ok)ok.onclick=()=>{confirmCancel();etViewMode=true;renderEnterTimes();};
     },30);
   } else {
     etViewMode=true;renderEnterTimes();
   }
 }
 
-function renderResEvSel(){
-  const sel=document.getElementById('res-ev-sel');const cur=sel.value;
-  let html='<option value="">-- select event --</option>';
-  S.tournaments.filter(t=>!t.archived).forEach(t=>{
-    S.locations.filter(l=>l.tournamentId===t.id).forEach(loc=>{
-      const evs=S.events.filter(e=>e.locationId===loc.id).sort((a,b)=>b.runNumber-a.runNumber);
-      if(!evs.length)return;
-      html+=`<optgroup label="${t.name} &mdash; ${loc.name}">`;
-      evs.forEach(ev=>{html+=`<option value="${ev.id}" ${String(ev.id)===cur?'selected':''}>#${ev.runNumber}${ev.date?' &middot; '+ev.date:''}</option>`;});
-      html+='</optgroup>';
-    });
-  });
-  sel.innerHTML=html;
-}
-function renderResultEntry(){
-  const evId=parseInt(document.getElementById('res-ev-sel').value);
-  const area=document.getElementById('result-entry-area');
-  if(!evId){area.innerHTML='<div class="notice">Select an event above.</div>';return;}
-  if(!S.runners.length){area.innerHTML='<div class="notice">Add runners on the Runners tab first.</div>';return;}
-  const ev=S.events.find(e=>e.id===evId);if(!ev)return;
-  if(!S.results[evId])S.results[evId]={};
-  area.innerHTML=`<div class="card">
-    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:1rem;">
-      <div>
-        <span style="font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:800;text-transform:uppercase;letter-spacing:.02em;">${ev.locationName} <span class="badge badge-orange">#${ev.runNumber}</span></span>
-        <div style="font-size:12px;color:var(--text2);margin-top:3px;display:flex;gap:12px;align-items:center;">
-          ${fmtDate(ev.date)}
-          ${ev.date&&isParkrun(ev.tournamentId)?`<a href="https://www.parkrun.org.uk/${ev.slug}/results/${ev.date}/" target="_blank" style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--orange);text-decoration:none;">Open Parkrun Results &#8599;</a>`:''}
-    </div>
-    <div class="results-table-wrap">
-      <table>
-        <thead><tr><th>Runner</th><th>Baseline</th><th>Time</th><th>Difference</th><th>Band</th><th>Points</th></tr></thead>
-        <tbody id="rtbody-${evId}"></tbody>
-      </table>
-    </div>
-  </div>`;
-  renderResultRows(evId);
-}
-function renderResultRows(evId){
-  const tbody=document.getElementById('rtbody-'+evId);if(!tbody)return;
-  const ev=S.events.find(e=>e.id===evId);
-  const res=S.results[evId]||{};
-  const ts=getTournamentSettings(ev?.tournamentId);
-  const showParkrunId=isParkrun(ev?.tournamentId);
-  const attending=getTournamentRunners(ev?.tournamentId).filter(r=>res[r.id]?.absent!==true);
-  if(!attending.length){tbody.innerHTML=`<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:1.5rem;">No attending runners.</td></tr>`;return;}
-  tbody.innerHTML=attending.map(r=>{
-    const rd=res[r.id]||{};
-    const actual=rd.actualSec??null;
-    const baseline=getTournamentBaselinePb(r.id,ev?.tournamentId)??r.pbSec;
-    const diff=(actual!=null&&baseline!=null)?actual-baseline:null;
-    const bp=diff!=null?getBandPts(diff,ts):null;
-    const bc=diff==null?'badge-neu':diff<0?'badge-pos':diff===0?'badge-neu':'badge-neg';
-    return`<tr>
-      <td><strong style="font-family:'Barlow Condensed',sans-serif;font-size:15px;text-transform:uppercase;letter-spacing:.02em;">${r.name}</strong>${showParkrunId&&r.rid?'<br><span style="font-size:11px;color:var(--text3);">A'+r.rid+'</span>':''}</td>
-      <td class="text-mono" style="color:var(--orange);">${baseline!=null?sTime(baseline):'--'}</td>
-      <td class="text-mono">${actual!=null?sTime(actual):'<span style="color:var(--text3)">--</span>'}</td>
-      <td>${diff!=null?`<span class="badge ${bc}">${dStr(diff)}</span>`:''}</td>
-      <td style="font-size:12px;color:var(--text2);">${bp?bp.label:''}</td>
-      <td style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;color:${bp&&bp.pts>0?'var(--orange)':bp&&bp.pts<0?'var(--red)':'var(--text)'};">${bp!=null?(bp.pts>0?'+':'')+bp.pts:'--'}</td>
-    </tr>`;
-  }).join('');
-}
-function manualRes(evId,rId,val){
-  if(!S.results[evId])S.results[evId]={};
-  const p=val.split(':').map(Number);let sec=null;
-  if(p.length===3)sec=p[0]*3600+p[1]*60+p[2];else if(p.length===2)sec=p[0]*60+p[1];
-  const ev=S.events.find(e=>e.id===evId);
-  const baseline=getRunnerPb(rId,getTournamentActivityType(ev?.tournamentId))??null;
-  S.results[evId][rId]={...(S.results[evId][rId]||{}),actualSec:sec,baselinePbSec:baseline};
-  persist();renderResultRows(evId);
-}
-function toggleAttendance(evId,rId){
-  if(!S.results[evId])S.results[evId]={};
-  const current=S.results[evId][rId]?.absent===true;
-  S.results[evId][rId]={...(S.results[evId][rId]||{}),absent:!current};
-  persist();renderResultRows(evId);
-}
-function clearEventResults(evId){
-  confirmModal('Clear Results','Clear all results for this event? This cannot be undone.','Clear',()=>{
-    S.results[evId]={};persist();renderResultEntry();
-  });
-}
-
+// ── Leaderboard ───────────────────────────────────────────────
 function renderLbSel(){
   const sel=document.getElementById('lb-tournament-sel');const cur=sel.value;
   sel.innerHTML='<option value="">-- select tournament --</option>'+S.tournaments.map(t=>`<option value="${t.id}" ${String(t.id)===cur?'selected':''}>${t.archived?'[Archived] ':''}${t.name}</option>`).join('');
 }
-
 function renderLeaderboard(){
   const tid=document.getElementById('lb-tournament-sel')?.value;
   const t=tid?S.tournaments.find(x=>String(x.id)===tid):null;
   const area=document.getElementById('lb-area');
   const heading=document.getElementById('lb-heading');
-
   if(!t){
     if(heading)heading.textContent='Leaderboard';
-    const totalEvs=S.events.length;
-    const totalRunners=S.runners.length;
-    const totalTournaments=S.tournaments.length;
-    area.innerHTML=`
-      <div class="notice" style="padding:2rem 1rem 1rem;">
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.5" style="margin-bottom:1rem;"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text2);margin-bottom:.5rem;">Select a tournament to view the leaderboard</div>
-        <div style="font-size:13px;color:var(--text3);">Use the dropdown above to choose a tournament</div>
-      </div>
+    area.innerHTML=`<div class="notice" style="padding:2rem 1rem 1rem;">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;text-transform:uppercase;color:var(--text2);margin-bottom:.5rem;">Select a tournament to view the leaderboard</div>
+      <div style="font-size:13px;color:var(--text3);">Use the dropdown above to choose a tournament</div></div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:1rem;">
-        ${[{label:'Club Runners',value:totalRunners},{label:'Tournaments',value:totalTournaments},{label:'Events',value:totalEvs}].map(m=>`
-          <div class="metric"><div class="metric-label">${m.label}</div><div class="metric-value">${m.value}</div></div>`).join('')}
+        ${[{label:'Club Runners',value:S.runners.length},{label:'Tournaments',value:S.tournaments.length},{label:'Events',value:S.events.length}].map(m=>`<div class="metric"><div class="metric-label">${m.label}</div><div class="metric-value">${m.value}</div></div>`).join('')}
       </div>`;
     return;
   }
-
   if(heading)heading.textContent=t.name;
   const filterEvs=S.events.filter(e=>String(e.tournamentId)===tid);
-
-  const eligibleRunners=tid?getTournamentRunners(parseInt(tid)):S.runners.filter(r=>!r.archived);
+  const eligibleRunners=getTournamentRunners(parseInt(tid));
   const scores=eligibleRunners.map(r=>{
     let bandPts=0,runs=0;
     filterEvs.forEach(ev=>{
-      const rd=S.results[ev.id]?.[r.id];
-      if(rd?.absent)return;
-      if(rd?.actualSec!=null){
-        const baseline=getTournamentBaselinePb(r.id,parseInt(tid));
-        if(baseline==null)return;
-        const ts=getTournamentSettings(ev.tournamentId);
-        bandPts+=getBandPts(rd.actualSec-baseline,ts).pts;
-        runs++;
-      }
+      const rd=S.results[ev.id]?.[r.id];if(rd?.absent)return;
+      if(rd?.actualSec!=null){const baseline=getTournamentBaselinePb(r.id,parseInt(tid));if(baseline==null)return;bandPts+=getBandPts(rd.actualSec-baseline,getTournamentSettings(ev.tournamentId)).pts;runs++;}
     });
     const ts=getTournamentSettings(parseInt(tid));
     return{runner:r,bandPts,runs,bonus:getBonus(runs,ts),total:bandPts+getBonus(runs,ts)};
   }).filter(s=>s.runs>0).sort((a,b)=>b.total-a.total||a.runner.name.localeCompare(b.runner.name));
-
   const totalPts=scores.reduce((sum,s)=>sum+s.total,0);
   const posStyles=['background:var(--orange);color:#fff;','background:#555;color:#fff;','background:#7a3d10;color:#fff;'];
-
   area.innerHTML=`
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:1.25rem;">
-      ${[{label:'Club Runners',value:S.runners.length},{label:'Total Points',value:totalPts},{label:'Events',value:filterEvs.length}].map(m=>`
-        <div class="metric"><div class="metric-label">${m.label}</div><div class="metric-value">${m.value}</div></div>`).join('')}
+      ${[{label:'Club Runners',value:S.runners.length},{label:'Total Points',value:totalPts},{label:'Events',value:filterEvs.length}].map(m=>`<div class="metric"><div class="metric-label">${m.label}</div><div class="metric-value">${m.value}</div></div>`).join('')}
     </div>
     <div class="card">
       <div class="lb-hdr">
-        <span style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;">#</span>
-        <span style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;">Runner</span>
-        <span style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;text-align:right;">Runs</span>
-        <span style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;text-align:right;">Band pts</span>
-        <span style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;text-align:right;">Bonus</span>
-        <span style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;text-align:right;">Total</span>
+        <span style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;">#</span>
+        <span style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;">Runner</span>
+        <span style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;text-align:right;">Runs</span>
+        <span style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;text-align:right;">Band pts</span>
+        <span style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;text-align:right;">Bonus</span>
+        <span style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;text-align:right;">Total</span>
       </div>
-      <div id="lb-body">
-        ${scores.length?scores.map((s,i)=>`
-          <div class="lb-row">
-            <div class="pos-num" style="${posStyles[i]||'background:var(--bg4);color:var(--text2);font-size:12px;'}">${i+1}</div>
-            <div><div class="lb-name">${s.runner.name}</div><div class="lb-sub">A${s.runner.rid} &middot; ${s.runs} run${s.runs!==1?'s':''}</div></div>
-            <div class="text-right">${s.runs}</div>
-            <div class="text-right" style="font-weight:600;color:${s.bandPts>0?'var(--green)':s.bandPts<0?'var(--red)':'var(--text)'};">${s.bandPts>0?'+':''}${s.bandPts}</div>
-            <div class="text-right" style="color:var(--orange);font-weight:600;">+${s.bonus}</div>
-            <div class="text-right" style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:${i===0?'var(--orange)':'var(--text)'};">${s.total}</div>
-          </div>`).join(''):'<div class="notice">No results entered yet.</div>'}
-      </div>
+      ${scores.length?scores.map((s,i)=>`<div class="lb-row">
+        <div class="pos-num" style="${posStyles[i]||'background:var(--bg4);color:var(--text2);font-size:12px;'}">${i+1}</div>
+        <div><div class="lb-name">${s.runner.name}</div><div class="lb-sub">${s.runner.rid?'A'+s.runner.rid+' · ':''}${s.runs} run${s.runs!==1?'s':''}</div></div>
+        <div class="text-right">${s.runs}</div>
+        <div class="text-right" style="font-weight:600;color:${s.bandPts>0?'var(--green)':s.bandPts<0?'var(--red)':'var(--text)'};">${s.bandPts>0?'+':''}${s.bandPts}</div>
+        <div class="text-right" style="color:var(--orange);font-weight:600;">+${s.bonus}</div>
+        <div class="text-right" style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:${i===0?'var(--orange)':'var(--text)'};">${s.total}</div>
+      </div>`).join(''):'<div class="notice">No results entered yet.</div>'}
     </div>`;
 }
 
+// ── Tournament runners panel ──────────────────────────────────
 function showTournamentRunners(tid){
-  const t=S.tournaments.find(x=>x.id===tid);if(!t)return;
-  const panelId='runners-panel-'+tid;
-  const bodyEl=document.getElementById('tbody-'+tid);if(!bodyEl)return;
-  const existing=document.getElementById(panelId);
-  if(existing)existing.remove();
-  const panel=document.createElement('div');
-  panel.id=panelId;
-  panel.style.cssText='margin-bottom:.75rem;';
-  bodyEl.prepend(panel);
-  renderRunnersPanel(tid,false);
+  const panelId='runners-panel-'+tid;const bodyEl=document.getElementById('tbody-'+tid);if(!bodyEl)return;
+  document.getElementById(panelId)?.remove();
+  const panel=document.createElement('div');panel.id=panelId;panel.style.cssText='margin-bottom:.75rem;';
+  bodyEl.prepend(panel);renderRunnersPanel(tid,false);
 }
-
 function renderRunnersPanel(tid,editMode){
   const panel=document.getElementById('runners-panel-'+tid);if(!panel)return;
   const t=S.tournaments.find(x=>x.id===tid);if(!t)return;
-  const actType=getTournamentActivityType(tid);
-  const label=actType==='parkrun'?'Parkrun':actType;
-  const enrolled=S.tournamentRunners[tid]||[];
-
+  const actType=getTournamentActivityType(tid);const label=actType;
   if(!editMode){
     const enrolledRunners=S.runners.filter(r=>!r.archived&&isEnrolled(tid,r.id));
-    const showParkrunId=isParkrun(tid);
+    const showPkId=isParkrun(tid);
     const rows=enrolledRunners.length
-      ?enrolledRunners.map(r=>{
-          const entry=getTournamentRunnerEntry(tid,r.id);
-          const baseline=entry?.baselineSec??getRunnerPb(r.id,actType);
-          return`<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);gap:10px;flex-wrap:wrap;">
-            <div>
-              <span style="font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:.02em;">${r.name}</span>
-              ${showParkrunId&&r.rid?`<span style="font-size:12px;color:var(--text3);margin-left:6px;">A${r.rid}</span>`:''}
-            </div>
-            <span style="font-size:13px;color:var(--text3);">${label} baseline: <span style="font-family:'SF Mono','Fira Code',monospace;color:var(--orange);">${baseline!=null?sTime(baseline):'--'}</span></span>
-          </div>`;
-        }).join('')
+      ?enrolledRunners.map(r=>{const entry=getTournamentRunnerEntry(tid,r.id);const baseline=entry?.baselineSec??getRunnerPb(r.id,actType);
+        return`<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);gap:10px;flex-wrap:wrap;">
+          <div><span style="font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;text-transform:uppercase;">${r.name}</span>${showPkId&&r.rid?`<span style="font-size:12px;color:var(--text3);margin-left:6px;">A${r.rid}</span>`:''}</div>
+          <span style="font-size:13px;color:var(--text3);">${label} baseline: <span class="text-mono" style="color:var(--orange);">${baseline!=null?sTime(baseline):'--'}</span></span>
+        </div>`;}).join('')
       :`<div style="font-size:13px;color:var(--text3);padding:8px 0;">No runners enrolled yet.</div>`;
-
-    panel.innerHTML=`<div class="card card-accent" style="margin-bottom:0;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;">
-        <div class="card-title" style="margin-bottom:0;">Club Runners <span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:400;color:var(--text3);text-transform:none;letter-spacing:0;">(${enrolledRunners.length})</span></div>
-        <div style="display:flex;gap:6px;">
-          <button class="btn btn-sm btn-info" onclick="renderRunnersPanel(${tid},true)">Edit</button>
-          <button class="btn btn-sm" onclick="document.getElementById('runners-panel-${tid}').remove()">Close</button>
-        </div>
-      </div>
-      ${rows}
-    </div>`;
+    panel.innerHTML=`<div class="card card-accent" style="margin-bottom:0;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;">
+      <div class="card-title" style="margin-bottom:0;">Club Runners (${enrolledRunners.length})</div>
+      <div style="display:flex;gap:6px;"><button class="btn btn-sm btn-info" onclick="renderRunnersPanel(${tid},true)">Edit</button><button class="btn btn-sm" onclick="document.getElementById('runners-panel-${tid}').remove()">Close</button></div>
+    </div>${rows}</div>`;
   } else {
-    const showParkrunId=isParkrun(tid);
+    const showPkId=isParkrun(tid);
     const rows=S.runners.filter(r=>!r.archived).map(r=>{
-      const isIn=isEnrolled(tid,r.id);
-      const entry=getTournamentRunnerEntry(tid,r.id);
-      const suggested=entry?.baselineSec??getRunnerPb(r.id,actType);
+      const isIn=isEnrolled(tid,r.id);const entry=getTournamentRunnerEntry(tid,r.id);const suggested=entry?.baselineSec??getRunnerPb(r.id,actType);
       return`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);flex-wrap:wrap;">
         <input type="checkbox" id="enroll-cb-${tid}-${r.id}" ${isIn?'checked':''} style="width:16px;height:16px;accent-color:var(--orange);flex-shrink:0;"/>
-        <label for="enroll-cb-${tid}-${r.id}" style="flex:1;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:.02em;cursor:pointer;">${r.name}${showParkrunId&&r.rid?` <span style="font-weight:400;font-size:12px;color:var(--text3);">A${r.rid}</span>`:''}
-        </label>
-        <div style="display:flex;align-items:center;gap:6px;">
-          <span style="font-size:11px;color:var(--text3);">${label} baseline</span>
-          <input type="time" id="enroll-baseline-${tid}-${r.id}" step="1" value="${suggested!=null?sHMS(suggested):''}" style="max-width:130px;"/>
-          ${!isIn&&!suggested?`<span style="font-size:11px;color:var(--amber);">no baseline set</span>`:''}
-        </div>
+        <label for="enroll-cb-${tid}-${r.id}" style="flex:1;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;text-transform:uppercase;cursor:pointer;">${r.name}${showPkId&&r.rid?` <span style="font-weight:400;font-size:12px;color:var(--text3);">A${r.rid}</span>`:''}</label>
+        <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;color:var(--text3);">${label} baseline</span><input type="time" id="enroll-baseline-${tid}-${r.id}" step="1" value="${suggested!=null?sHMS(suggested):''}" style="max-width:130px;"/></div>
       </div>`;
     }).join('');
-
-    panel.innerHTML=`<div class="card card-accent" style="margin-bottom:0;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;">
-        <div class="card-title" style="margin-bottom:0;">Club Runners</div>
-        <div style="display:flex;gap:6px;">
-          <button class="btn btn-sm btn-primary" onclick="saveRunnersPanel(${tid})">Save</button>
-          <button class="btn btn-sm" onclick="renderRunnersPanel(${tid},false)">Cancel</button>
-        </div>
-      </div>
-      <p style="font-size:12px;color:var(--text3);margin-bottom:.75rem;">Tick runners to include them in this tournament. Each needs a <strong>${label} baseline</strong> — the time they're measured against for the whole tournament.</p>
-      ${S.runners.length?rows:'<div class="notice">No runners added yet. Add runners on the Club Runners tab.</div>'}
+    panel.innerHTML=`<div class="card card-accent" style="margin-bottom:0;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;">
+      <div class="card-title" style="margin-bottom:0;">Club Runners</div>
+      <div style="display:flex;gap:6px;"><button class="btn btn-sm btn-primary" onclick="saveRunnersPanel(${tid})">Save</button><button class="btn btn-sm" onclick="renderRunnersPanel(${tid},false)">Cancel</button></div>
+    </div>
+    <p style="font-size:12px;color:var(--text3);margin-bottom:.75rem;">Tick runners to include them. Each needs a <strong>${label} baseline</strong>.</p>
+    ${S.runners.length?rows:'<div class="notice">No runners added yet.</div>'}
     </div>`;
   }
 }
-
 function saveRunnersPanel(tid){
-  const actType=getTournamentActivityType(tid);
-  const errors=[];
+  const actType=getTournamentActivityType(tid);const errors=[];
   S.runners.forEach(r=>{
-    const cb=document.getElementById(`enroll-cb-${tid}-${r.id}`);
-    const timeInput=document.getElementById(`enroll-baseline-${tid}-${r.id}`);
-    if(cb?.checked){
-      const sec=tSec(timeInput?.value);
-      if(!sec){
-        errors.push(r.name+' needs a '+actType+' baseline time.');
-      } else {
-        setBaseline(r.id,actType,sec,tid);
-        if(!r.pbs)r.pbs={};
-        if(r.pbs[actType]==null){r.pbs[actType]=sec;if(actType==='parkrun')r.pbSec=sec;}
-      }
-    } else {
-      unenrollRunner(tid,r.id);
-    }
+    const cb=document.getElementById(`enroll-cb-${tid}-${r.id}`);const timeInput=document.getElementById(`enroll-baseline-${tid}-${r.id}`);
+    if(cb?.checked){const sec=tSec(timeInput?.value);if(!sec)errors.push(r.name+' needs a '+actType+' baseline.');else{setBaseline(r.id,actType,sec,tid);if(!r.pbs)r.pbs={};if(r.pbs[actType]==null){r.pbs[actType]=sec;if(actType==='parkrun')r.pbSec=sec;}}}
+    else unenrollRunner(tid,r.id);
   });
   if(errors.length){alert('Please fix:\n'+errors.join('\n'));return;}
-  persist();renderEnterTimesSel();renderRunners();
-  renderRunnersPanel(tid,false);
+  persist();renderEnterTimesSel();renderRunners();renderRunnersPanel(tid,false);
 }
 
-function toggleEnrollment(tid,rId){}
-
-function updateEnrollmentBaseline(tid,rId,val){
-  const sec=tSec(val);if(!sec)return;
-  if(isEnrolled(tid,rId)){enrollRunner(tid,rId,sec);persist();}
-}
+// ── Tournament settings ───────────────────────────────────────
 function toggleTournamentSettings(tid){
   const bodyEl=document.getElementById('tbody-'+tid);if(!bodyEl)return;
-  const existingId='settings-panel-'+tid;
-  const existing=document.getElementById(existingId);
-  if(existing){existing.remove();return;}
-  const panel=document.createElement('div');
-  panel.id=existingId;
-  panel.style.cssText='margin-bottom:.75rem;';
-  panel.innerHTML=buildSettingsPanel(tid);
-  bodyEl.prepend(panel);
-  renderBonusPreview(tid);
+  const existingId='settings-panel-'+tid;const existing=document.getElementById(existingId);if(existing){existing.remove();return;}
+  const panel=document.createElement('div');panel.id=existingId;panel.style.cssText='margin-bottom:.75rem;';
+  panel.innerHTML=buildSettingsPanel(tid);bodyEl.prepend(panel);renderBonusPreview(tid);
 }
-
 function buildSettingsPanel(tid){
-  const t=S.tournaments.find(x=>x.id===tid);if(!t)return'';
-  const s=t.settings;
-  return`<div class="card card-accent" style="margin-bottom:0;">
-    <div class="card-title">Scoring Settings</div>
+  const t=S.tournaments.find(x=>x.id===tid);if(!t)return'';const s=t.settings;
+  return`<div class="card card-accent" style="margin-bottom:0;"><div class="card-title">Scoring Settings</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
       <div>
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:.5rem;">Attendance Bonus Tiers</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--text3);margin-bottom:.5rem;">Attendance Bonus Tiers</div>
         <p style="font-size:12px;color:var(--text3);margin-bottom:.75rem;">Highest qualifying tier wins.</p>
-        <div style="display:grid;grid-template-columns:1fr 1fr 36px;gap:6px;font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:4px;"><span>Min events</span><span>Pts</span><span></span></div>
-        <div id="tiers-list-${tid}">${s.bonusTiers.map((tier,i)=>`
-          <div style="display:grid;grid-template-columns:1fr 1fr 36px;gap:6px;align-items:center;margin-bottom:6px;">
-            <input type="number" value="${tier.minRuns}" min="1" class="text-mono" style="padding:6px 8px;font-size:13px;" onchange="updateTier(${tid},${i},'minRuns',this.value)"/>
-            <input type="number" value="${tier.points}" class="text-mono" style="padding:6px 8px;font-size:13px;" onchange="updateTier(${tid},${i},'points',this.value)"/>
-            <button class="btn btn-sm btn-danger" onclick="removeTier(${tid},${i})" title="Remove tier"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
-          </div>`).join('')}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 36px;gap:6px;font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--text3);margin-bottom:4px;"><span>Min events</span><span>Pts</span><span></span></div>
+        <div id="tiers-list-${tid}">${s.bonusTiers.map((tier,i)=>`<div style="display:grid;grid-template-columns:1fr 1fr 36px;gap:6px;align-items:center;margin-bottom:6px;">
+          <input type="number" value="${tier.minRuns}" min="1" class="text-mono" style="padding:6px 8px;font-size:13px;" onchange="updateTier(${tid},${i},'minRuns',this.value)"/>
+          <input type="number" value="${tier.points}" class="text-mono" style="padding:6px 8px;font-size:13px;" onchange="updateTier(${tid},${i},'points',this.value)"/>
+          <button class="btn btn-sm btn-danger" onclick="removeTier(${tid},${i})">✕</button></div>`).join('')}</div>
         <button class="btn btn-sm" style="margin-top:4px;" onclick="addTier(${tid})">+ Add Tier</button>
         <div id="bonus-preview-${tid}" style="background:var(--bg3);border-radius:var(--radius-sm);padding:.75rem 1rem;margin-top:.75rem;"></div>
       </div>
       <div>
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:.5rem;">Time Bands</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--text3);margin-bottom:.5rem;">Time Bands</div>
         <p style="font-size:12px;color:var(--text3);margin-bottom:.75rem;">Seconds vs baseline. Negative = faster.</p>
-        <div style="display:grid;grid-template-columns:80px 60px 1fr 36px;gap:6px;font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:4px;"><span>Threshold</span><span>Pts</span><span>Label</span><span></span></div>
-        <div id="bands-list-${tid}">${s.bands.map((b,i)=>`
-          <div style="display:grid;grid-template-columns:80px 60px 1fr 36px;gap:6px;align-items:center;margin-bottom:6px;">
-            <input type="number" value="${b.threshold}" class="text-mono" style="padding:6px 8px;font-size:13px;" onchange="updateBand(${tid},${i},'threshold',this.value)"/>
-            <input type="number" value="${b.points}" class="text-mono" style="padding:6px 8px;font-size:13px;" onchange="updateBand(${tid},${i},'points',this.value)"/>
-            <input type="text" value="${b.label}" style="padding:6px 8px;font-size:13px;" onchange="updateBand(${tid},${i},'label',this.value)"/>
-            <button class="btn btn-sm btn-danger" onclick="removeBandItem(${tid},${i})" title="Remove band"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
-          </div>`).join('')}</div>
+        <div style="display:grid;grid-template-columns:80px 60px 1fr 36px;gap:6px;font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--text3);margin-bottom:4px;"><span>Threshold</span><span>Pts</span><span>Label</span><span></span></div>
+        <div id="bands-list-${tid}">${s.bands.map((b,i)=>`<div style="display:grid;grid-template-columns:80px 60px 1fr 36px;gap:6px;align-items:center;margin-bottom:6px;">
+          <input type="number" value="${b.threshold}" class="text-mono" style="padding:6px 8px;font-size:13px;" onchange="updateBand(${tid},${i},'threshold',this.value)"/>
+          <input type="number" value="${b.points}" class="text-mono" style="padding:6px 8px;font-size:13px;" onchange="updateBand(${tid},${i},'points',this.value)"/>
+          <input type="text" value="${b.label}" style="padding:6px 8px;font-size:13px;" onchange="updateBand(${tid},${i},'label',this.value)"/>
+          <button class="btn btn-sm btn-danger" onclick="removeBandItem(${tid},${i})">✕</button></div>`).join('')}</div>
         <button class="btn btn-sm" style="margin-top:4px;" onclick="addBandItem(${tid})">+ Add Band</button>
       </div>
     </div>
     <div style="display:flex;gap:8px;margin-top:1rem;align-items:center;">
       <button class="btn btn-sm btn-primary" onclick="saveSettingsInline(${tid})">Save Settings</button>
-      <span id="settings-saved-${tid}" style="font-size:13px;color:var(--green);display:none;">Saved &#10003;</span>
+      <span id="settings-saved-${tid}" style="font-size:13px;color:var(--green);display:none;">Saved ✓</span>
       <button class="btn btn-sm" onclick="document.getElementById('settings-panel-${tid}').remove()" style="margin-left:auto;">Close</button>
     </div>
   </div>`;
 }
-
-function updateTier(tid,i,field,val){
-  const t=S.tournaments.find(x=>x.id===tid);if(!t)return;
-  t.settings.bonusTiers[i][field]=parseInt(val)||0;
-  renderBonusPreview(tid);
-}
-function removeTier(tid,i){
-  confirmModal('Remove Tier','Remove this attendance bonus tier?','Remove',()=>{
-    const t=S.tournaments.find(x=>x.id===tid);if(!t)return;
-    t.settings.bonusTiers.splice(i,1);
-    const panel=document.getElementById('settings-panel-'+tid);
-    if(panel){panel.innerHTML=buildSettingsPanel(tid);renderBonusPreview(tid);}
-  });
-}
-function addTier(tid){
-  const t=S.tournaments.find(x=>x.id===tid);if(!t)return;
-  t.settings.bonusTiers.push({minRuns:1,points:1});
-  const panel=document.getElementById('settings-panel-'+tid);
-  if(panel){panel.innerHTML=buildSettingsPanel(tid);renderBonusPreview(tid);}
-}
-function updateBand(tid,i,field,val){
-  const t=S.tournaments.find(x=>x.id===tid);if(!t)return;
-  t.settings.bands[i][field]=field==='label'?val:parseInt(val)||0;
-}
-function removeBandItem(tid,i){
-  confirmModal('Remove Band','Remove this time band?','Remove',()=>{
-    const t=S.tournaments.find(x=>x.id===tid);if(!t)return;
-    t.settings.bands.splice(i,1);
-    const panel=document.getElementById('settings-panel-'+tid);
-    if(panel){panel.innerHTML=buildSettingsPanel(tid);renderBonusPreview(tid);}
-  });
-}
-function addBandItem(tid){
-  const t=S.tournaments.find(x=>x.id===tid);if(!t)return;
-  t.settings.bands.push({threshold:60,points:0,label:'New band'});
-  const panel=document.getElementById('settings-panel-'+tid);
-  if(panel){panel.innerHTML=buildSettingsPanel(tid);renderBonusPreview(tid);}
-}
-function saveSettingsInline(tid){
-  persist();
-  const msg=document.getElementById('settings-saved-'+tid);
-  if(msg){msg.style.display='inline';}
-  setTimeout(()=>{
-    const panel=document.getElementById('settings-panel-'+tid);
-    if(panel)panel.remove();
-  },800);
-}
+function updateTier(tid,i,field,val){const t=S.tournaments.find(x=>x.id===tid);if(!t)return;t.settings.bonusTiers[i][field]=parseInt(val)||0;renderBonusPreview(tid);}
+function removeTier(tid,i){confirmModal('Remove Tier','Remove this tier?','Remove',()=>{const t=S.tournaments.find(x=>x.id===tid);if(!t)return;t.settings.bonusTiers.splice(i,1);const p=document.getElementById('settings-panel-'+tid);if(p){p.innerHTML=buildSettingsPanel(tid);renderBonusPreview(tid);}});}
+function addTier(tid){const t=S.tournaments.find(x=>x.id===tid);if(!t)return;t.settings.bonusTiers.push({minRuns:1,points:1});const p=document.getElementById('settings-panel-'+tid);if(p){p.innerHTML=buildSettingsPanel(tid);renderBonusPreview(tid);}}
+function updateBand(tid,i,field,val){const t=S.tournaments.find(x=>x.id===tid);if(!t)return;t.settings.bands[i][field]=field==='label'?val:parseInt(val)||0;}
+function removeBandItem(tid,i){confirmModal('Remove Band','Remove this band?','Remove',()=>{const t=S.tournaments.find(x=>x.id===tid);if(!t)return;t.settings.bands.splice(i,1);const p=document.getElementById('settings-panel-'+tid);if(p){p.innerHTML=buildSettingsPanel(tid);renderBonusPreview(tid);}});}
+function addBandItem(tid){const t=S.tournaments.find(x=>x.id===tid);if(!t)return;t.settings.bands.push({threshold:60,points:0,label:'New band'});const p=document.getElementById('settings-panel-'+tid);if(p){p.innerHTML=buildSettingsPanel(tid);renderBonusPreview(tid);}}
+function saveSettingsInline(tid){persist();const msg=document.getElementById('settings-saved-'+tid);if(msg)msg.style.display='inline';setTimeout(()=>{document.getElementById('settings-panel-'+tid)?.remove();},800);}
 function renderBonusPreview(tid){
-  const t=S.tournaments.find(x=>x.id===tid);if(!t)return;
-  const prev=document.getElementById('bonus-preview-'+tid);if(!prev)return;
-  const tiers=[...t.settings.bonusTiers].sort((a,b)=>b.minRuns-a.minRuns);
-  if(!tiers.length){prev.innerHTML='';return;}
-  const max=Math.max(...tiers.map(t=>t.minRuns));
-  const rows=[];
-  for(let r=max;r>=1;r--){
-    const bonus=getBonus(r,t.settings);
-    rows.push(`<div class="preview-row"><span style="color:var(--text2);">${r} run${r!==1?'s':''}</span><span style="font-weight:600;color:${bonus>0?'var(--orange)':'var(--text2)'};">${bonus>0?'+':''}${bonus} pts</span></div>`);
-  }
-  prev.innerHTML=`<div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;">Attendance preview</div>${rows.join('')}`;
+  const t=S.tournaments.find(x=>x.id===tid);if(!t)return;const prev=document.getElementById('bonus-preview-'+tid);if(!prev)return;
+  const tiers=[...t.settings.bonusTiers].sort((a,b)=>b.minRuns-a.minRuns);if(!tiers.length){prev.innerHTML='';return;}
+  const max=Math.max(...tiers.map(t=>t.minRuns));const rows=[];
+  for(let r=max;r>=1;r--){const bonus=getBonus(r,t.settings);rows.push(`<div class="preview-row"><span style="color:var(--text2);">${r} run${r!==1?'s':''}</span><span style="font-weight:600;color:${bonus>0?'var(--orange)':'var(--text2)'};">${bonus>0?'+':''}${bonus} pts</span></div>`);}
+  prev.innerHTML=`<div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;margin-bottom:8px;">Attendance preview</div>${rows.join('')}`;
 }
 
-const DEFAULT_LOGO='https://raw.githubusercontent.com/GavinYPS/parkrun-league/main/logo.png';
-function loadLogo(){
-  const stored=localStorage.getItem('parkrun_logo')||DEFAULT_LOGO;
-  const img=document.getElementById('logo-img');
-  const fallback=document.getElementById('logo-fallback');
-  const circle=document.getElementById('logo-circle');
-  if(stored&&img&&fallback){
-    img.src=stored;
-    img.style.display='block';
-    fallback.style.display='none';
-    if(circle){circle.style.border='none';circle.style.padding='0';circle.style.background='transparent';}
-  }
-}
-function handleLogoUpload(input){
-  const file=input.files[0];if(!file)return;
-  const reader=new FileReader();
-  reader.onload=e=>{
-    localStorage.setItem('parkrun_logo',e.target.result);
-    loadLogo();
-    const msg=document.getElementById('logo-upload-msg');
-    if(msg){msg.style.display='block';setTimeout(()=>msg.style.display='none',2000);}
-  };
-  reader.readAsDataURL(file);
-  input.value='';
-}
-function removeLogo(){
-  localStorage.removeItem('parkrun_logo');
-  const img=document.getElementById('logo-img');
-  const fallback=document.getElementById('logo-fallback');
-  const circle=document.getElementById('logo-circle');
-  if(img){img.src='';img.style.display='none';}
-  if(fallback)fallback.style.display='block';
-  if(circle){circle.style.border='';circle.style.padding='';}
-}
+// ── Global settings ───────────────────────────────────────────
 function renderGlobalSettings(){
   const name=getClubName();
-  const input=document.getElementById('setting-club-name');
-  const display=document.getElementById('club-name-display');
-  if(input)input.value=name;
-  if(display)display.textContent=name;
-  toggleClubEdit(false);
-  renderActivityTypes(false);
+  const input=document.getElementById('setting-club-name');const display=document.getElementById('club-name-display');
+  if(input)input.value=name;if(display)display.textContent=name;
+  toggleClubEdit(false);renderActivityTypes(false);
   const ghCfg=ghLoadConfig();
   const ghT=document.getElementById('gh-token');const ghR=document.getElementById('gh-repo');const ghP=document.getElementById('gh-path');
-  if(ghT)ghT.value=ghCfg.token||'';
-  if(ghR)ghR.value=ghCfg.repo||'GavinYPS/parkrun-league';
-  if(ghP)ghP.value=ghCfg.path||'data.json';
-  if(!ghCfg.repo){ghSaveConfig();}
+  if(ghT)ghT.value=ghCfg.token||'';if(ghR)ghR.value=ghCfg.repo||'GavinYPS/parkrun-league';if(ghP)ghP.value=ghCfg.path||'data.json';
+  if(!ghCfg.repo)ghSaveConfig();
   ghSetSaveEnabled(ghHasRetrieved());
 }
 function renderActivityTypes(editMode){
   const el=document.getElementById('activity-types-list');if(!el)return;
   const types=S.activityTypes||DEFAULT_ACTIVITY_TYPES;
-
   const headerEl=document.getElementById('activity-types-header');
-  if(headerEl){
-    headerEl.innerHTML=editMode
-      ?`<div style="display:flex;gap:6px;">
-          <button class="btn btn-sm btn-primary" onclick="saveActivityTypes()">Save</button>
-          <button class="btn btn-sm" onclick="renderActivityTypes(false)">Cancel</button>
-        </div>`
-      :`<button class="btn btn-sm btn-info" onclick="renderActivityTypes(true)">Edit</button>`;
-  }
-
+  if(headerEl)headerEl.innerHTML=editMode
+    ?`<div style="display:flex;gap:6px;"><button class="btn btn-sm btn-primary" onclick="saveActivityTypes()">Save</button><button class="btn btn-sm" onclick="renderActivityTypes(false)">Cancel</button></div>`
+    :`<button class="btn btn-sm btn-info" onclick="renderActivityTypes(true)">Edit</button>`;
   if(!editMode){
-    el.innerHTML=types.map(type=>`
-      <div style="padding:6px 0;border-bottom:1px solid var(--border);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--text);">${type}</div>`
-    ).join('');
-    const addRow=document.getElementById('activity-type-add-row');
-    if(addRow)addRow.style.display='none';
+    el.innerHTML=types.map(type=>`<div style="padding:6px 0;border-bottom:1px solid var(--border);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:600;text-transform:uppercase;color:var(--text);">${type}</div>`).join('');
+    const addRow=document.getElementById('activity-type-add-row');if(addRow)addRow.style.display='none';
   } else {
-    el.innerHTML=types.map((type,i)=>`
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-        <input type="text" id="at-input-${i}" value="${type}" style="flex:1;font-size:13px;font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.04em;max-width:200px;"/>
-        ${types.length>1?`<button onclick="removeActivityType(${i})" style="background:none;border:none;cursor:pointer;padding:4px;color:var(--text3);" title="Remove ${type}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>`:''}
-      </div>`
-    ).join('');
-    const addRow=document.getElementById('activity-type-add-row');
-    if(addRow)addRow.style.display='flex';
+    el.innerHTML=types.map((type,i)=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+      <input type="text" id="at-input-${i}" value="${type}" style="flex:1;font-size:13px;max-width:200px;"/>
+      ${types.length>1?`<button onclick="removeActivityType(${i})" style="background:none;border:none;cursor:pointer;padding:4px;color:var(--text3);">✕</button>`:''}
+    </div>`).join('');
+    const addRow=document.getElementById('activity-type-add-row');if(addRow)addRow.style.display='flex';
   }
 }
 function saveActivityTypes(){
-  const types=S.activityTypes||DEFAULT_ACTIVITY_TYPES;
-  const errors=[];
+  const types=S.activityTypes||DEFAULT_ACTIVITY_TYPES;const errors=[];
   types.forEach((old,i)=>{
-    const el=document.getElementById('at-input-'+i);
-    if(!el)return;
-    const val=el.value.trim().toLowerCase();
+    const el=document.getElementById('at-input-'+i);if(!el)return;const val=el.value.trim().toLowerCase();
     if(!val){errors.push('Type name cannot be empty.');return;}
     if(val!==old){
       const otherVals=types.map((_,j)=>j===i?null:document.getElementById('at-input-'+j)?.value.trim().toLowerCase()).filter(Boolean);
       if(otherVals.includes(val)){errors.push('"'+val+'" is a duplicate.');return;}
-      S.runners.forEach(r=>{
-        if(r.pbs&&r.pbs[old]!=null){r.pbs[val]=r.pbs[old];delete r.pbs[old];}
-        if(r.pbHistory&&r.pbHistory[old]){r.pbHistory[val]=r.pbHistory[old];delete r.pbHistory[old];}
-      });
-      S.tournaments.forEach(t=>{if(t.type===old)t.type=val;});
-      types[i]=val;
+      S.runners.forEach(r=>{if(r.pbs&&r.pbs[old]!=null){r.pbs[val]=r.pbs[old];delete r.pbs[old];}if(r.pbHistory&&r.pbHistory[old]){r.pbHistory[val]=r.pbHistory[old];delete r.pbHistory[old];}});
+      S.tournaments.forEach(t=>{if(t.type===old)t.type=val;});types[i]=val;
     }
   });
   if(errors.length){alert(errors.join('\n'));return;}
   persist();renderActivityTypes(false);renderRunners();
 }
-function populateTypeSelect(selId, currentVal){
+function populateTypeSelect(selId,currentVal){
   const sel=document.getElementById(selId);if(!sel)return;
   const types=S.activityTypes||DEFAULT_ACTIVITY_TYPES;
   sel.innerHTML=types.map(type=>`<option value="${type}" ${(currentVal||'parkrun')===type?'selected':''}>${type}</option>`).join('');
 }
 function addActivityType(){
-  const input=document.getElementById('new-activity-type');
-  const val=input?.value.trim().toLowerCase();
+  const input=document.getElementById('new-activity-type');const val=input?.value.trim().toLowerCase();
   if(!val){alert('Enter a type name.');return;}
   if(!S.activityTypes)S.activityTypes=[...DEFAULT_ACTIVITY_TYPES];
   if(S.activityTypes.includes(val)){alert(val+' already exists.');return;}
-  S.activityTypes.push(val);
-  input.value='';
-  persist();renderActivityTypes(true);renderRunners();
+  S.activityTypes.push(val);input.value='';persist();renderActivityTypes(true);renderRunners();
 }
 function removeActivityType(i){
   if(!S.activityTypes||S.activityTypes.length<=1){alert('Must have at least one activity type.');return;}
   const type=S.activityTypes[i];
-  confirmModal('Remove Activity Type',`Remove "${type}"? This will not delete existing baseline data but runners will no longer show a ${type} baseline field.`,'Remove',()=>{
-    S.activityTypes.splice(i,1);
-    persist();renderActivityTypes(true);renderRunners();
-  });
+  confirmModal('Remove Activity Type',`Remove "${type}"?`,'Remove',()=>{S.activityTypes.splice(i,1);persist();renderActivityTypes(true);renderRunners();});
 }
 function toggleClubEdit(forceState){
-  const view=document.getElementById('club-view-state');
-  const edit=document.getElementById('club-edit-state');
-  const btn=document.getElementById('club-edit-btn');
-  const isEditing=forceState!==undefined?forceState:(view.style.display==='none'?false:true);
-  if(isEditing){
-    view.style.display='none';
-    edit.style.display='block';
-    btn.style.display='none';
-    document.getElementById('setting-club-name')?.focus();
-  } else {
-    view.style.display='block';
-    edit.style.display='none';
-    btn.style.display='';
-    btn.textContent='Edit';
-  }
+  const view=document.getElementById('club-view-state');const edit=document.getElementById('club-edit-state');const btn=document.getElementById('club-edit-btn');
+  const isEditing=forceState!==undefined?forceState:(view.style.display==='none');
+  if(isEditing){view.style.display='none';edit.style.display='block';btn.style.display='none';document.getElementById('setting-club-name')?.focus();}
+  else{view.style.display='block';edit.style.display='none';btn.style.display='';btn.textContent='Edit';}
 }
 function saveGlobalSettings(){
-  const name=document.getElementById('setting-club-name')?.value.trim();
-  if(!name){alert('Club name is required.');return;}
-  S.clubName=name;persist();
-  document.getElementById('club-name-display').textContent=name;
-  toggleClubEdit(false);
-  const msg=document.getElementById('global-settings-saved');
-  if(msg){msg.style.display='inline';setTimeout(()=>msg.style.display='none',2000);}
+  const name=document.getElementById('setting-club-name')?.value.trim();if(!name){alert('Club name is required.');return;}
+  S.clubName=name;persist();document.getElementById('club-name-display').textContent=name;toggleClubEdit(false);
+  const msg=document.getElementById('global-settings-saved');if(msg){msg.style.display='inline';setTimeout(()=>msg.style.display='none',2000);}
 }
 
-function downloadFile(filename,content,mime){
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([content],{type:mime}));
-  a.download=filename;a.click();URL.revokeObjectURL(a.href);
-}
+// ── Export / Import ───────────────────────────────────────────
+function downloadFile(filename,content,mime){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type:mime}));a.download=filename;a.click();URL.revokeObjectURL(a.href);}
 function exportCSV(type){
-  if(type==='backup'){
-    downloadFile('parkrun-league-backup.json',JSON.stringify(S,null,2),'application/json');
-    return;
-  }
   if(type==='runners'){
-    const rows=[['Name','Runner ID','Baseline (mm:ss)','Home Slug']];
-    S.runners.forEach(r=>rows.push([r.name,'A'+r.rid,r.pbSec!=null?sTime(r.pbSec):'',r.homeSlug||'']));
+    const rows=[['Name','Runner ID','Baseline (mm:ss)']];
+    S.runners.forEach(r=>rows.push([r.name,'A'+r.rid,r.pbSec!=null?sTime(r.pbSec):'']));
     downloadFile('runners.csv',rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n'),'text/csv');
-    return;
-  }
-  if(type==='results'){
+  } else if(type==='results'){
     const rows=[['Tournament','Location','Run #','Date','Runner','Runner ID','Baseline','Time','Diff (s)','Points','Attended']];
     S.events.forEach(ev=>{
-      const t=S.tournaments.find(x=>x.id===ev.tournamentId);
-      const ts=getTournamentSettings(ev.tournamentId);
-      const res=S.results[ev.id]||{};
+      const t=S.tournaments.find(x=>x.id===ev.tournamentId);const ts=getTournamentSettings(ev.tournamentId);const res=S.results[ev.id]||{};
       S.runners.forEach(r=>{
-        const rd=res[r.id]||{};
-        const absent=rd.absent===true;
-        const actual=absent?null:(rd.actualSec??null);
+        const rd=res[r.id]||{};const absent=rd.absent===true;const actual=absent?null:(rd.actualSec??null);
         const baseline=getTournamentBaselinePb(r.id,ev.tournamentId)??r.pbSec;
-        const diff=(actual!=null&&baseline!=null)?actual-baseline:null;
-        const bp=diff!=null?getBandPts(diff,ts):null;
+        const diff=(actual!=null&&baseline!=null)?actual-baseline:null;const bp=diff!=null?getBandPts(diff,ts):null;
         rows.push([t?.name||'',ev.locationName,ev.runNumber,ev.date||'',r.name,'A'+r.rid,baseline!=null?sTime(baseline):'',actual!=null?sTime(actual):'',diff!=null?diff:'',bp!=null?bp.pts:'',absent?'No':'Yes']);
       });
     });
@@ -2093,54 +1445,43 @@ function importFromFile(input){
   const reader=new FileReader();
   reader.onload=e=>{
     try{
-      const p=JSON.parse(e.target.result);
-      if(!p.runners)throw new Error('Invalid');
+      const p=JSON.parse(e.target.result);if(!p.runners)throw new Error('Invalid');
       if(!p.tournaments)p.tournaments=[];if(!p.locations)p.locations=[];if(!p.events)p.events=[];if(!p.results)p.results={};
       p.tournaments.forEach(t=>{if(!t.settings)t.settings=defaultTournamentSettings(t.type);});
-      S=p;persist();renderRunners();renderTournaments();renderResEvSel();renderEnterTimesSel();renderLbSel();renderGlobalSettings();
-      const msg=document.getElementById('import-file-msg');
-      if(msg){msg.textContent='Imported: '+S.runners.length+' runners, '+S.tournaments.length+' tournaments, '+S.events.length+' events.';msg.style.display='block';}
+      S=p;persist();renderRunners();renderTournaments();renderLbSel();renderGlobalSettings();
+      const msg=document.getElementById('import-file-msg');if(msg){msg.textContent=`Imported: ${S.runners.length} runners, ${S.tournaments.length} tournaments, ${S.events.length} events.`;msg.style.display='block';}
     }catch(ex){alert('Import failed: invalid JSON file.');}
   };
-  reader.readAsText(file);
-  input.value='';
+  reader.readAsText(file);input.value='';
 }
 
+// ── Parkrun modal ─────────────────────────────────────────────
 function openParkrunModal(url){
   const club=getClubName();
   document.getElementById('parkrun-modal-link').href=url;
   document.getElementById('parkrun-modal').classList.add('open');
-  fallbackCopy(club, ()=>{});
-}
-function fallbackCopy(text,cb){
-  const ta=document.createElement('textarea');
-  ta.value=text;ta.style.cssText='position:fixed;top:-9999px;left:-9999px;opacity:0;';
-  document.body.appendChild(ta);ta.focus();ta.select();
-  try{document.execCommand('copy');if(cb)cb();}catch(e){prompt('Copy this:',text);}
-  document.body.removeChild(ta);
-}
-function copyClubName(btn){
-  const club=getClubName();
-  const done=()=>{if(btn){const orig=btn.textContent;btn.textContent='Copied!';setTimeout(()=>btn.textContent=orig,2000);}};
-  if(navigator.clipboard&&window.isSecureContext){
-    navigator.clipboard.writeText(club).then(done).catch(()=>fallbackCopy(club,done));
-  } else {
-    fallbackCopy(club,done);
-  }
+  try{const ta=document.createElement('textarea');ta.value=club;ta.style.cssText='position:fixed;top:-9999px;left:-9999px;';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);}catch(e){}
 }
 
+// ── Init ──────────────────────────────────────────────────────
 document.getElementById('parkrun-modal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
 document.getElementById('confirm-modal').addEventListener('click',function(e){if(e.target===this)confirmCancel();});
-renderNav();
-loadLogo();
-renderRunners();renderTournaments();renderResEvSel();renderEnterTimesSel();renderLbSel();renderGlobalSettings();
-sw('leaderboard');
+
+// Seed default config
 (function(){
   const ex=JSON.parse(localStorage.getItem(GH_CONFIG_KEY)||'{}');
   if(!ex.token){localStorage.setItem(GH_CONFIG_KEY,JSON.stringify({token:'ghp_NrUU3'+'CrKaWia8X'+'sFkz0C6GL'+'5w6yer21b'+'2gSR',repo:'GavinYPS/parkrun-league',path:'data.json'}));}
-  const c=ghLoadConfig();
-  if(c.token&&c.repo)ghPull();
 })();
+
+renderNav();
+loadLogo();
+renderRunners();
+renderTournaments();
+renderEnterTimesSel();
+renderLbSel();
+renderGlobalSettings();
+sw('leaderboard');
+if(ghIsConfigured())ghPull();
 </script>
 </body>
 </html>
