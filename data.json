@@ -1,0 +1,133 @@
+{
+  "runners": [
+    {
+      "id": 1778105007125,
+      "name": "Gavin Trevena",
+      "rid": "8416304",
+      "homeSlug": "",
+      "pbs": {
+        "parkrun": 1211,
+        "10k": 2494
+      },
+      "pbSec": 1211
+    },
+    {
+      "id": 1778106401454,
+      "name": "Matthew Rigby",
+      "rid": "621150",
+      "homeSlug": "",
+      "pbs": {
+        "parkrun": 1436
+      },
+      "pbSec": 1436,
+      "pbHistory": {
+        "parkrun": [
+          {
+            "sec": 1454,
+            "date": "2026-05-06"
+          }
+        ],
+        "parkrun_t1778105189351": [
+          {
+            "sec": 1454,
+            "date": "2026-05-06"
+          }
+        ]
+      }
+    }
+  ],
+  "tournaments": [
+    {
+      "id": 1778105189351,
+      "name": "Macclesfield Parkrun 2026",
+      "desc": "",
+      "type": "parkrun",
+      "settings": {
+        "bonusTiers": [
+          {
+            "minRuns": 4,
+            "points": 4
+          },
+          {
+            "minRuns": 3,
+            "points": 3
+          },
+          {
+            "minRuns": 2,
+            "points": 2
+          },
+          {
+            "minRuns": 1,
+            "points": 1
+          }
+        ],
+        "bands": [
+          {
+            "threshold": -120,
+            "points": 4,
+            "label": "2+ min faster"
+          },
+          {
+            "threshold": -60,
+            "points": 2,
+            "label": "1-2 min faster"
+          },
+          {
+            "threshold": -30,
+            "points": 1,
+            "label": "30s-1 min faster"
+          }
+        ]
+      }
+    }
+  ],
+  "locations": [
+    {
+      "id": 1778105214927,
+      "tournamentId": 1778105189351,
+      "slug": "macclesfield",
+      "name": "Macclesfield Parkrun"
+    }
+  ],
+  "events": [
+    {
+      "id": 1778106356850,
+      "locationId": 1778105214927,
+      "tournamentId": 1778105189351,
+      "slug": "macclesfield",
+      "locationName": "Macclesfield Parkrun",
+      "runNumber": 335,
+      "date": "2026-05-02"
+    }
+  ],
+  "results": {
+    "1778106356850": {
+      "1778105007125": {
+        "absent": true
+      },
+      "1778106401454": {
+        "actualSec": 1400,
+        "baselinePbSec": 1454
+      }
+    }
+  },
+  "activityTypes": [
+    "parkrun",
+    "10k"
+  ],
+  "tournamentRunners": {
+    "1778105189351": [
+      {
+        "rId": 1778105007125,
+        "baselineSec": 1214,
+        "enrolledDate": "2026-05-06"
+      },
+      {
+        "rId": 1778106401454,
+        "baselineSec": 1436,
+        "enrolledDate": "2026-05-06"
+      }
+    ]
+  },
+  "_savedAt": 1778250604172
+}
