@@ -168,7 +168,7 @@ table td input[type=time]{width:110px;font-size:13px;padding:5px 8px}
       <h2>Enter Times</h2>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
         <span style="font-size:13px;color:var(--text2);">Event</span>
-        <select id="et-ev-sel" style="width:280px;" onchange="etViewMode=false;renderEnterTimes()"><option value="">-- select event --</option></select>
+        <select id="et-ev-sel" style="width:280px;" onchange="etViewMode=false;etEditMode=true;renderEnterTimes()"><option value="">-- select event --</option></select>
       </div>
     </div>
     <div id="enter-times-area"><div class="notice">Select an event above.</div></div>
@@ -1053,14 +1053,34 @@ function renderEnterTimesSel(){
   sel.innerHTML=html;
 }
 let etViewMode=false;
+let etEditMode=true; // true = editing, false = saved/view
+
 function renderEnterTimes(){
   const evId=parseInt(document.getElementById('et-ev-sel').value);const area=document.getElementById('enter-times-area');
   if(!evId){area.innerHTML='<div class="notice">Select an event above.</div>';return;}
   const ev=S.events.find(e=>e.id===evId);if(!ev)return;if(!S.results[evId])S.results[evId]={};
   const parkrunLink=ev.date&&isParkrun(ev.tournamentId)?`https://www.parkrun.org.uk/${ev.slug}/results/${ev.date}/`:'';
   const ts=getTournamentSettings(ev.tournamentId);const wcPts=ts.wildcardBonus??2;const wcActive=ev.wildcard===true;
-  const modeBtn=etViewMode?`<button class="btn btn-sm btn-info" onclick="etViewMode=false;renderEnterTimes();">← Edit Times</button>`:`<button class="btn btn-sm btn-primary" onclick="viewResultsValidated(${evId})">View Results →</button>`;
-  const tableHead=etViewMode?`<tr><th>Runner</th><th>Baseline</th><th>Time</th><th>Difference</th><th>Band</th><th>Points</th></tr>`:`<tr><th>Runner</th><th>Attended</th><th>Time</th><th></th></tr>`;
+
+  let actionBtn;
+  if(etViewMode){
+    actionBtn=`<button class="btn btn-sm btn-info" onclick="etViewMode=false;etEditMode=true;renderEnterTimes();">← Edit Times</button>`;
+  } else if(etEditMode){
+    actionBtn=`<div style="display:flex;gap:8px;">
+      <button class="btn btn-sm btn-primary" onclick="saveEnterTimes(${evId})">Save ✓</button>
+      <button class="btn btn-sm btn-primary" onclick="viewResultsValidated(${evId})">View Results →</button>
+    </div>`;
+  } else {
+    actionBtn=`<div style="display:flex;gap:8px;">
+      <button class="btn btn-sm btn-info" onclick="etEditMode=true;renderEnterTimes();">Edit Times</button>
+      <button class="btn btn-sm btn-primary" onclick="viewResultsValidated(${evId})">View Results →</button>
+    </div>`;
+  }
+
+  const tableHead=etViewMode
+    ?`<tr><th>Runner</th><th>Baseline</th><th>Time</th><th>Difference</th><th>Band</th><th>Points</th></tr>`
+    :`<tr><th>Runner</th><th>Attended</th><th>Time</th><th></th></tr>`;
+
   area.innerHTML=`<div class="card">
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:1rem;">
       <div>
@@ -1070,10 +1090,11 @@ function renderEnterTimes(){
           ${parkrunLink?`<button onclick="openParkrunResults('${parkrunLink}')" style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--orange);background:none;border:none;cursor:pointer;padding:0;letter-spacing:.06em;">Open Parkrun Results &#8599;</button>`:''}
         </div>
       </div>
-      <div style="display:flex;gap:8px;align-items:center;">${modeBtn}</div>
+      <div style="display:flex;gap:8px;align-items:center;">${actionBtn}</div>
     </div>
     <div class="results-table-wrap"><table><thead>${tableHead}</thead><tbody id="et-tbody-${evId}"></tbody></table></div>
   </div>`;
+
   etViewMode?renderEtResultRows(evId):renderEnterTimesRows(evId);
 }
 function renderEtResultRows(evId){
@@ -1100,21 +1121,52 @@ function renderEnterTimesRows(evId){
   const ev=S.events.find(e=>e.id===evId);const showPkId=isParkrun(ev?.tournamentId);const res=S.results[evId]||{};
   const eligible=getTournamentRunners(ev?.tournamentId);
   if(!eligible.length){tbody.innerHTML=`<tr><td colspan="4" style="text-align:center;color:var(--text3);padding:1.5rem;">No runners enrolled.</td></tr>`;return;}
+  const readonly=!etEditMode;
   tbody.innerHTML=eligible.map(r=>{
-    const rd=res[r.id]||{};const absent=rd.absent===true;const mVal=(!absent&&rd.actualSec!=null)?sHMS(rd.actualSec):'';
-    const timeInput=absent?'<span style="font-size:12px;color:var(--text3);">DNS</span>':`<input type="time" step="1" value="${mVal}" onchange="manualResEt(${evId},${r.id},this.value)" style="max-width:140px;"/>`;
+    const rd=res[r.id]||{};const absent=rd.absent===true;
+    // Show saved time or default 00:00:00
+    const mVal=(!absent&&rd.actualSec!=null)?sHMS(rd.actualSec):'00:00:00';
     const toggleIcon=absent
       ?`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg>`
       :`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><polyline points="9 12 11 14 15 10" stroke="#fff" stroke-width="2.5" fill="none"/></svg>`;
-    const hasData=rd.actualSec!=null||rd.absent;
-    return`<tr>
-      <td style="${absent?'opacity:.35;':''}"><strong style="font-family:'Barlow Condensed',sans-serif;font-size:15px;text-transform:uppercase;">${r.name}</strong>${showPkId&&r.rid?'<br><span style="font-size:11px;color:var(--text3);">A'+r.rid+'</span>':''}</td>
-      <td><button onclick="toggleAttendanceEt(${evId},${r.id})" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;">${toggleIcon}</button></td>
-      <td style="${absent?'opacity:.35;':''}">${timeInput}</td>
-      <td>${hasData?`<button onclick="clearRunnerResult(${evId},${r.id})" style="background:none;border:none;cursor:pointer;padding:4px;color:var(--text3);"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>`:''}
-      </td>
+    const timeCell=absent
+      ?`<span style="font-size:12px;color:var(--text3);">DNS</span>`
+      :readonly
+        ?`<span class="text-mono" style="font-size:14px;color:${rd.actualSec!=null?'var(--text)':'var(--text3)'};">${rd.actualSec!=null?sTime(rd.actualSec):'--'}</span>`
+        :`<input type="time" step="1" id="et-time-${evId}-${r.id}" value="${mVal}" style="max-width:140px;"/>`;
+    return`<tr style="${absent?'opacity:.35;':''}">
+      <td><strong style="font-family:'Barlow Condensed',sans-serif;font-size:15px;text-transform:uppercase;">${r.name}</strong>${showPkId&&r.rid?'<br><span style="font-size:11px;color:var(--text3);">A'+r.rid+'</span>':''}</td>
+      <td>${readonly?'':`<button onclick="toggleAttendanceEt(${evId},${r.id})" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;">${toggleIcon}</button>`}</td>
+      <td>${timeCell}</td>
+      <td></td>
     </tr>`;
   }).join('');
+}
+
+function saveEnterTimes(evId){
+  const ev=S.events.find(e=>e.id===evId);if(!ev)return;
+  if(!S.results[evId])S.results[evId]={};
+  const eligible=getTournamentRunners(ev?.tournamentId);
+  eligible.forEach(r=>{
+    const rd=S.results[evId][r.id]||{};
+    if(rd.absent)return; // don't touch absent runners
+    const input=document.getElementById(`et-time-${evId}-${r.id}`);
+    if(!input)return;
+    const val=input.value;
+    const p=val.split(':').map(Number);
+    const sec=(p.length===3)?p[0]*3600+p[1]*60+p[2]:(p.length===2)?p[0]*60+p[1]:null;
+    // Treat 00:00:00 as no time entered
+    if(!sec||sec===0){
+      delete S.results[evId][r.id];
+    } else {
+      const baseline=getRunnerPb(r.id,getTournamentActivityType(ev.tournamentId))??null;
+      S.results[evId][r.id]={...rd,actualSec:sec,baselinePbSec:baseline};
+    }
+  });
+  persist();
+  etEditMode=false;
+  renderEnterTimes();
+  showToast('Times saved ✓');
 }
 function manualResEt(evId,rId,val){
   if(!S.results[evId])S.results[evId]={};const p=val.split(':').map(Number);let sec=null;if(p.length===3)sec=p[0]*3600+p[1]*60+p[2];else if(p.length===2)sec=p[0]*60+p[1];
