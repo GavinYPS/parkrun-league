@@ -288,7 +288,7 @@ var DEFAULT_LOGO = 'https://raw.githubusercontent.com/GavinYPS/parkrun-league/ma
 
 function defaultTournamentSettings() {
   return {
-    attendanceBonus: 0,
+    attendanceBonus: 2,
     wildcardBonus: 2,
     bonusTiers: [{minRuns:7,points:4},{minRuns:3,points:3}],
     bandTable: JSON.parse(JSON.stringify(DEFAULT_BAND_TABLE))
@@ -755,12 +755,12 @@ function getBandTable(settings) {
 }
 
 function getBandPtsForRunner(diffSecs, band, settings) {
-  // diffSecs = actual - baseline; negative = faster, positive = slower
+  // diffSecs = actual - baseline; negative = faster, positive = slower, 0 = matched
   var table = getBandTable(settings);
   var brackets = table[band];
   if (!brackets || !brackets.length) return {pts:0, label:'No band set'};
   if (diffSecs > 0) {
-    // Slower than PB — check slower brackets
+    // Slower than baseline
     var slower = diffSecs;
     var match = brackets.filter(function(b){ return b.slowerFrom != null; })
       .sort(function(a,b){ return b.pts - a.pts; })
@@ -768,11 +768,12 @@ function getBandPtsForRunner(diffSecs, band, settings) {
     if (match) return {pts: match.pts, label: match.pts + ' pts (' + slower + 's off baseline)'};
     return {pts:0, label:'Outside range'};
   } else {
-    // Faster than PB
-    var faster = -diffSecs;
-    var best = brackets.filter(function(b){ return b.minFaster != null && faster >= b.minFaster && (b.maxFaster == null || faster <= b.maxFaster); })
-      .sort(function(a,b){ return b.pts - a.pts; })[0];
-    if (best) return {pts: best.pts, label: best.pts + ' pts (' + faster + 's faster than baseline)'};
+    // Faster than or equal to baseline (diffSecs <= 0)
+    var faster = -diffSecs; // 0 or positive
+    var best = brackets.filter(function(b){
+      return b.minFaster != null && faster >= b.minFaster && (b.maxFaster == null || faster <= b.maxFaster);
+    }).sort(function(a,b){ return b.pts - a.pts; })[0];
+    if (best) return {pts: best.pts, label: best.pts + ' pts (' + (faster === 0 ? 'matched baseline' : faster + 's faster') + ')'};
     return {pts:0, label:'No improvement'};
   }
 }
