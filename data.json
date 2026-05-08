@@ -9,7 +9,8 @@
         "parkrun": 1211,
         "10k": 2494
       },
-      "pbSec": 1211
+      "pbSec": 1211,
+      "band": "A"
     },
     {
       "id": 1778106401454,
@@ -34,7 +35,8 @@
           }
         ]
       },
-      "isLeader": true
+      "isLeader": true,
+      "band": "B"
     },
     {
       "id": 1778260052500,
@@ -45,7 +47,8 @@
         "parkrun": 1385
       },
       "pbSec": 1385,
-      "isLeader": true
+      "isLeader": true,
+      "band": "B"
     },
     {
       "id": 1778260069092,
@@ -55,7 +58,8 @@
       "pbs": {
         "parkrun": 1438
       },
-      "pbSec": 1438
+      "pbSec": 1438,
+      "band": "B"
     },
     {
       "id": 1778260092370,
@@ -65,7 +69,8 @@
       "pbs": {
         "parkrun": 1441
       },
-      "pbSec": 1441
+      "pbSec": 1441,
+      "band": "C"
     },
     {
       "id": 1778260104465,
@@ -76,7 +81,8 @@
         "parkrun": 1548
       },
       "pbSec": 1548,
-      "isLeader": true
+      "isLeader": true,
+      "band": "C"
     },
     {
       "id": 1778260130668,
@@ -86,7 +92,8 @@
       "pbs": {
         "parkrun": 1650
       },
-      "pbSec": 1650
+      "pbSec": 1650,
+      "band": "D"
     },
     {
       "id": 1778260144770,
@@ -96,7 +103,8 @@
       "pbs": {
         "parkrun": 1742
       },
-      "pbSec": 1742
+      "pbSec": 1742,
+      "band": "E"
     },
     {
       "id": 1778260179461,
@@ -106,7 +114,8 @@
       "pbs": {
         "parkrun": 1723
       },
-      "pbSec": 1723
+      "pbSec": 1723,
+      "band": "E"
     },
     {
       "id": 1778260209630,
@@ -116,7 +125,8 @@
       "pbs": {
         "parkrun": 1721
       },
-      "pbSec": 1721
+      "pbSec": 1721,
+      "band": "E"
     },
     {
       "id": 1778260222505,
@@ -126,7 +136,8 @@
       "pbs": {
         "parkrun": 1788
       },
-      "pbSec": 1788
+      "pbSec": 1788,
+      "band": "E"
     },
     {
       "id": 1778260241566,
@@ -137,7 +148,8 @@
         "parkrun": 2083
       },
       "pbSec": 2083,
-      "isLeader": false
+      "isLeader": false,
+      "band": "F"
     }
   ],
   "tournaments": [
@@ -361,6 +373,6 @@
       }
     ]
   },
-  "_savedAt": 1778273315563,
+  "_savedAt": 1778279406293,
   "_logo": null
 }
