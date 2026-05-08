@@ -72,8 +72,10 @@
       "name": "Helen POINTON",
       "rid": "4545931",
       "homeSlug": "",
-      "pbs": {},
-      "pbSec": null,
+      "pbs": {
+        "parkrun": 1548
+      },
+      "pbSec": 1548,
       "isLeader": true
     },
     {
@@ -81,32 +83,40 @@
       "name": "Eileen FFRENCH",
       "rid": "3682352",
       "homeSlug": "",
-      "pbs": {},
-      "pbSec": null
+      "pbs": {
+        "parkrun": 1650
+      },
+      "pbSec": 1650
     },
     {
       "id": 1778260144770,
       "name": "Rebecca BETTISON",
       "rid": "8492715",
       "homeSlug": "",
-      "pbs": {},
-      "pbSec": null
+      "pbs": {
+        "parkrun": 1742
+      },
+      "pbSec": 1742
     },
     {
       "id": 1778260179461,
       "name": "Holly BAMFORD",
       "rid": "3717433",
       "homeSlug": "",
-      "pbs": {},
-      "pbSec": null
+      "pbs": {
+        "parkrun": 1723
+      },
+      "pbSec": 1723
     },
     {
       "id": 1778260209630,
       "name": "Andrew SMALLMAN",
       "rid": "4762872",
       "homeSlug": "",
-      "pbs": {},
-      "pbSec": null
+      "pbs": {
+        "parkrun": 1721
+      },
+      "pbSec": 1721
     },
     {
       "id": 1778260222505,
@@ -123,8 +133,10 @@
       "name": "Zoe DICKINSON",
       "rid": "8243754",
       "homeSlug": "",
-      "pbs": {},
-      "pbSec": null,
+      "pbs": {
+        "parkrun": 2083
+      },
+      "pbSec": 2083,
       "isLeader": false
     }
   ],
@@ -313,12 +325,42 @@
         "enrolledDate": "2026-05-08"
       },
       {
+        "rId": 1778260104465,
+        "baselineSec": 1548,
+        "enrolledDate": "2026-05-08"
+      },
+      {
+        "rId": 1778260130668,
+        "baselineSec": 1650,
+        "enrolledDate": "2026-05-08"
+      },
+      {
+        "rId": 1778260144770,
+        "baselineSec": 1742,
+        "enrolledDate": "2026-05-08"
+      },
+      {
+        "rId": 1778260179461,
+        "baselineSec": 1723,
+        "enrolledDate": "2026-05-08"
+      },
+      {
+        "rId": 1778260209630,
+        "baselineSec": 1721,
+        "enrolledDate": "2026-05-08"
+      },
+      {
         "rId": 1778260222505,
         "baselineSec": 1788,
+        "enrolledDate": "2026-05-08"
+      },
+      {
+        "rId": 1778260241566,
+        "baselineSec": 2083,
         "enrolledDate": "2026-05-08"
       }
     ]
   },
-  "_savedAt": 1778272959282,
+  "_savedAt": 1778273101860,
   "_logo": null
 }
