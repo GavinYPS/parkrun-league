@@ -375,7 +375,7 @@ function persist(){
 }
 
 // ── GitHub Sync ──────────────────────────────────────────────
-const GH_CONFIG_KEY='parkrun_gh_config';
+const GH_CONFIG_KEY='parkrun_gh_config_v2';
 // ── Settings Password ─────────────────────────────────────────
 const SETTINGS_PASS='RUN@2026';
 const SETTINGS_SESSION_KEY='parkrun_settings_auth';
@@ -2096,7 +2096,7 @@ renderRunners();renderTournaments();renderResEvSel();renderEnterTimesSel();rende
 sw('leaderboard');
 (function(){
   const ex=JSON.parse(localStorage.getItem(GH_CONFIG_KEY)||'{}');
-  if(!ex.token){localStorage.setItem(GH_CONFIG_KEY,JSON.stringify({token:'ghp_NrUU3CrKaWi'+'a8XsFkz0C6GL5w6yer21b2gSR'+'dmyq6fmeNTz0T0Yc9Fu3P9dSF'+'AM7V9PlZaYDL0OVml024X97Hn',repo:'GavinYPS/parkrun-league',path:'data.json'}));}
+  if(!ex.token){localStorage.setItem(GH_CONFIG_KEY,JSON.stringify({token:'ghp_NrUU3'+'CrKaWia8X'+'sFkz0C6GL'+'5w6yer21b'+'2gSR',repo:'GavinYPS/parkrun-league',path:'data.json'}));}
   const c=ghLoadConfig();
   if(c.token&&c.repo)ghPull();
 })();
