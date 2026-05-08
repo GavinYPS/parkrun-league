@@ -821,7 +821,19 @@ function renderPbFields(containerId, currentPbs) {
   var types = S.activityTypes || DEFAULT_ACTIVITY_TYPES;
   container.innerHTML = types.map(function(type) {
     var val = (currentPbs && currentPbs[type] != null) ? sHMS(currentPbs[type]) : '';
-    return '<div class="form-row"><label>' + type + ' Baseline</label><input type="time" id="r-pb-' + type.replace(/\s+/g,'-') + '" step="1" style="max-width:160px;" value="' + val + '"/></div>';
+    var extra = '';
+    if (type === 'parkrun') {
+      var suggested = currentPbs && currentPbs['parkrun'] != null ? suggestBand(currentPbs['parkrun']) : null;
+      extra = '<div id="r-band-suggestion" style="padding-left:100px;min-height:20px;margin-top:3px;">'
+        + (suggested ? bandSuggHtml('r-band-select', 'r-band-suggestion', suggested) : '')
+        + '</div>'
+        + '<div class="form-row" style="margin-top:4px;"><label>Band</label>'
+        + '<select id="r-band-select" style="max-width:240px;font-size:13px;"><option value="">No band assigned</option>'
+        + BAND_LABELS.map(function(b){ return '<option value="' + b + '"' + (suggested === b ? ' selected' : '') + '>' + b + ' \u2014 ' + BAND_TIME_RANGES[b] + '</option>'; }).join('')
+        + '</select></div>';
+    }
+    return '<div class="form-row"><label>' + type + ' Baseline</label><input type="time" id="r-pb-' + type.replace(/\s+/g,'-') + '" step="1" style="max-width:160px;" value="' + val + '"'
+      + (type === 'parkrun' ? ' oninput="updateAddRunnerBandSuggestion()"' : '') + '/></div>' + extra;
   }).join('');
 }
 
@@ -832,6 +844,26 @@ function clearRunnerForm() {
   renderPbFields('r-pb-fields', {});
 }
 
+function bandSuggHtml(selId, suggId, band) {
+  return '<span style="font-size:12px;color:var(--text3);">Suggested: <button type="button"'
+    + ' onclick="document.getElementById(\'' + selId + '\').value=\'' + band + '\';document.getElementById(\'' + suggId + '\').innerHTML=\'<span style=&quot;font-size:12px;color:var(--green);&quot;>&#10003; Band ' + band + ' applied</span>\';"'
+    + ' style="background:var(--orange-dim);border:1px solid var(--orange);color:var(--orange);font-weight:700;font-size:12px;padding:1px 8px;border-radius:3px;cursor:pointer;">'
+    + 'Use Band ' + band + '</button></span>';
+}
+
+function updateAddRunnerBandSuggestion() {
+  var inp = document.getElementById('r-pb-parkrun');
+  var suggEl = document.getElementById('r-band-suggestion');
+  if (!inp || !suggEl) return;
+  var sec = tSec(inp.value);
+  var suggested = suggestBand(sec);
+  if (suggested) {
+    suggEl.innerHTML = bandSuggHtml('r-band-select', 'r-band-suggestion', suggested);
+  } else {
+    suggEl.innerHTML = sec ? '<span style="font-size:12px;color:var(--text3);">Time outside standard bands \u2014 assign manually</span>' : '';
+  }
+}
+
 function addRunner() {
   var url = document.getElementById('r-url').value.trim();
   var name = document.getElementById('r-name').value.trim();
@@ -840,7 +872,8 @@ function addRunner() {
   if (rid && S.runners.some(function(r) { return r.rid === rid; })) { alert('Runner A' + rid + ' already added.'); return; }
   var types = S.activityTypes || DEFAULT_ACTIVITY_TYPES; var pbs = {};
   types.forEach(function(type) { var el = document.getElementById('r-pb-' + type.replace(/\s+/g,'-')); if (el && el.value) pbs[type] = tSec(el.value); });
-  S.runners.push({id:uid(), name:name, rid:rid, homeSlug:'', pbs:pbs, pbSec: pbs['parkrun'] != null ? pbs['parkrun'] : (Object.values(pbs)[0] || null)});
+  var bandSel = document.getElementById('r-band-select'); var band = bandSel ? (bandSel.value || null) : null;
+  S.runners.push({id:uid(), name:name, rid:rid, homeSlug:'', pbs:pbs, band:band, pbSec: pbs['parkrun'] != null ? pbs['parkrun'] : (Object.values(pbs)[0] || null)});
   clearRunnerForm(); document.getElementById('f-runner').style.display = 'none'; persist(); renderRunners();
 }
 
