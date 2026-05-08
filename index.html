@@ -566,12 +566,38 @@ function addRunner(){
 function editRunnerName(id){
   const r=S.runners.find(x=>x.id===id);if(!r)return;
   const h3=document.getElementById('runner-name-'+id);if(!h3)return;
-  h3.innerHTML=`<input type="text" id="runner-name-input-${id}" value="${r.name.replace(/"/g,'&quot;')}" style="font-size:inherit;font-family:inherit;font-weight:inherit;padding:2px 6px;max-width:220px;" onkeydown="if(event.key==='Enter')saveRunnerName(${id});if(event.key==='Escape')renderRunners();"/>
+  h3.innerHTML=`<input type="text" id="runner-name-input-${id}" value="${r.name.replace(/"/g,'&quot;')}" style="font-size:inherit;font-family:inherit;font-weight:inherit;padding:2px 6px;max-width:200px;" onkeydown="if(event.key==='Enter')saveRunnerName(${id});if(event.key==='Escape')renderRunners();"/>
     <button class="btn btn-sm btn-primary" onclick="saveRunnerName(${id})" style="margin-left:6px;">Save</button>
     <button class="btn btn-sm" onclick="renderRunners()" style="margin-left:4px;">Cancel</button>`;
+  // Also inject parkrun ID edit below the name
+  const metaEl=h3.closest('.runner-info')?.querySelector('.runner-meta');
+  if(metaEl){
+    const ridSpan=metaEl.querySelector('[data-rid-edit]');
+    if(!ridSpan){
+      const div=document.createElement('div');
+      div.setAttribute('data-rid-edit','1');
+      div.style.cssText='margin-top:6px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;';
+      div.innerHTML=`<span style="font-size:12px;color:var(--text2);">Parkrun ID</span>
+        <input type="text" id="runner-rid-input-${id}" value="${r.rid||''}" placeholder="e.g. 8416304" style="max-width:130px;font-family:'SF Mono','Fira Code',monospace;font-size:13px;padding:4px 8px;" onkeydown="if(event.key==='Enter')saveRunnerName(${id});if(event.key==='Escape')renderRunners();"/>`;
+      metaEl.prepend(div);
+    }
+  }
   document.getElementById('runner-name-input-'+id)?.select();
 }
-function saveRunnerName(id){const r=S.runners.find(x=>x.id===id);if(!r)return;const val=document.getElementById('runner-name-input-'+id)?.value.trim();if(!val){alert('Name cannot be empty.');return;}r.name=val;persist();renderRunners();}
+function saveRunnerName(id){
+  const r=S.runners.find(x=>x.id===id);if(!r)return;
+  const val=document.getElementById('runner-name-input-'+id)?.value.trim();
+  if(!val){alert('Name cannot be empty.');return;}
+  r.name=val;
+  const ridVal=document.getElementById('runner-rid-input-'+id)?.value.trim();
+  if(ridVal!==undefined){
+    const ridM=ridVal.match(/\b(\d{4,9})\b/);
+    const newRid=ridM?ridM[1]:'';
+    if(newRid&&newRid!==r.rid&&S.runners.some(x=>x.id!==id&&x.rid===newRid)){alert('Runner A'+newRid+' is already added.');return;}
+    r.rid=newRid;
+  }
+  persist();renderRunners();
+}
 function showRunnerActions(id,show){const card=document.querySelector(`[data-runner-id="${id}"]`);if(!card)return;const actions=card.querySelector('.runner-actions');if(actions)actions.style.visibility=show?'visible':'hidden';}
 function editRunnerPB(id){
   const r=S.runners.find(x=>x.id===id);if(!r)return;
