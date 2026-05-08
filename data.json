@@ -56,8 +56,10 @@
       "name": "Michelle CARTER",
       "rid": "4530181",
       "homeSlug": "",
-      "pbs": {},
-      "pbSec": null
+      "pbs": {
+        "parkrun": 1441
+      },
+      "pbSec": 1441
     },
     {
       "id": 1778260104465,
@@ -104,8 +106,10 @@
       "name": "Angela RAVENSCROFT",
       "rid": "1461800",
       "homeSlug": "",
-      "pbs": {},
-      "pbSec": null
+      "pbs": {
+        "parkrun": 1788
+      },
+      "pbSec": 1788
     },
     {
       "id": 1778260241566,
@@ -230,14 +234,25 @@
       {
         "rId": 1778105007125,
         "baselineSec": 1214,
-        "enrolledDate": "2026-05-06"
+        "enrolledDate": "2026-05-08"
       },
       {
         "rId": 1778106401454,
         "baselineSec": 1436,
-        "enrolledDate": "2026-05-06"
+        "enrolledDate": "2026-05-08"
+      },
+      {
+        "rId": 1778260092370,
+        "baselineSec": 1441,
+        "enrolledDate": "2026-05-08"
+      },
+      {
+        "rId": 1778260222505,
+        "baselineSec": 1788,
+        "enrolledDate": "2026-05-08"
       }
     ]
   },
-  "_savedAt": 1778261535318
+  "_savedAt": 1778261841429,
+  "_logo": null
 }
