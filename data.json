@@ -263,33 +263,33 @@
       },
       "1778260104465": {
         "attended": true,
-        "actualSec": null,
-        "baselinePbSec": 1428
+        "actualSec": 1580,
+        "baselinePbSec": 1548
       },
       "1778260130668": {
         "attended": true,
-        "actualSec": null,
-        "baselinePbSec": 1623
+        "actualSec": 1630,
+        "baselinePbSec": 1650
       },
       "1778260144770": {
         "attended": true,
-        "actualSec": null,
+        "actualSec": 1712,
         "baselinePbSec": 1742
       },
       "1778260179461": {
         "attended": true,
-        "actualSec": null,
+        "actualSec": 1719,
         "baselinePbSec": 1723
       },
       "1778260209630": {
         "attended": true,
-        "actualSec": null,
+        "actualSec": 1721,
         "baselinePbSec": 1721
       },
       "1778260241566": {
         "attended": true,
         "actualSec": 1992,
-        "baselinePbSec": 2093
+        "baselinePbSec": 2083
       }
     }
   },
@@ -361,6 +361,6 @@
       }
     ]
   },
-  "_savedAt": 1778273101860,
+  "_savedAt": 1778273249257,
   "_logo": null
 }
