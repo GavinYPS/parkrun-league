@@ -178,6 +178,36 @@
       "locationName": "Macclesfield Parkrun",
       "runNumber": 335,
       "date": "2026-05-02"
+    },
+    {
+      "id": 1778261483755,
+      "locationId": 1778105214927,
+      "tournamentId": 1778105189351,
+      "slug": "macclesfield",
+      "locationName": "Macclesfield Parkrun",
+      "runNumber": 341,
+      "date": "2026-06-13",
+      "wildcard": false
+    },
+    {
+      "id": 1778261493129,
+      "locationId": 1778105214927,
+      "tournamentId": 1778105189351,
+      "slug": "macclesfield",
+      "locationName": "Macclesfield Parkrun",
+      "runNumber": 346,
+      "date": "2026-07-18",
+      "wildcard": false
+    },
+    {
+      "id": 1778261507187,
+      "locationId": 1778105214927,
+      "tournamentId": 1778105189351,
+      "slug": "macclesfield",
+      "locationName": "Macclesfield Parkrun",
+      "runNumber": 353,
+      "date": "2026-09-05",
+      "wildcard": false
     }
   ],
   "results": {
@@ -209,5 +239,5 @@
       }
     ]
   },
-  "_savedAt": 1778260315267
+  "_savedAt": 1778261535318
 }
