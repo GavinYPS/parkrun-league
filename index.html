@@ -39,7 +39,7 @@ main{max-width:920px;margin:0 auto;padding:1.5rem}
 .form-row{display:flex;gap:10px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
 .form-row label{font-size:13px;color:var(--text2);min-width:90px;flex-shrink:0}
 .form-hint{font-size:12px;color:var(--text3);margin-top:2px;padding-left:100px;margin-bottom:6px}
-input[type=text],input[type=number],input[type=date],input[type=time],select,input[type=url]{font-family:'Barlow',sans-serif;font-size:14px;padding:8px 10px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--bg3);color:var(--text);width:100%;transition:border-color .15s}
+input[type=text],input[type=number],input[type=date],input[type=time],select,input[type=url],input[type=password]{font-family:'Barlow',sans-serif;font-size:14px;padding:8px 10px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--bg3);color:var(--text);width:100%;transition:border-color .15s}
 input:focus,select:focus{outline:none;border-color:var(--orange);box-shadow:0 0 0 3px var(--orange-glow)}
 input[type=time],input[type=number]{font-family:'SF Mono','Fira Code',monospace}
 select option{background:var(--bg3)}
@@ -117,6 +117,11 @@ table td input[type=time]{width:110px;font-size:13px;padding:5px 8px}
 .export-area{width:100%;min-height:80px;font-family:'SF Mono','Fira Code',monospace;font-size:12px;padding:8px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--bg3);color:var(--text);resize:vertical}
 .text-right{text-align:right}
 .text-mono{font-family:'SF Mono','Fira Code',monospace}
+/* Token field wrapper */
+.token-wrap{position:relative;flex:1;max-width:300px;display:flex;align-items:center;}
+.token-wrap input{padding-right:38px;font-family:'SF Mono','Fira Code',monospace;font-size:12px;}
+.token-toggle{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text3);padding:2px;display:flex;align-items:center;transition:color .15s;}
+.token-toggle:hover{color:var(--text2);}
 </style>
 </head>
 <body>
@@ -128,13 +133,11 @@ table td input[type=time]{width:110px;font-size:13px;padding:5px 8px}
     <span class="logo-sub">Tournament Tracker</span>
   </div>
   <div style="flex:1"></div>
+  <div id="header-auth"></div>
 </header>
 
-<nav>
-  <button class="active" onclick="sw('runners')">Club Runners</button>
-  <button onclick="sw('events')">Tournaments</button>
-  <button onclick="sw('leaderboard')">Leaderboard</button>
-  <button onclick="sw('settings')">Settings</button>
+<nav id="main-nav">
+  <!-- populated by renderNav() -->
 </nav>
 
 <main>
@@ -236,7 +239,6 @@ table td input[type=time]{width:110px;font-size:13px;padding:5px 8px}
       <div class="card-title" style="margin-bottom:0;">Club Details</div>
       <button id="club-edit-btn" class="btn btn-sm" onclick="toggleClubEdit()">Edit</button>
     </div>
-    <!-- View state -->
     <div id="club-view-state">
       <div class="form-row" style="margin-bottom:4px;">
         <label>Club name</label>
@@ -244,7 +246,6 @@ table td input[type=time]{width:110px;font-size:13px;padding:5px 8px}
       </div>
       <p class="form-hint">Used for the club filter on Parkrun results pages.</p>
     </div>
-    <!-- Edit state -->
     <div id="club-edit-state" style="display:none;">
       <div class="form-row">
         <label>Club name</label>
@@ -295,7 +296,15 @@ table td input[type=time]{width:110px;font-size:13px;padding:5px 8px}
     <p style="font-size:13px;color:var(--text2);margin-bottom:1rem;line-height:1.6;">Store your data on GitHub so it's never lost and works across devices.</p>
     <div class="form-row" style="margin-bottom:8px;">
       <label style="min-width:100px;font-size:13px;">Token</label>
-      <input type="password" id="gh-token" placeholder="github_pat_xxxx" style="flex:1;max-width:300px;" onblur="ghOnTokenBlur()"/>
+      <div class="token-wrap">
+        <input type="password" id="gh-token" placeholder="github_pat_xxxx" onblur="ghOnTokenBlur()"/>
+        <button class="token-toggle" id="gh-token-toggle" onclick="toggleTokenVisibility()" title="Show/hide token">
+          <!-- Eye icon (show) -->
+          <svg id="icon-eye" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          <!-- Eye-off icon (hide) — hidden initially -->
+          <svg id="icon-eye-off" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+        </button>
+      </div>
     </div>
     <div class="form-row" style="margin-bottom:8px;">
       <label style="min-width:100px;font-size:13px;">Repo</label>
@@ -331,13 +340,25 @@ table td input[type=time]{width:110px;font-size:13px;padding:5px 8px}
     <h3 id="confirm-title">Are you sure?</h3>
     <p id="confirm-msg" style="font-size:14px;color:var(--text2);margin-bottom:1.25rem;line-height:1.6;"></p>
     <div style="display:flex;gap:8px;justify-content:flex-end;">
-      <button class="btn" onclick="confirmCancel()">Cancel</button>
+      <button class="btn" id="confirm-cancel" onclick="confirmCancel()">Cancel</button>
       <button class="btn btn-danger" id="confirm-ok-btn" onclick="confirmOK()">Remove</button>
     </div>
   </div>
 </div>
 
 <script>
+// ── Token visibility toggle ───────────────────────────────────
+function toggleTokenVisibility(){
+  const inp=document.getElementById('gh-token');
+  const eyeOn=document.getElementById('icon-eye');
+  const eyeOff=document.getElementById('icon-eye-off');
+  if(!inp)return;
+  const isHidden=inp.type==='password';
+  inp.type=isHidden?'text':'password';
+  eyeOn.style.display=isHidden?'none':'block';
+  eyeOff.style.display=isHidden?'block':'none';
+}
+
 const STORE_KEY='parkrun_league_v3';
 function defaultTournamentSettings(type){
   if(type&&type!=='parkrun'){
@@ -358,53 +379,62 @@ const GH_CONFIG_KEY='parkrun_gh_config';
 // ── Settings Password ─────────────────────────────────────────
 const SETTINGS_PASS='RUN@2026';
 const SETTINGS_SESSION_KEY='parkrun_settings_auth';
-function settingsUnlocked(){
-  return sessionStorage.getItem(SETTINGS_SESSION_KEY)==='1';
+
+function isLoggedIn(){return sessionStorage.getItem(SETTINGS_SESSION_KEY)==='1';}
+function settingsUnlocked(){return isLoggedIn();}
+
+function renderNav(){
+  const loggedIn=isLoggedIn();
+  const nav=document.getElementById('main-nav');
+  if(!nav)return;
+  const tabs=loggedIn
+    ?[['runners','Club Runners'],['events','Tournaments'],['leaderboard','Leaderboard'],['settings','Settings']]
+    :[['leaderboard','Leaderboard']];
+  nav.innerHTML=tabs.map(([id,label])=>`<button onclick="sw('${id}')">${label}</button>`).join('');
+  // Auth button in header
+  const authEl=document.getElementById('header-auth');
+  if(authEl){
+    authEl.innerHTML=loggedIn
+      ?`<button class="btn btn-sm btn-danger" onclick="doLogout()" style="font-size:11px;">Log out</button>`
+      :`<button class="btn btn-sm btn-primary" onclick="promptLogin()" style="font-size:11px;">Admin login</button>`;
+  }
 }
-function promptSettingsPassword(){
-  confirmModal('Settings — Enter Password','',
-    'Unlock',
-    ()=>{
-      const val=document.getElementById('settings-pass-input')?.value;
-      if(val===SETTINGS_PASS){
-        sessionStorage.setItem(SETTINGS_SESSION_KEY,'1');
-        confirmCancel();
-        sw('settings');
-      } else {
-        document.getElementById('settings-pass-input').value='';
-        document.getElementById('settings-pass-input').placeholder='Incorrect — try again';
-        document.getElementById('settings-pass-input').focus();
-        return false; // prevent modal closing
-      }
-    }
-  );
-  // Patch the OK button to not close modal on wrong password
+
+function doLogout(){
+  sessionStorage.removeItem(SETTINGS_SESSION_KEY);
+  renderNav();
+  sw('leaderboard');
+}
+
+function promptLogin(){
+  confirmModal('Admin Login','','Login',()=>{});
   setTimeout(()=>{
     const msg=document.getElementById('confirm-msg');
     if(msg){
-      msg.innerHTML=`<input type="password" id="settings-pass-input" placeholder="Enter password" style="width:100%;padding:8px;font-size:14px;margin-top:4px;" onkeydown="if(event.key==='Enter'){event.preventDefault();document.getElementById('confirm-ok').click();}"/>`;
+      msg.innerHTML=`<input type="password" id="settings-pass-input" placeholder="Enter password" style="width:100%;padding:8px;font-size:14px;margin-top:4px;" onkeydown="if(event.key==='Enter'){event.preventDefault();document.getElementById('confirm-ok-btn').click();}"/>`;
       document.getElementById('settings-pass-input')?.focus();
     }
-    // Override OK button to validate before closing
-    const ok=document.getElementById('confirm-ok');
+    const ok=document.getElementById('confirm-ok-btn');
     if(ok){
       ok.onclick=()=>{
         const val=document.getElementById('settings-pass-input')?.value;
         if(val===SETTINGS_PASS){
           sessionStorage.setItem(SETTINGS_SESSION_KEY,'1');
           confirmCancel();
-          sw('settings');
+          renderNav();
+          sw('runners');
         } else {
           const inp=document.getElementById('settings-pass-input');
           if(inp){inp.value='';inp.placeholder='Incorrect — try again';inp.style.borderColor='var(--red)';inp.focus();}
         }
       };
     }
-    // Cancel closes modal without granting access
     const cancel=document.getElementById('confirm-cancel');
     if(cancel){cancel.onclick=()=>confirmCancel();}
   },30);
 }
+
+function promptSettingsPassword(){promptLogin();}
 function ghLoadConfig(){
   try{return JSON.parse(localStorage.getItem(GH_CONFIG_KEY)||'{}');}catch(e){return {};}
 }
@@ -433,7 +463,6 @@ function ghStatus(msg,ok){
   const el=document.getElementById('gh-sync-status');
   if(el){el.textContent=msg;el.style.color=ok===false?'var(--red)':ok===true?'var(--green)':'var(--text3)';}
 }
-// Merge: combine local+remote by ID, remote wins for existing records
 function ghMerge(local,remote){
   const m={...remote};
   const merge=(ra,la)=>{const map={};(ra||[]).forEach(x=>map[x.id]=x);(la||[]).forEach(x=>{if(!map[x.id])map[x.id]=x;});return Object.values(map);};
@@ -526,7 +555,6 @@ async function ghPull(){
     renderRunners();renderTournaments();renderResEvSel();renderEnterTimesSel();renderLbSel();renderGlobalSettings();
   }catch(e){ghStatus('Retrieve failed: '+e.message,false);console.warn('GitHub retrieve failed:',e.message);}
 }
-// Local-mode warning — shown once per session if no sync configured
 let _localWarnShown=false;
 function warnLocalMode(){
   if(_localWarnShown||ghIsConfigured())return;
@@ -545,7 +573,6 @@ function toggleCollapse(bodyId, chevId){
   if(chev)chev.classList.toggle('open',collapsed);
 }
 
-// ── Confirm modal ──────────────────────────────────────────────────
 let _confirmCb=null;
 function confirmModal(title,msg,okLabel,cb){
   document.getElementById('confirm-title').textContent=title;
@@ -568,11 +595,9 @@ function slugFromUrl(url){const m=url.match(/parkrun\.org\.uk\/([a-z0-9-]+)\//i)
 function getTournamentSettings(tid){const t=S.tournaments.find(t=>t.id===tid);return(t&&t.settings)?t.settings:defaultTournamentSettings();}
 function isParkrun(tid){const t=S.tournaments.find(t=>t.id===tid);return!t||!t.type||t.type==='parkrun';}
 
-// Activity type for a tournament — maps tournament type to activity type key
 function getTournamentActivityType(tid){
   const t=S.tournaments.find(x=>x.id===tid);
   const type=t?.type||'parkrun';
-  // 'generic' is legacy for the first non-parkrun type; map to first non-parkrun activity type
   if(type==='generic'){
     const types=S.activityTypes||DEFAULT_ACTIVITY_TYPES;
     return types.find(t=>t!=='parkrun')||'10k';
@@ -580,15 +605,12 @@ function getTournamentActivityType(tid){
   return type;
 }
 
-// Get a runner's baseline for a specific activity type
 function getRunnerPb(rId, activityType){
   const r=S.runners.find(x=>x.id===rId);if(!r)return null;
   if(r.pbs&&r.pbs[activityType]!=null)return r.pbs[activityType];
-  // Fallback to legacy pbSec for Parkrun
   if(activityType==='parkrun'&&r.pbSec!=null)return r.pbSec;
   return null;
 }
-// Get runners enrolled in a tournament (those with a baseline snapshot)
 function getTournamentRunners(tid){
   if(!tid)return S.runners.filter(r=>!r.archived);
   const key=String(tid);
@@ -610,12 +632,9 @@ function enrollRunner(tid,rId,baselineSec){
   S.tournamentRunners[key].push({rId,baselineSec,enrolledDate:new Date().toISOString().substring(0,10)});
 }
 
-// Set a baseline. tid=null means global runner PB only, no tournament effect.
-// tid set means tournament enrollment only — never touches other tournaments or global PB.
 function setBaseline(rId, actType, sec, tid){
   const r=S.runners.find(x=>x.id===rId);if(!r)return;
   if(tid!=null){
-    // Tournament-scoped: update enrollment only, push to that tournament's history
     const prev=getTournamentRunnerEntry(tid,rId)?.baselineSec??null;
     if(prev!=null&&prev!==sec){
       if(!r.pbHistory)r.pbHistory={};
@@ -625,7 +644,6 @@ function setBaseline(rId, actType, sec, tid){
     }
     enrollRunner(tid,rId,sec);
   } else {
-    // Global only: update r.pbs, push to global history, never touch enrollments
     if(!r.pbs)r.pbs={};
     const prev=r.pbs[actType]??null;
     if(prev!=null&&prev!==sec){
@@ -656,12 +674,8 @@ function getBandPts(diff,settings){const bands=[...(settings||defaultTournamentS
 function getBonus(runs,settings){const tiers=[...(settings||defaultTournamentSettings()).bonusTiers].sort((a,b)=>b.minRuns-a.minRuns);for(const t of tiers)if(runs>=t.minRuns)return t.points;return 0}
 
 function sw(t){
-  // Don't switch to settings tab visually until unlocked
-  if(t==='settings'&&!settingsUnlocked()){
-    promptSettingsPassword();
-    return;
-  }
-  document.querySelectorAll('nav button').forEach(el=>el.classList.toggle('active',el.getAttribute('onclick').includes("'"+t+"'")));
+  if(!isLoggedIn()&&t!=='leaderboard'){promptLogin();return;}
+  document.querySelectorAll('#main-nav button').forEach(el=>el.classList.toggle('active',el.getAttribute('onclick')===`sw('${t}')`));
   document.querySelectorAll('.section').forEach(el=>el.classList.toggle('active',el.id==='tab-'+t));
   if(t==='leaderboard'){renderLbSel();renderLeaderboard();}
   if(t==='results'){renderResEvSel();renderResultEntry();}
@@ -750,7 +764,6 @@ function editRunnerPB(id){
   form.style.cssText='background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:.75rem 1rem;margin-top:.5rem;';
   const pbRows=types.map(type=>{
     const curVal=r.pbs&&r.pbs[type]!=null?sHMS(r.pbs[type]):r.pbSec&&type==='parkrun'?sHMS(r.pbSec):'';
-    // Current tournament baselines for this type
     const enrolledT=S.tournaments.filter(t=>getTournamentActivityType(t.id)===type&&isEnrolled(t.id,r.id));
     const tournamentCurrentLine=enrolledT.map(t=>{
       const entry=getTournamentRunnerEntry(t.id,r.id);
@@ -761,7 +774,6 @@ function editRunnerPB(id){
           </div>`
         :'';
     }).join('');
-    // Global history only (no tournament tags in history — those are separate)
     const history=(r.pbHistory?.[type]||[]).slice().reverse();
     const histHtml=history.length?`
       <div style="margin-top:6px;padding:6px 0 2px;border-top:1px solid var(--border);">
@@ -796,7 +808,7 @@ function saveRunnerPB(id){
     if(!el)return;
     const s=tSec(el.value);
     if(s!=null){
-      setBaseline(id,type,s,null); // global only — never touches tournament enrollments
+      setBaseline(id,type,s,null);
     } else {
       if(r.pbs)delete r.pbs[type];
     }
@@ -861,8 +873,7 @@ function removeRunner(id){
   const r=S.runners.find(x=>x.id===id);
   confirmModal('Archive Runner',`Archive ${r?.name||'this runner'}? They will be hidden from all views but their data is kept. You can restore them later.`,'Archive',()=>{
     const runner=S.runners.find(x=>x.id===id);
-    if(runner)runner.archived=true;
-    persist();renderRunners();
+    if(runner){runner.archived=true;persist();renderRunners();}
   });
 }
 function restoreRunner(id){
@@ -892,7 +903,6 @@ function archiveTournament(tid){
   const t=S.tournaments.find(x=>x.id===tid);if(!t)return;
   confirmModal('Archive Tournament',`Archive "${t.name}"? It will be hidden from all views. Club Runners baselines for this tournament will be removed. You can restore it later.`,'Archive',()=>{
     t.archived=true;
-    // Remove all tournament enrollments (clear tags from runner profiles)
     delete S.tournamentRunners[String(tid)];
     persist();renderTournaments();renderResEvSel();renderEnterTimesSel();renderLbSel();
   });
@@ -906,7 +916,6 @@ function restoreTournament(tid){
 function editTournament(tid){
   const t=S.tournaments.find(x=>x.id===tid);if(!t)return;
   const formId='f-edit-t-'+tid;
-  // Toggle: if already open, close it
   const existing=document.getElementById(formId);
   if(existing){existing.remove();return;}
   const form=document.createElement('div');
@@ -926,7 +935,6 @@ function editTournament(tid){
       <button class="btn btn-primary btn-sm" onclick="saveTournamentEdit(${tid})">Save</button>
       <button class="btn btn-sm" onclick="document.getElementById('f-edit-t-${tid}').remove()">Cancel</button>
     </div>`;
-  // Insert at top of tournament body
   const tbody=document.getElementById('tbody-'+tid);
   if(tbody)tbody.prepend(form);
   setTimeout(()=>document.getElementById('edit-t-name-'+tid)?.focus(),50);
@@ -989,7 +997,6 @@ function addLocationGeneric(tid){
   const ensureUrl=u=>u&&!u.match(/^https?:\/\//)?'https://'+u:u;
   const locId=uid();
   S.locations.push({id:locId,tournamentId:tid,slug,name,date,eventPage:ensureUrl(eventPage),resultsUrl:ensureUrl(resultsUrl)});
-  // Auto-create a single event for this location
   S.events.push({id:uid(),locationId:locId,tournamentId:tid,slug,locationName:name,runNumber:1,date});
   document.getElementById('f-loc-'+tid)?.remove();
   persist();renderTournaments();renderResEvSel();renderEnterTimesSel();
@@ -1013,9 +1020,6 @@ function editLocationGeneric(lid){
       <button class="btn btn-primary btn-sm" onclick="saveLocationGeneric(${lid})">Save</button>
       <button class="btn btn-sm" onclick="document.getElementById('f-edit-loc-${lid}').remove()">Cancel</button>
     </div>`;
-  // Insert after the location block
-  const locBlock=form.closest?.(`.location-block`)||document.querySelector(`[id="evrow-"]`);
-  // Find the location-block by looking for the edit button's parent
   const allBlocks=document.querySelectorAll('.location-block');
   let targetBlock=null;
   allBlocks.forEach(b=>{if(b.innerHTML.includes('editLocationGeneric('+lid+')')||b.innerHTML.includes("editLocationGeneric("+lid+")"))targetBlock=b;});
@@ -1032,7 +1036,6 @@ function saveLocationGeneric(lid){
   if(!name){alert('Name is required.');return;}
   const ensureUrl=u=>u&&!u.match(/^https?:\/\//)?'https://'+u:u;
   loc.name=name;loc.date=date;loc.eventPage=ensureUrl(eventPage);loc.resultsUrl=ensureUrl(resultsUrl);
-  // Keep the auto-event in sync
   const ev=S.events.find(e=>e.locationId===lid);
   if(ev){ev.locationName=name;ev.date=date;}
   document.getElementById('f-edit-loc-'+lid)?.remove();
@@ -1076,21 +1079,18 @@ function removeLocation(lid){
 }
 
 function prevSaturday(fromDate){
-  // Returns the most recent Saturday on or before today
   const d=fromDate?new Date(fromDate+'T12:00:00'):new Date();
-  const day=d.getDay(); // 0=Sun,6=Sat
-  const daysBack=day===6?0:day+1; // 0 if today is Sat, else go back to last Sat
+  const day=d.getDay();
+  const daysBack=day===6?0:day+1;
   d.setDate(d.getDate()-daysBack);
   return d.toISOString().substring(0,10);
 }
 function suggestNextDate(locEvents, suggestedRun){
-  // Sort by run number descending to get latest two
   const sorted=[...locEvents].sort((a,b)=>b.runNumber-a.runNumber);
   const last=sorted[0];
   const prev=sorted[1];
   if(!last||!last.date) return prevSaturday(null);
   if(prev&&prev.date&&prev.runNumber){
-    // Calculate days-per-run from the gap between the two most recent dated events
     const gap=last.runNumber-prev.runNumber;
     if(gap>0){
       const lastD=new Date(last.date+'T12:00:00');
@@ -1102,7 +1102,6 @@ function suggestNextDate(locEvents, suggestedRun){
       return result.toISOString().substring(0,10);
     }
   }
-  // Fallback: just add 7 days per run from last event
   const runsAhead=(suggestedRun||last.runNumber+1)-last.runNumber;
   const result=new Date(last.date+'T12:00:00');
   result.setDate(result.getDate()+runsAhead*7);
@@ -1117,7 +1116,6 @@ function showAddEvent(lid){
   const loc=S.locations.find(l=>l.id===lid);
   const parkrun=isParkrun(loc?.tournamentId);
 
-  // Smart defaults: find latest event for this location
   const locEvents=S.events.filter(e=>e.locationId===lid).sort((a,b)=>b.runNumber-a.runNumber);
   const lastEv=locEvents[0];
   const suggestedRun=lastEv?lastEv.runNumber+1:'';
@@ -1214,7 +1212,6 @@ function renderTournaments(){
     const tEvents=S.events.filter(e=>e.tournamentId===t.id);
     const locsHtml=tLocs.map(loc=>{
       if(!isParkrun(t.id)){
-        // Generic: location IS the event — find its single auto-created event
         const locEv=S.events.find(e=>e.locationId===loc.id);
         const evId=locEv?.id;
         const ensureUrl=u=>u&&!u.match(/^https?:\/\//)?'https://'+u:u;
@@ -1234,7 +1231,6 @@ function renderTournaments(){
         </div>`;
       }
 
-      // Parkrun: locations contain multiple events
       const locEvents=S.events.filter(e=>e.locationId===loc.id).sort((a,b)=>b.runNumber-a.runNumber);
       const evRows=locEvents.map(ev=>{
         const evUrl=ev.date?`https://www.parkrun.org.uk/${loc.slug}/results/${ev.date}/`:'';
@@ -1314,7 +1310,7 @@ function renderEnterTimesSel(){
   });
   sel.innerHTML=html;
 }
-let etViewMode = false; // false = edit times, true = view results
+let etViewMode = false;
 
 function renderEnterTimes(){
   const evId=parseInt(document.getElementById('et-ev-sel').value);
@@ -1391,7 +1387,6 @@ function renderEnterTimesRows(evId){
   const actType=getTournamentActivityType(ev?.tournamentId);
   const showParkrunId=isParkrun(ev?.tournamentId);
   const res=S.results[evId]||{};
-  // Only show runners who have a baseline for this tournament's activity type
   const eligible=getTournamentRunners(ev?.tournamentId);
   if(!eligible.length){
     tbody.innerHTML=`<tr><td colspan="4" style="text-align:center;color:var(--text3);padding:1.5rem;">No runners enrolled in this tournament. Add runners via the tournament settings.</td></tr>`;
@@ -1408,7 +1403,7 @@ function renderEnterTimesRows(evId){
       :`<input type="time" step="1" value="${mVal}" onchange="manualResEt(${evId},${r.id},this.value)" style="max-width:140px;border-color:${missingTime?'var(--amber)':'var(--border2)'};box-shadow:${missingTime?'0 0 0 2px var(--amber-bg)':'none'};"/>${missingTime?`<span style="font-size:11px;color:var(--amber);margin-left:6px;">required</span>`:''}`;
     const toggleIcon=absent
       ?`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg>`
-      :`<svg width="15" height="15" viewBox="0 0 24 24" fill="var(--orange)" stroke="var(--orange)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><polyline points="9 12 11 14 15 10" stroke="#fff" stroke-width="2.5" fill="none"/></svg>`;
+      :`<svg width="15" height="15" viewBox="0 0 24 24" fill="fill:var(--orange)" stroke="var(--orange)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><polyline points="9 12 11 14 15 10" stroke="#fff" stroke-width="2.5" fill="none"/></svg>`;
     const hasData=rd.actualSec!=null||rd.absent;
     return`<tr>
       <td style="${rowStyle}"><strong style="font-family:'Barlow Condensed',sans-serif;font-size:15px;text-transform:uppercase;letter-spacing:.02em;">${r.name}</strong>${showParkrunId&&r.rid?'<br><span style="font-size:11px;color:var(--text3);">A'+r.rid+'</span>':''}</td>
@@ -1441,8 +1436,6 @@ function editBaseline(evId,rId){
   const actType=getTournamentActivityType(tid);
   const parkrun=isParkrun(tid);
 
-  // For Parkrun: baseline is per-event (stored on the result)
-  // For generic: baseline is per-tournament (stored on the enrollment)
   const current=parkrun
     ? (S.results[evId]?.[rId]?.baselinePbSec ?? getTournamentBaselinePb(rId,tid))
     : getTournamentBaselinePb(rId,tid);
@@ -1466,7 +1459,6 @@ function editBaseline(evId,rId){
       persist();renderEtResultRows(evId);
     }
   );
-  // Inject time input into the confirm modal
   setTimeout(()=>{
     const msg=document.getElementById('confirm-msg');
     if(msg){
@@ -1500,6 +1492,14 @@ function viewResultsValidated(evId){
       'View Results',
       ()=>{etViewMode=true;renderEnterTimes();}
     );
+    // Override the ok button to not get swallowed by confirmOK's modal-close-then-cb flow
+    setTimeout(()=>{
+      const ok=document.getElementById('confirm-ok-btn');
+      if(ok){
+        const orig=ok.onclick;
+        ok.onclick=()=>{confirmCancel();etViewMode=true;renderEnterTimes();};
+      }
+    },30);
   } else {
     etViewMode=true;renderEnterTimes();
   }
@@ -1600,7 +1600,6 @@ function renderLeaderboard(){
   const area=document.getElementById('lb-area');
   const heading=document.getElementById('lb-heading');
 
-  // No tournament selected — show hint + overview stats
   if(!t){
     if(heading)heading.textContent='Leaderboard';
     const totalEvs=S.events.length;
@@ -1619,11 +1618,9 @@ function renderLeaderboard(){
     return;
   }
 
-  // Tournament selected
   if(heading)heading.textContent=t.name;
   const filterEvs=S.events.filter(e=>String(e.tournamentId)===tid);
 
-  // Compute scores
   const eligibleRunners=tid?getTournamentRunners(parseInt(tid)):S.runners.filter(r=>!r.archived);
   const scores=eligibleRunners.map(r=>{
     let bandPts=0,runs=0;
@@ -1677,7 +1674,6 @@ function showTournamentRunners(tid){
   const t=S.tournaments.find(x=>x.id===tid);if(!t)return;
   const panelId='runners-panel-'+tid;
   const bodyEl=document.getElementById('tbody-'+tid);if(!bodyEl)return;
-  // Always remove and recreate to ensure fresh render
   const existing=document.getElementById(panelId);
   if(existing)existing.remove();
   const panel=document.createElement('div');
@@ -1695,7 +1691,6 @@ function renderRunnersPanel(tid,editMode){
   const enrolled=S.tournamentRunners[tid]||[];
 
   if(!editMode){
-    // VIEW MODE
     const enrolledRunners=S.runners.filter(r=>!r.archived&&isEnrolled(tid,r.id));
     const showParkrunId=isParkrun(tid);
     const rows=enrolledRunners.length
@@ -1723,7 +1718,6 @@ function renderRunnersPanel(tid,editMode){
       ${rows}
     </div>`;
   } else {
-    // EDIT MODE — checkboxes + baseline inputs
     const showParkrunId=isParkrun(tid);
     const rows=S.runners.filter(r=>!r.archived).map(r=>{
       const isIn=isEnrolled(tid,r.id);
@@ -1766,8 +1760,7 @@ function saveRunnersPanel(tid){
       if(!sec){
         errors.push(r.name+' needs a '+actType+' baseline time.');
       } else {
-        setBaseline(r.id,actType,sec,tid); // tournament-scoped only
-        // Seed global PB only if the runner has none yet (as a reference, not overwrite)
+        setBaseline(r.id,actType,sec,tid);
         if(!r.pbs)r.pbs={};
         if(r.pbs[actType]==null){r.pbs[actType]=sec;if(actType==='parkrun')r.pbSec=sec;}
       }
@@ -1780,9 +1773,7 @@ function saveRunnersPanel(tid){
   renderRunnersPanel(tid,false);
 }
 
-function toggleEnrollment(tid,rId){
-  // Kept for backwards compat but replaced by saveRunnersPanel
-}
+function toggleEnrollment(tid,rId){}
 
 function updateEnrollmentBaseline(tid,rId,val){
   const sec=tSec(val);if(!sec)return;
@@ -1917,15 +1908,12 @@ function renderGlobalSettings(){
   if(ghR)ghR.value=ghCfg.repo||'GavinYPS/parkrun-league';
   if(ghP)ghP.value=ghCfg.path||'data.json';
   if(!ghCfg.repo){ghSaveConfig();}
-  // Save only enabled if retrieved this session (or token already configured from before)
   ghSetSaveEnabled(ghHasRetrieved());
 }
 function renderActivityTypes(editMode){
   const el=document.getElementById('activity-types-list');if(!el)return;
   const types=S.activityTypes||DEFAULT_ACTIVITY_TYPES;
-  const container=el.parentElement;
 
-  // Render the header row with Edit button
   const headerEl=document.getElementById('activity-types-header');
   if(headerEl){
     headerEl.innerHTML=editMode
@@ -1937,22 +1925,18 @@ function renderActivityTypes(editMode){
   }
 
   if(!editMode){
-    // VIEW
     el.innerHTML=types.map(type=>`
       <div style="padding:6px 0;border-bottom:1px solid var(--border);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--text);">${type}</div>`
     ).join('');
-    // Hide add row
     const addRow=document.getElementById('activity-type-add-row');
     if(addRow)addRow.style.display='none';
   } else {
-    // EDIT
     el.innerHTML=types.map((type,i)=>`
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
         <input type="text" id="at-input-${i}" value="${type}" style="flex:1;font-size:13px;font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.04em;max-width:200px;"/>
         ${types.length>1?`<button onclick="removeActivityType(${i})" style="background:none;border:none;cursor:pointer;padding:4px;color:var(--text3);" title="Remove ${type}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>`:''}
       </div>`
     ).join('');
-    // Show add row
     const addRow=document.getElementById('activity-type-add-row');
     if(addRow)addRow.style.display='flex';
   }
@@ -1966,10 +1950,8 @@ function saveActivityTypes(){
     const val=el.value.trim().toLowerCase();
     if(!val){errors.push('Type name cannot be empty.');return;}
     if(val!==old){
-      // Check for duplicates against other new values
       const otherVals=types.map((_,j)=>j===i?null:document.getElementById('at-input-'+j)?.value.trim().toLowerCase()).filter(Boolean);
       if(otherVals.includes(val)){errors.push('"'+val+'" is a duplicate.');return;}
-      // Rename: update runner pbs/history and tournament types
       S.runners.forEach(r=>{
         if(r.pbs&&r.pbs[old]!=null){r.pbs[val]=r.pbs[old];delete r.pbs[old];}
         if(r.pbHistory&&r.pbHistory[old]){r.pbHistory[val]=r.pbHistory[old];delete r.pbHistory[old];}
@@ -2088,11 +2070,6 @@ function openParkrunModal(url){
   const club=getClubName();
   document.getElementById('parkrun-modal-link').href=url;
   document.getElementById('parkrun-modal').classList.add('open');
-  // Auto-copy club name to clipboard immediately
-  fallbackCopy(club, ()=>{});
-}
-function copyClubNameModal(btn){
-  const club=getClubName();
   fallbackCopy(club, ()=>{});
 }
 function fallbackCopy(text,cb){
@@ -2102,7 +2079,6 @@ function fallbackCopy(text,cb){
   try{document.execCommand('copy');if(cb)cb();}catch(e){prompt('Copy this:',text);}
   document.body.removeChild(ta);
 }
-
 function copyClubName(btn){
   const club=getClubName();
   const done=()=>{if(btn){const orig=btn.textContent;btn.textContent='Copied!';setTimeout(()=>btn.textContent=orig,2000);}};
@@ -2115,8 +2091,9 @@ function copyClubName(btn){
 
 document.getElementById('parkrun-modal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
 document.getElementById('confirm-modal').addEventListener('click',function(e){if(e.target===this)confirmCancel();});
+renderNav();
 renderRunners();renderTournaments();renderResEvSel();renderEnterTimesSel();renderLbSel();renderGlobalSettings();
-// Seed default config on first visit — token saved to localStorage only, not visible in UI
+sw('leaderboard');
 (function(){
   const ex=JSON.parse(localStorage.getItem(GH_CONFIG_KEY)||'{}');
   if(!ex.token){localStorage.setItem(GH_CONFIG_KEY,JSON.stringify({token:'ghp_NrUU3CrKaWi'+'a8XsFkz0C6GL5w6yer21b2gSR'+'dmyq6fmeNTz0T0Yc9Fu3P9dSF'+'AM7V9PlZaYDL0OVml024X97Hn',repo:'GavinYPS/parkrun-league',path:'data.json'}));}
