@@ -274,9 +274,10 @@ table td input[type=time]{width:110px;font-size:13px;padding:5px 8px}
         <label style="min-width:100px;font-size:13px;">File path</label>
         <input type="text" id="gh-path" placeholder="data.json" style="flex:1;max-width:300px;" onblur="ghSaveConfig()"/>
       </div>
-      <div class="btn-group" style="margin-top:.75rem;flex-wrap:wrap;">
+      <div class="btn-group" style="margin-top:.75rem;flex-wrap:wrap;align-items:center;">
         <button id="gh-save-btn" class="btn btn-sm btn-primary" onclick="ghPush()" disabled>Save Data</button>
         <button class="btn btn-sm" onclick="ghPull()">Load Data</button>
+        <span id="gh-save-hint" style="font-size:11px;color:var(--text3);margin-left:4px;display:none;">Load data first to unlock saving</span>
       </div>
       <p style="font-size:11px;color:var(--text3);margin-top:.75rem;">Create a token at github.com → Settings → Developer settings → Personal access tokens → Fine-grained → Contents: Read &amp; Write on your repo.</p>
     </div>
@@ -429,7 +430,12 @@ function ghSaveConfig(){const cfg={token:document.getElementById('gh-token')?.va
 function ghIsConfigured(){const cfg=ghLoadConfig();return !!(cfg.token&&cfg.repo);}
 function ghHasRetrieved(){return sessionStorage.getItem('parkrun_gh_retrieved')==='1';}
 function ghMarkRetrieved(){sessionStorage.setItem('parkrun_gh_retrieved','1');}
-function ghSetSaveEnabled(e){const btn=document.getElementById('gh-save-btn');if(btn){btn.disabled=!e;btn.style.opacity=e?'1':'0.45';}}
+function ghSetSaveEnabled(enabled){
+  const btn=document.getElementById('gh-save-btn');
+  const hint=document.getElementById('gh-save-hint');
+  if(btn){btn.disabled=!enabled;btn.style.opacity=enabled?'1':'0.45';}
+  if(hint)hint.style.display=enabled?'none':'inline';
+}
 function ghOnTokenBlur(){ghSaveConfig();}
 function ghStatus(msg,ok){const el=document.getElementById('gh-sync-status');if(el){el.textContent=msg;el.style.color=ok===false?'var(--red)':ok===true?'var(--green)':'var(--text3)';}}
 
@@ -1023,7 +1029,7 @@ function renderRunnersPanel(tid,editMode){
       return`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);flex-wrap:wrap;">
         <input type="checkbox" id="enroll-cb-${tid}-${r.id}" ${isIn?'checked':''} style="width:16px;height:16px;accent-color:var(--orange);flex-shrink:0;"/>
         <label for="enroll-cb-${tid}-${r.id}" style="flex:1;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;text-transform:uppercase;cursor:pointer;">${r.name}${showPkId&&r.rid?` <span style="font-weight:400;font-size:12px;color:var(--text3);">A${r.rid}</span>`:''}</label>
-        <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;color:var(--text3);">${label} baseline</span><input type="time" id="enroll-baseline-${tid}-${r.id}" step="1" value="${suggested!=null?sHMS(suggested):''}" style="max-width:130px;"/></div>
+        <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;color:var(--text3);">${label} baseline</span><input type="time" id="enroll-baseline-${tid}-${r.id}" step="1" value="${suggested!=null?sHMS(suggested):''}" style="max-width:130px;" oninput="autoEnrollOnBaseline(${tid},${r.id})"/></div>
       </div>`;
     }).join('');
     panel.innerHTML=`<div class="card card-accent" style="margin-bottom:0;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;">
@@ -1034,6 +1040,11 @@ function renderRunnersPanel(tid,editMode){
     ${S.runners.length?rows:'<div class="notice">No runners added yet.</div>'}
     </div>`;
   }
+}
+function autoEnrollOnBaseline(tid,rId){
+  const cb=document.getElementById(`enroll-cb-${tid}-${rId}`);
+  const input=document.getElementById(`enroll-baseline-${tid}-${rId}`);
+  if(cb&&input&&input.value)cb.checked=true;
 }
 function saveRunnersPanel(tid){
   const actType=getTournamentActivityType(tid);const errors=[];
