@@ -41,8 +41,10 @@
       "name": "Katrina BARNES",
       "rid": "3332037",
       "homeSlug": "",
-      "pbs": {},
-      "pbSec": null,
+      "pbs": {
+        "parkrun": 1385
+      },
+      "pbSec": 1385,
       "isLeader": true
     },
     {
@@ -50,8 +52,10 @@
       "name": "Oliver TEALE",
       "rid": "258398",
       "homeSlug": "",
-      "pbs": {},
-      "pbSec": null
+      "pbs": {
+        "parkrun": 1438
+      },
+      "pbSec": 1438
     },
     {
       "id": 1778260092370,
@@ -234,6 +238,46 @@
         "attended": true,
         "actualSec": 1758,
         "baselinePbSec": 1788
+      },
+      "1778260052500": {
+        "attended": true,
+        "actualSec": 1366,
+        "baselinePbSec": 1385
+      },
+      "1778260069092": {
+        "attended": true,
+        "actualSec": 1429,
+        "baselinePbSec": 1438
+      },
+      "1778260104465": {
+        "attended": true,
+        "actualSec": null,
+        "baselinePbSec": 1428
+      },
+      "1778260130668": {
+        "attended": true,
+        "actualSec": null,
+        "baselinePbSec": 1623
+      },
+      "1778260144770": {
+        "attended": true,
+        "actualSec": null,
+        "baselinePbSec": 1742
+      },
+      "1778260179461": {
+        "attended": true,
+        "actualSec": null,
+        "baselinePbSec": 1723
+      },
+      "1778260209630": {
+        "attended": true,
+        "actualSec": null,
+        "baselinePbSec": 1721
+      },
+      "1778260241566": {
+        "attended": true,
+        "actualSec": 1992,
+        "baselinePbSec": 2093
       }
     }
   },
@@ -254,6 +298,16 @@
         "enrolledDate": "2026-05-08"
       },
       {
+        "rId": 1778260052500,
+        "baselineSec": 1385,
+        "enrolledDate": "2026-05-08"
+      },
+      {
+        "rId": 1778260069092,
+        "baselineSec": 1438,
+        "enrolledDate": "2026-05-08"
+      },
+      {
         "rId": 1778260092370,
         "baselineSec": 1441,
         "enrolledDate": "2026-05-08"
@@ -265,6 +319,6 @@
       }
     ]
   },
-  "_savedAt": 1778266208253,
+  "_savedAt": 1778272959282,
   "_logo": null
 }
