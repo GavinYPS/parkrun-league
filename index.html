@@ -453,8 +453,12 @@ async function ghPush(){
   if(!ghHasRetrieved()){ghStatus('Load data first',false);alert('Load the latest data first before saving.');return;}
   ghStatus('Saving…');
   try{
-    const sha=await ghGetSha(cfg);S._savedAt=Date.now();persist();
-    const content=btoa(unescape(encodeURIComponent(JSON.stringify(S,null,2))));
+    const sha=await ghGetSha(cfg);S._savedAt=Date.now();
+    // Include logo in save payload
+    const logo=localStorage.getItem('parkrun_logo')||null;
+    const payload={...S,_logo:logo};
+    persist();
+    const content=btoa(unescape(encodeURIComponent(JSON.stringify(payload,null,2))));
     const body={message:'Sync '+new Date().toISOString(),content};if(sha)body.sha=sha;
     const r=await fetch(`https://api.github.com/repos/${cfg.repo}/contents/${cfg.path}`,{method:'PUT',headers:{Authorization:'Bearer '+cfg.token,Accept:'application/vnd.github.v3+json','Content-Type':'application/json','X-GitHub-Api-Version':'2022-11-28'},body:JSON.stringify(body)});
     if(!r.ok){const e=await r.json();throw new Error(e.message||r.status);}
@@ -480,6 +484,10 @@ async function ghPull(){
       S=choice==='merge'?ghMerge(S,remote):remote;
     }else{S=remote;}
     localStorage.setItem(STORE_KEY,JSON.stringify(S));
+    // Restore logo if present in payload
+    if(remote._logo)localStorage.setItem('parkrun_logo',remote._logo);
+    else localStorage.removeItem('parkrun_logo');
+    loadLogo();
     ghMarkRetrieved();ghSetSaveEnabled(true);ghStatus('Loaded ✓ '+new Date().toLocaleTimeString(),true);
     renderRunners();renderTournaments();renderLbSel();renderGlobalSettings();
   }catch(e){ghStatus('Load failed: '+e.message,false);console.warn(e);}
@@ -566,6 +574,10 @@ function addRunner(){
 function editRunnerName(id){
   const r=S.runners.find(x=>x.id===id);if(!r)return;
   const h3=document.getElementById('runner-name-'+id);if(!h3)return;
+  // Hide other runner cards
+  document.querySelectorAll('.runner-card').forEach(card=>{
+    if(card.dataset.runnerId!==String(id))card.style.display='none';
+  });
   h3.innerHTML=`<input type="text" id="runner-name-input-${id}" value="${r.name.replace(/"/g,'&quot;')}" style="font-size:inherit;font-family:inherit;font-weight:inherit;padding:2px 6px;max-width:200px;" onkeydown="if(event.key==='Enter')saveRunnerName(${id});if(event.key==='Escape')renderRunners();"/>
     <button class="btn btn-sm btn-primary" onclick="saveRunnerName(${id})" style="margin-left:6px;">Save</button>
     <button class="btn btn-sm" onclick="renderRunners()" style="margin-left:4px;">Cancel</button>`;
@@ -848,10 +860,12 @@ function renderTournaments(){
             <button class="btn btn-sm btn-danger" onclick="removeLocation(${loc.id})">Remove</button>
           </div></div></div>`;
       }
-      const locEvents=S.events.filter(e=>e.locationId===loc.id).sort((a,b)=>b.runNumber-a.runNumber);
+      const locEvents=S.events.filter(e=>e.locationId===loc.id).sort((a,b)=>a.runNumber-b.runNumber);
+      const today=new Date().toISOString().substring(0,10);
       const evRows=locEvents.map(ev=>{
         const evUrl=ev.date?`https://www.parkrun.org.uk/${loc.slug}/results/${ev.date}/`:'';
         const wcActive=ev.wildcard===true;
+        const canEnterTimes=!ev.date||ev.date<=today;
         return`<div class="event-row" id="evrow-${ev.id}">
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
             <span class="badge badge-orange">#${ev.runNumber}</span>
@@ -861,9 +875,11 @@ function renderTournaments(){
           </div>
           <div style="display:flex;gap:6px;flex-shrink:0;">
             <button class="btn btn-sm" onclick="editEvent(${ev.id})">Edit</button>
-            <button class="btn btn-sm btn-info" onclick="etViewMode=false;sw('enter-times');document.getElementById('et-ev-sel').value='${ev.id}';renderEnterTimes();">Enter Times</button>
-            <button class="btn btn-sm" onclick="etViewMode=true;sw('enter-times');document.getElementById('et-ev-sel').value='${ev.id}';renderEnterTimes();">Results</button>
-            <button class="btn btn-sm btn-danger" onclick="removeEvent(${ev.id})">Remove</button>
+            ${canEnterTimes
+              ?`<button class="btn btn-sm btn-info" onclick="etViewMode=false;sw('enter-times');document.getElementById('et-ev-sel').value='${ev.id}';renderEnterTimes();">Enter Times</button>
+                <button class="btn btn-sm" onclick="etViewMode=true;sw('enter-times');document.getElementById('et-ev-sel').value='${ev.id}';renderEnterTimes();">Results</button>`
+              :`<button class="btn btn-sm" disabled style="opacity:.35;cursor:not-allowed;" title="Available on ${fmtDate(ev.date)}">Enter Times</button>
+                <button class="btn btn-sm" disabled style="opacity:.35;cursor:not-allowed;" title="Available on ${fmtDate(ev.date)}">Results</button>`}            <button class="btn btn-sm btn-danger" onclick="removeEvent(${ev.id})">Remove</button>
           </div></div>`;
       }).join('');
       return`<div class="location-block">
@@ -1033,7 +1049,7 @@ function saveRunnersPanel(tid){
 // ── Enter Times ───────────────────────────────────────────────
 function renderEnterTimesSel(){
   const sel=document.getElementById('et-ev-sel');if(!sel)return;const cur=sel.value;let html='<option value="">-- select event --</option>';
-  S.tournaments.filter(t=>!t.archived).forEach(t=>{S.locations.filter(l=>l.tournamentId===t.id).forEach(loc=>{const evs=S.events.filter(e=>e.locationId===loc.id).sort((a,b)=>b.runNumber-a.runNumber);if(!evs.length)return;html+=`<optgroup label="${t.name} — ${loc.name}">`;evs.forEach(ev=>{html+=`<option value="${ev.id}" ${String(ev.id)===cur?'selected':''}>#${ev.runNumber}${ev.date?' · '+ev.date:''}</option>`;});html+='</optgroup>';});});
+  S.tournaments.filter(t=>!t.archived).forEach(t=>{S.locations.filter(l=>l.tournamentId===t.id).forEach(loc=>{      const evs=S.events.filter(e=>e.locationId===loc.id).sort((a,b)=>a.runNumber-b.runNumber);if(!evs.length)return;html+=`<optgroup label="${t.name} — ${loc.name}">`;evs.forEach(ev=>{html+=`<option value="${ev.id}" ${String(ev.id)===cur?'selected':''}>#${ev.runNumber}${ev.date?' · '+ev.date:''}</option>`;});html+='</optgroup>';});});
   sel.innerHTML=html;
 }
 let etViewMode=false;
@@ -1148,7 +1164,8 @@ function renderLeaderboard(){
     return;
   }
   if(heading)heading.textContent=t.name;
-  const filterEvs=S.events.filter(e=>String(e.tournamentId)===tid);
+  const today=new Date().toISOString().substring(0,10);
+  const filterEvs=S.events.filter(e=>String(e.tournamentId)===tid&&(!e.date||e.date<=today));
   const eligibleRunners=getTournamentRunners(parseInt(tid));
   const scores=eligibleRunners.map(r=>{
     let bandPts=0,runs=0,attendancePts=0,wildcardPts=0;
