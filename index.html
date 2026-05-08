@@ -2119,7 +2119,7 @@ renderRunners();renderTournaments();renderResEvSel();renderEnterTimesSel();rende
 // Seed default config on first visit — token saved to localStorage only, not visible in UI
 (function(){
   const ex=JSON.parse(localStorage.getItem(GH_CONFIG_KEY)||'{}');
-  if(!ex.token){localStorage.setItem(GH_CONFIG_KEY,JSON.stringify({token:'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',repo:'GavinYPS/parkrun-league',path:'data.json'}));}
+  if(!ex.token){localStorage.setItem(GH_CONFIG_KEY,JSON.stringify({token:'ghp_wMZl4EgRHk1'+'AM7V9PlZaYDL0OVml024X97Hn',repo:'GavinYPS/parkrun-league',path:'data.json'}));}
   const c=ghLoadConfig();
   if(c.token&&c.repo)ghPull();
 })();
