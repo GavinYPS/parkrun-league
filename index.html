@@ -282,15 +282,6 @@ table td input[type=time]{width:110px;font-size:13px;padding:5px 8px}
   </div><!-- end tab-settings -->
 </main>
 
-<div class="modal-overlay" id="parkrun-modal">
-  <div class="modal" style="max-width:400px;">
-    <h3>Parkrun Results</h3>
-    <p style="font-size:13px;color:var(--text2);margin-bottom:1.25rem;line-height:1.6;">Your club name has been copied to clipboard. Paste it into the search box to filter by your club.</p>
-    <a id="parkrun-modal-link" href="#" target="_blank" class="btn btn-primary" style="margin-bottom:1rem;width:100%;justify-content:center;" onclick="document.getElementById('parkrun-modal').classList.remove('open')">Open Parkrun Results &#8599;</a>
-    <button class="btn btn-sm" onclick="document.getElementById('parkrun-modal').classList.remove('open')" style="width:100%;justify-content:center;">Close</button>
-  </div>
-</div>
-
 <div class="modal-overlay" id="confirm-modal">
   <div class="modal" style="max-width:380px;">
     <h3 id="confirm-title">Are you sure?</h3>
@@ -875,7 +866,7 @@ function renderTournaments(){
             <span class="badge badge-orange">#${ev.runNumber}</span>
             ${wcActive?`<span class="badge badge-wc">⚡ Wildcard</span>`:''}
             <span style="font-size:13px;color:var(--text2);">${ev.date?fmtDate(ev.date):'<em style="color:var(--text3)">no date</em>'}</span>
-            ${evUrl?`<button onclick="openParkrunModal('${evUrl}')" class="btn btn-sm" style="padding:2px 8px;font-size:11px;">parkrun.org.uk &#8599;</button>`:''}
+            ${evUrl?`<button onclick="openParkrunResults('${evUrl}')" class="btn btn-sm btn-info" style="padding:2px 8px;font-size:11px;">Open Parkrun Results &#8599;</button>`:''}
           </div>
           <div style="display:flex;gap:6px;flex-shrink:0;">
             <button class="btn btn-sm" onclick="editEvent(${ev.id})">Edit</button>
@@ -1076,7 +1067,7 @@ function renderEnterTimes(){
         <span style="font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:800;text-transform:uppercase;">${ev.locationName} <span class="badge badge-orange">#${ev.runNumber}</span>${wcActive?` <span class="badge badge-wc">⚡ Wildcard +${wcPts}pts</span>`:''}</span>
         <div style="font-size:12px;color:var(--text2);margin-top:3px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
           ${fmtDate(ev.date)}
-          ${parkrunLink?`<a href="${parkrunLink}" target="_blank" style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--orange);text-decoration:none;">Open Parkrun Results &#8599;</a>`:''}
+          ${parkrunLink?`<button onclick="openParkrunResults('${parkrunLink}')" style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--orange);background:none;border:none;cursor:pointer;padding:0;letter-spacing:.06em;">Open Parkrun Results &#8599;</button>`:''}
         </div>
       </div>
       <div style="display:flex;gap:8px;align-items:center;">${modeBtn}</div>
@@ -1287,13 +1278,26 @@ function exportCSV(type){
 function importFromFile(input){const file=input.files[0];if(!file)return;const reader=new FileReader();reader.onload=e=>{try{const p=JSON.parse(e.target.result);if(!p.runners)throw new Error('Invalid');if(!p.tournaments)p.tournaments=[];if(!p.locations)p.locations=[];if(!p.events)p.events=[];if(!p.results)p.results={};p.tournaments.forEach(t=>{if(!t.settings)t.settings=defaultTournamentSettings();});S=p;persist();renderRunners();renderTournaments();renderLbSel();renderGlobalSettings();const msg=document.getElementById('import-file-msg');if(msg){msg.textContent=`Imported: ${S.runners.length} runners, ${S.tournaments.length} tournaments, ${S.events.length} events.`;msg.style.display='block';}}catch(ex){alert('Import failed: invalid JSON file.');}};reader.readAsText(file);input.value='';}
 
 // ── Parkrun modal ─────────────────────────────────────────────
-function openParkrunModal(url){
-  const club=getClubName();document.getElementById('parkrun-modal-link').href=url;document.getElementById('parkrun-modal').classList.add('open');
+// ── Toast ─────────────────────────────────────────────────────
+function showToast(msg){
+  let toast=document.getElementById('app-toast');
+  if(!toast){
+    toast=document.createElement('div');toast.id='app-toast';
+    toast.style.cssText='position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:var(--bg4);border:1px solid var(--border2);color:var(--text);font-family:"Barlow Condensed",sans-serif;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:8px 20px;border-radius:var(--radius-sm);box-shadow:0 4px 16px rgba(0,0,0,.5);z-index:9999;opacity:0;transition:opacity .2s;pointer-events:none;';
+    document.body.appendChild(toast);
+  }
+  toast.textContent=msg;toast.style.opacity='1';
+  clearTimeout(toast._timer);toast._timer=setTimeout(()=>toast.style.opacity='0',2000);
+}
+
+function openParkrunResults(url){
+  const club=getClubName();
   try{const ta=document.createElement('textarea');ta.value=club;ta.style.cssText='position:fixed;top:-9999px;left:-9999px;';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);}catch(e){}
+  showToast('Club name copied to clipboard');
+  window.open(url,'_blank');
 }
 
 // ── Init ──────────────────────────────────────────────────────
-document.getElementById('parkrun-modal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
 document.getElementById('confirm-modal').addEventListener('click',function(e){if(e.target===this)confirmCancel();});
 
 (function(){
