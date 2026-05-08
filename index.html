@@ -747,15 +747,34 @@ function suggestNextDate(locEvents,suggestedRun){
 function showAddEvent(lid){
   const formId='f-ev-'+lid;const existing=document.getElementById(formId);if(existing){existing.remove();return;}
   const loc=S.locations.find(l=>l.id===lid);const parkrun=isParkrun(loc?.tournamentId);
-  const locEvents=S.events.filter(e=>e.locationId===lid).sort((a,b)=>b.runNumber-a.runNumber);const lastEv=locEvents[0];const suggestedRun=lastEv?lastEv.runNumber+1:'';const suggestedDate=parkrun?suggestNextDate(locEvents,suggestedRun||undefined):prevSaturday();
+  const locEvents=S.events.filter(e=>e.locationId===lid).sort((a,b)=>b.runNumber-a.runNumber);
+  const lastEv=locEvents[0];
+  const suggestedRun=lastEv?lastEv.runNumber+1:'';
+  const suggestedDate=parkrun?suggestNextDate(locEvents,suggestedRun||undefined):prevSaturday();
   const form=document.createElement('div');form.id=formId;form.className='inline-form';
   form.innerHTML=`<div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.75rem;">Add Event</div>
-    <div class="form-row"><label>${parkrun?'Run number':'Event number'}</label><input type="number" min="1" id="evnum-${lid}" value="${suggestedRun}" oninput="${parkrun?`autoDateFromRun(${lid})`:''}" style="max-width:130px;font-family:'SF Mono','Fira Code',monospace;"/></div>
-    <div class="form-row"><label>Date</label><input type="date" id="evdate-${lid}" value="${suggestedDate}" style="max-width:190px;"/></div>
+    <div class="form-row"><label>Date</label><input type="date" id="evdate-${lid}" value="${suggestedDate}" style="max-width:190px;" ${parkrun?`oninput="autoRunFromDate(${lid})"`:''}/>
+    ${parkrun?`<span id="evdate-hint-${lid}" style="font-size:11px;color:var(--text3);margin-left:4px;">sets run number</span>`:''}
+    </div>
+    <div class="form-row"><label>${parkrun?'Run number':'Event number'}</label><input type="number" min="1" id="evnum-${lid}" value="${suggestedRun}" style="max-width:130px;font-family:'SF Mono','Fira Code',monospace;"/></div>
     <div class="btn-group" style="margin-top:8px;"><button class="btn btn-primary btn-sm" onclick="saveEvent(${lid})">Save Event</button><button class="btn btn-sm" onclick="document.getElementById('f-ev-${lid}').remove()">Cancel</button></div>`;
-  const evlist=document.getElementById('loc-body-'+lid);if(evlist)evlist.prepend(form);setTimeout(()=>document.getElementById('evnum-'+lid)?.focus(),50);
+  const evlist=document.getElementById('loc-body-'+lid);if(evlist)evlist.prepend(form);
+  if(parkrun)autoRunFromDate(lid);
+  setTimeout(()=>document.getElementById('evdate-'+lid)?.focus(),50);
 }
-function autoDateFromRun(lid){const numEl=document.getElementById('evnum-'+lid);const dateEl=document.getElementById('evdate-'+lid);if(!numEl||!dateEl)return;const num=parseInt(numEl.value);if(!num)return;dateEl.value=suggestNextDate(S.events.filter(e=>e.locationId===lid),num);}
+function autoRunFromDate(lid){
+  const dateEl=document.getElementById('evdate-'+lid);const numEl=document.getElementById('evnum-'+lid);const hintEl=document.getElementById('evdate-hint-'+lid);
+  if(!dateEl||!numEl||!dateEl.value)return;
+  const locEvents=S.events.filter(e=>e.locationId===lid).sort((a,b)=>b.runNumber-a.runNumber);
+  const lastEv=locEvents[0];
+  if(!lastEv||!lastEv.date||!lastEv.runNumber){return;}
+  const lastDate=new Date(lastEv.date+'T12:00:00');const newDate=new Date(dateEl.value+'T12:00:00');
+  const diffDays=Math.round((newDate-lastDate)/86400000);
+  const diffWeeks=Math.round(diffDays/7);
+  const suggestedRun=lastEv.runNumber+diffWeeks;
+  if(suggestedRun>0){numEl.value=suggestedRun;if(hintEl)hintEl.textContent=`run #${suggestedRun}`;}
+  else{if(hintEl)hintEl.textContent='check date';}
+}
 function saveEvent(lid){
   const loc=S.locations.find(l=>l.id===lid);if(!loc)return;const num=parseInt(document.getElementById('evnum-'+lid)?.value);const date=document.getElementById('evdate-'+lid)?.value||'';
   if(!num||num<1){alert('Run number must be 1 or greater.');return;}if(S.events.some(e=>e.locationId===lid&&e.runNumber===num)){alert('Run #'+num+' already exists.');return;}
