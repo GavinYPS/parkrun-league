@@ -551,8 +551,8 @@ function toggleCollapse(bodyId,chevId){var body=document.getElementById(bodyId);
 function openParkrunResults(url){
   var club=getClubName();
   try{var ta=document.createElement('textarea');ta.value=club;ta.style.cssText='position:fixed;top:-9999px;left:-9999px;';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);}catch(e){}
-  showToast('Club name copied to clipboard');
-  window.open(url,'_blank');
+  showToast('\u2702 "'+club+'" copied — paste into club search');
+  setTimeout(function(){window.open(url,'_blank');},800);
 }
 
 // ── Runners ───────────────────────────────────────────────────
@@ -655,7 +655,7 @@ function renderRunners(){
     var actions=isArchived
       ?'<button class="btn btn-sm" onclick="restoreRunner('+r.id+')" style="font-size:10px;padding:3px 8px;">Restore</button><button class="btn btn-sm btn-danger" onclick="deleteRunner('+r.id+')" style="font-size:10px;padding:3px 8px;">Delete</button>'
       :'<button class="btn btn-sm btn-info" onclick="editRunnerPB('+r.id+')" style="font-size:10px;padding:3px 8px;">Baselines</button><button class="btn btn-sm btn-danger" onclick="removeRunner('+r.id+')" style="font-size:10px;padding:3px 8px;">Archive</button>';
-    var nameDisplay=(r.isLeader?'&#127965; ':'')+r.name+(isArchived?' <span style="font-size:10px;color:var(--text3);background:var(--bg3);border-radius:4px;padding:1px 5px;">Archived</span>':'');
+    var nameDisplay=(r.isLeader?'\uD83C\uDFBD ':'')+r.name+(isArchived?' <span style="font-size:10px;color:var(--text3);background:var(--bg3);border-radius:4px;padding:1px 5px;">Archived</span>':'');
     var editBtn=isArchived?'':'<button onclick="editRunnerName('+r.id+')" style="background:none;border:none;cursor:pointer;padding:2px;color:var(--text3);vertical-align:middle;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>';
     return '<div class="runner-card" data-runner-id="'+r.id+'" style="'+(isArchived?'opacity:.5;':'')+'"><div class="runner-info" style="min-width:0;"><h3 id="runner-name-'+r.id+'" style="font-size:15px;">'+nameDisplay+' '+editBtn+'</h3><div class="runner-meta">'+meta+'</div></div><div class="runner-actions">'+actions+'</div></div>';
   }
@@ -889,7 +889,7 @@ function renderTournaments(){
         var leftSide='<span class="badge badge-orange">#'+ev.runNumber+'</span>';
         if(wcActive)leftSide+=' <span class="badge badge-wc">&#9889; Wildcard</span>';
         leftSide+=' <span style="font-size:13px;color:var(--text2);">'+(ev.date?fmtDate(ev.date):'<em style="color:var(--text3)">no date</em>')+'</span>';
-        if(evUrl)leftSide+=' <button onclick="openParkrunResults(\''+evUrl+'\')" class="btn btn-sm btn-info" style="padding:2px 8px;font-size:11px;">Open Parkrun Results &#8599;</button>';
+        if(evUrl){var evActive=ev.date<=today;leftSide+=' <button onclick="'+( evActive?'openParkrunResults(\''+evUrl+'\')':'void(0)')+'" class="btn btn-sm btn-info" style="padding:2px 8px;font-size:11px;'+(evActive?'':'opacity:.4;cursor:not-allowed;')+'" '+(evActive?'':'disabled')+'title="'+(evActive?'':'Available on '+fmtDate(ev.date))+'">Open Parkrun Results &#8599;</button>';}
         var rightSide='<button class="btn btn-sm" onclick="editEvent('+ev.id+')">Edit</button>';
         if(canEnterTimes){
           rightSide+='<button class="btn btn-sm btn-info" onclick="etViewMode=false;etEditMode=true;sw(\'enter-times\');document.getElementById(\'et-ev-sel\').value=\''+ev.id+'\';renderEnterTimes();">Enter Times</button>';
@@ -1073,6 +1073,7 @@ function renderEnterTimes(){
   var ev=S.events.find(function(e){return e.id===evId;});if(!ev)return;
   if(!S.results[evId])S.results[evId]={};
   var parkrunLink=ev.date&&isParkrun(ev.tournamentId)?'https://www.parkrun.org.uk/'+ev.slug+'/results/'+ev.date+'/':'';
+  var parkrunActive=ev.date&&ev.date<=today;
   var ts=getTournamentSettings(ev.tournamentId);var wcPts=ts.wildcardBonus||2;var wcActive=ev.wildcard===true;
   var actionBtn='';
   if(etViewMode){
@@ -1094,7 +1095,7 @@ function renderEnterTimes(){
   var titleHtml=ev.locationName+' <span class="badge badge-orange">#'+ev.runNumber+'</span>';
   if(wcActive)titleHtml+=' <span class="badge badge-wc">&#9889; Wildcard +'+wcPts+'pts</span>';
   var metaHtml=fmtDate(ev.date);
-  if(parkrunLink)metaHtml+=' <button onclick="openParkrunResults(\''+parkrunLink+'\')" style="font-family:Barlow Condensed,sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--orange);background:none;border:none;cursor:pointer;padding:0;letter-spacing:.06em;">Open Parkrun Results &#8599;</button>';
+  if(parkrunLink)metaHtml+=' <button onclick="'+(parkrunActive?'openParkrunResults(\''+parkrunLink+'\')':'void(0)')+'" style="font-family:Barlow Condensed,sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--orange);background:none;border:none;cursor:'+(parkrunActive?'pointer':'not-allowed')+';padding:0;letter-spacing:.06em;opacity:'+(parkrunActive?'1':'.4')+'" '+(parkrunActive?'':'disabled')+'title="'+(parkrunActive?'':'Available on '+fmtDate(ev.date))+'">Open Parkrun Results &#8599;</button>';
   area.innerHTML='<div class="card">'
     +'<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:1rem;">'
     +'<div><span style="font-family:Barlow Condensed,sans-serif;font-size:17px;font-weight:800;text-transform:uppercase;">'+titleHtml+'</span>'
