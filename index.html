@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
@@ -1555,7 +1555,7 @@ function renderRunnersPanel(tid, editMode) {
       var bandHtml = isParkrun(tid)
         ? '<div style="display:flex;flex-direction:column;gap:3px;align-items:flex-end;">'
           + '<div style="display:flex;align-items:center;gap:5px;"><span style="font-size:11px;color:var(--text3);">Band</span><select id="enroll-band-' + tid + '-' + r.id + '" style="font-size:12px;padding:3px 6px;max-width:100px;">' + bandOpts + '</select></div>'
-          + (suggestedBand ? '<button onclick="document.getElementById(\'enroll-band-' + tid + '-' + r.id + '\').value=\'' + suggestedBand + '\';this.style.display=\'none\';" style="font-size:10px;background:var(--orange-dim);border:1px solid var(--orange);color:var(--orange);padding:1px 6px;border-radius:3px;cursor:pointer;white-space:nowrap;">Suggested: ' + suggestedBand + ' (' + BAND_TIME_RANGES[suggestedBand] + ')</button>' : '')
+          + (suggestedBand ? '<button id="enroll-band-sugg-' + tid + '-' + r.id + '" onclick="document.getElementById(\'enroll-band-' + tid + '-' + r.id + '\').value=\'' + suggestedBand + '\';this.style.display=\'none\';" style="font-size:10px;background:var(--orange-dim);border:1px solid var(--orange);color:var(--orange);padding:1px 6px;border-radius:3px;cursor:pointer;white-space:nowrap;">Suggested: ' + suggestedBand + ' (' + BAND_TIME_RANGES[suggestedBand] + ')</button>' : '')
           + '</div>'
         : '';
       return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);flex-wrap:wrap;">'
