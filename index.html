@@ -1709,6 +1709,7 @@ function renderEnterTimesRows(evId) {
   var res = S.results[evId] || {}; var eligible = getTournamentRunners(ev ? ev.tournamentId : null);
   if (!eligible.length) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text3);padding:1.5rem;">No runners enrolled.</td></tr>'; return; }
   var readonly = !etEditMode;
+  if (readonly) eligible = eligible.filter(function(r) { return isAttended(res[r.id] || {}); });
   var tickedSvg = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><polyline points="9 12 11 14 15 10" stroke="#fff" stroke-width="2.5" fill="none"/></svg>';
   var emptySvg = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/></svg>';
   tbody.innerHTML = eligible.map(function(r) {
