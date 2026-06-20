@@ -290,6 +290,8 @@ function defaultTournamentSettings() {
   return {
     attendanceBonus: 2,
     wildcardBonus: 2,
+    volunteerBonus: 1,
+    volunteerMaxSessions: 1,
     bonusTiers: [{minRuns:7,points:4},{minRuns:3,points:3}],
     bandTable: JSON.parse(JSON.stringify(DEFAULT_BAND_TABLE))
   };
@@ -1401,8 +1403,12 @@ function buildSettingsPanel(tid) {
     // Col 1: Attendance + Wildcard
     + '<div>'
     + '<div class="ss-label">&#9989; Attendance Bonus</div>'
-    + '<p style="font-size:11px;color:var(--text3);margin-bottom:.5rem;">Points awarded to every runner who races (and volunteers) at an event.</p>'
-    + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:1rem;"><input type="number" id="attendance-bonus-' + tid + '" value="' + (s.attendanceBonus || 0) + '" min="0" class="text-mono" style="padding:5px 8px;font-size:13px;max-width:70px;" onchange="updateAttendanceBonus(' + tid + ',this.value)"/><span style="font-size:12px;color:var(--text2);">pts per event</span></div>'
+    + '<p style="font-size:11px;color:var(--text3);margin-bottom:.5rem;">Points awarded to every runner who races at an event (has a recorded time).</p>'
+    + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:1rem;"><input type="number" id="attendance-bonus-' + tid + '" value="' + (s.attendanceBonus || 0) + '" min="0" class="text-mono" style="padding:5px 8px;font-size:13px;max-width:70px;" onchange="updateAttendanceBonus(' + tid + ',this.value)"/><span style="font-size:12px;color:var(--text2);">pts per race</span></div>'
+    + '<div class="ss-label">&#129309; Volunteer Bonus</div>'
+    + '<p style="font-size:11px;color:var(--text3);margin-bottom:.5rem;">Flat points for attending as a volunteer. Separate from race attendance bonus.</p>'
+    + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:1rem;"><input type="number" id="volunteer-bonus-' + tid + '" value="' + (s.volunteerBonus || 0) + '" min="0" class="text-mono" style="padding:5px 8px;font-size:13px;max-width:70px;" onchange="updateVolunteerBonus(' + tid + ',this.value)"/><span style="font-size:12px;color:var(--text2);">pts per session</span></div>'
+    + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:1rem;"><input type="number" id="volunteer-max-' + tid + '" value="' + (s.volunteerMaxSessions != null ? s.volunteerMaxSessions : 1) + '" min="0" class="text-mono" style="padding:5px 8px;font-size:13px;max-width:70px;" onchange="updateVolunteerMax(' + tid + ',this.value)"/><span style="font-size:12px;color:var(--text2);">max sessions per tournament <span style="color:var(--text3);">(0 = unlimited)</span></span></div>'
     + '<div class="ss-label">&#9889; Wildcard Events</div>'
     + '<p style="font-size:11px;color:var(--text3);margin-bottom:.5rem;">Special events where all attendees get bonus points instead of band scoring.</p>'
     + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:.5rem;"><input type="number" id="wildcard-bonus-' + tid + '" value="' + (s.wildcardBonus || 2) + '" min="0" class="text-mono" style="padding:5px 8px;font-size:13px;max-width:70px;" onchange="updateWildcardBonus(' + tid + ',this.value)"/><span style="font-size:12px;color:var(--text2);">pts per wildcard</span></div>'
@@ -1415,7 +1421,7 @@ function buildSettingsPanel(tid) {
     // Col 3: Bonus tiers
     + '<div>'
     + '<div class="ss-label">&#127919; Attendance Bonus Tiers</div>'
-    + '<p style="font-size:11px;color:var(--text3);margin-bottom:.5rem;">Extra bonus for runners who attend multiple events. Highest qualifying tier wins.</p>'
+    + '<p style="font-size:11px;color:var(--text3);margin-bottom:.5rem;">Extra bonus for runners who race at multiple events. Highest qualifying tier wins. Volunteer sessions do not count.</p>'
     + '<div style="display:grid;grid-template-columns:1fr 1fr 28px;gap:5px;font-size:10px;color:var(--text3);margin-bottom:4px;"><span>Min events</span><span>Pts</span><span></span></div>'
     + '<div id="tiers-list-' + tid + '">' + tierRows + '</div>'
     + '<button class="btn btn-sm" style="margin-top:4px;" onclick="addTier(' + tid + ')">+ Add Tier</button>'
@@ -1524,6 +1530,8 @@ function resetBandTable(tid) {
 }
 
 function updateAttendanceBonus(tid, val) { var t = S.tournaments.find(function(x) { return x.id === tid; }); if (t) t.settings.attendanceBonus = parseInt(val) || 0; }
+function updateVolunteerBonus(tid, val) { var t = S.tournaments.find(function(x) { return x.id === tid; }); if (t) t.settings.volunteerBonus = parseInt(val) || 0; }
+function updateVolunteerMax(tid, val) { var t = S.tournaments.find(function(x) { return x.id === tid; }); if (t) t.settings.volunteerMaxSessions = parseInt(val) || 0; }
 function updateWildcardBonus(tid, val) { var t = S.tournaments.find(function(x) { return x.id === tid; }); if (t) t.settings.wildcardBonus = parseInt(val) || 0; }
 function updateTier(tid, i, field, val) { var t = S.tournaments.find(function(x) { return x.id === tid; }); if (!t) return; t.settings.bonusTiers[i][field] = parseInt(val) || 0; }
 function removeTier(tid, i) { if (!confirm('Remove this tier?')) return; var t = S.tournaments.find(function(x) { return x.id === tid; }); if (!t) return; t.settings.bonusTiers.splice(i, 1); var p = document.getElementById('settings-panel-' + tid); if (p) p.innerHTML = buildSettingsPanel(tid); }
@@ -1844,32 +1852,52 @@ function renderLeaderboard() {
       var rd = (S.results[ev.id] || {})[r.id];
       if (!isAttended(rd)) return;
       var ts = getTournamentSettings(ev.tournamentId);
-      if (rd.actualSec != null) {
+      if (isAttended(rd)) {
         if (ev.wildcard) { wildcardPts += (ts.wildcardBonus || 2); }
-        else {
+        else if (rd.volunteer) {
+          // Volunteer: separate volunteer bonus, no attendance bonus, no band points
+          attendancePts += (ts.volunteerBonus || 0);
+        } else if (rd.actualSec != null) {
+          // Racer: attendance bonus + band points
           attendancePts += (ts.attendanceBonus || 0);
           var baseline = getTournamentBaselinePb(r.id, parseInt(tid));
           if (baseline != null && isParkrun(parseInt(tid)) && r.band) {
             var bResult = getBandPtsForRunner(rd.actualSec - baseline, r.band, ts);
             bandPts += bResult.pts;
           }
+          runs++;
         }
-        runs++;
       }
     });
     var ts = getTournamentSettings(parseInt(tid));
-    return {runner:r, bandPts:bandPts, runs:runs, attendancePts:attendancePts, wildcardPts:wildcardPts, bonus:getBonus(runs, ts), total:bandPts + attendancePts + wildcardPts + getBonus(runs, ts)};
+    var volunteerPts = 0;
+    var volunteerSessions = 0;
+    filterEvs.forEach(function(ev) {
+      var rd2 = (S.results[ev.id] || {})[r.id];
+      if (rd2 && rd2.volunteer && !ev.wildcard) {
+        var ts2 = getTournamentSettings(ev.tournamentId);
+        var maxSessions = ts2.volunteerMaxSessions != null ? ts2.volunteerMaxSessions : 1;
+        if (maxSessions === 0 || volunteerSessions < maxSessions) {
+          volunteerPts += (ts2.volunteerBonus || 0);
+          volunteerSessions++;
+        }
+      }
+    });
+    return {runner:r, bandPts:bandPts, runs:runs, attendancePts:attendancePts, wildcardPts:wildcardPts, volunteerPts:volunteerPts, bonus:getBonus(runs, ts), total:bandPts + attendancePts + wildcardPts + volunteerPts + getBonus(runs, ts)};
   }).filter(function(s) { return s.runs > 0; }).sort(function(a,b) { return b.total - a.total || a.runner.name.localeCompare(b.runner.name); });
 
   var totalPts = scores.reduce(function(sum, s) { return sum + s.total; }, 0);
   var ts = getTournamentSettings(parseInt(tid));
   var showAttBonus = (ts.attendanceBonus || 0) > 0 && scores.some(function(s) { return s.attendancePts > 0; });
+  var hasVolunteers = scores.some(function(s) { return s.volunteerPts > 0; });
+  var showVolBonus = hasVolunteers;
   var hasWildcard = filterEvs.some(function(e) { return e.wildcard === true; });
   var showWcBonus = hasWildcard && (ts.wildcardBonus || 2) > 0 && scores.some(function(s) { return s.wildcardPts > 0; });
-  var colDef = '40px 1fr' + (showAttBonus ? ' 75px' : '') + (showWcBonus ? ' 75px' : '') + ' 75px 90px 80px';
+  var colDef = '40px 1fr' + (showAttBonus ? ' 75px' : '') + (showVolBonus ? ' 75px' : '') + (showWcBonus ? ' 75px' : '') + ' 75px 90px 80px';
   var hdr = '<span style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;">#</span>'
     + '<span style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;">Runner</span>'
     + (showAttBonus ? '<span style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;text-align:right;">&#9989; Att.</span>' : '')
+    + (showVolBonus ? '<span style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;text-align:right;">&#129309; Vol.</span>' : '')
     + (showWcBonus ? '<span style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;text-align:right;">&#9889; WC</span>' : '')
     + '<span style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;text-align:right;">&#9201; Speed</span>'
     + '<span style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;text-align:right;">&#127919; Bonus</span>'
@@ -1881,6 +1909,7 @@ function renderLeaderboard() {
       + '<div class="pos-num" style="' + (posStyles[i] || 'background:var(--bg4);color:var(--text2);font-size:12px;') + '">' + (i+1) + '</div>'
       + '<div><div class="lb-name">' + s.runner.name + '</div><div class="lb-sub">' + (s.runner.rid ? 'A' + s.runner.rid + ' &middot; ' : '') + s.runs + ' run' + (s.runs !== 1 ? 's' : '') + '</div></div>'
       + (showAttBonus ? '<div class="text-right" style="color:var(--blue);font-weight:600;">+' + s.attendancePts + '</div>' : '')
+      + (showVolBonus ? '<div class="text-right" style="color:#6ab04c;font-weight:600;">+' + s.volunteerPts + '</div>' : '')
       + (showWcBonus ? '<div class="text-right" style="color:#c084fc;font-weight:600;">+' + s.wildcardPts + '</div>' : '')
       + '<div class="text-right" style="font-weight:600;color:' + bandColor + ';">' + (s.bandPts > 0 ? '+' : '') + s.bandPts + '</div>'
       + '<div class="text-right" style="color:var(--orange);font-weight:600;">' + (s.bonus > 0 ? '+' : '') + s.bonus + '</div>'
