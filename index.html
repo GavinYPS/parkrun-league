@@ -1573,15 +1573,27 @@ function autoEnrollOnBaseline(tid, rId) { var cb = document.getElementById('enro
 
 function updateEnrollBandSuggestion(tid, rId) {
   var input = document.getElementById('enroll-baseline-' + tid + '-' + rId);
-  var btn = document.querySelector('[id="enroll-band-' + tid + '-' + rId + '"]');
+  var bandSel = document.getElementById('enroll-band-' + tid + '-' + rId);
   if (!input || !isParkrun(tid)) return;
   var sec = tSec(input.value);
   var suggested = suggestBand(sec);
-  // Update the suggestion button dynamically
-  var suggBtn = document.getElementById('enroll-band-sugg-' + tid + '-' + rId);
+  var suggBtnId = 'enroll-band-sugg-' + tid + '-' + rId;
+  var suggBtn = document.getElementById(suggBtnId);
+  if (!suggBtn && bandSel && bandSel.parentNode && bandSel.parentNode.parentNode) {
+    suggBtn = document.createElement('button');
+    suggBtn.id = suggBtnId;
+    suggBtn.style.cssText = 'font-size:10px;background:var(--orange-dim);border:1px solid var(--orange);color:var(--orange);padding:1px 6px;border-radius:3px;cursor:pointer;white-space:nowrap;margin-top:3px;';
+    bandSel.parentNode.parentNode.appendChild(suggBtn);
+  }
   if (suggBtn) {
-    if (suggested) { suggBtn.textContent = 'Suggested: ' + suggested + ' (' + BAND_TIME_RANGES[suggested] + ')'; suggBtn.style.display = ''; }
-    else { suggBtn.style.display = 'none'; }
+    if (suggested) {
+      var b = suggested;
+      suggBtn.textContent = 'Suggested: ' + b + ' (' + BAND_TIME_RANGES[b] + ')';
+      suggBtn.style.display = '';
+      suggBtn.onclick = function() { var sel = document.getElementById('enroll-band-' + tid + '-' + rId); if (sel) sel.value = b; this.style.display = 'none'; };
+    } else {
+      suggBtn.style.display = 'none';
+    }
   }
 }
 
