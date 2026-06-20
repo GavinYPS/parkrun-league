@@ -1718,10 +1718,16 @@ function renderEnterTimesRows(evId) {
     if (readonly) {
       var isVolunteer = rd.volunteer === true;
       attendedCell = attended
-        ? '<span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--orange);">' + tickedSvg + (isVolunteer ? ' Volunteer' : ' Attended') + '</span>'
-        : '<span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--text3);">' + emptySvg + ' Not attended</span>';
+        ? '<span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--orange);">' + tickedSvg + '</span>'
+        : '<span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--text3);">' + emptySvg + '</span>';
+      var typeCell = !attended
+        ? '<span style="color:var(--text3);font-size:12px;">&mdash;</span>'
+        : (isVolunteer
+          ? '<span style="font-size:12px;color:var(--blue);font-weight:600;">🙋 Volunteered</span>'
+          : '<span style="font-size:12px;color:var(--orange);font-weight:600;">🏃 Raced</span>');
       timeCell = !attended ? '<span style="color:var(--text3);font-size:12px;">&mdash;</span>'
-        : '<span class="text-mono" style="font-size:14px;">' + (rd.actualSec != null ? sTime(rd.actualSec) : '00:00:00') + '</span>';
+        : (isVolunteer ? '<span style="color:var(--text3);font-size:12px;">&mdash;</span>'
+        : '<span class="text-mono" style="font-size:14px;">' + (rd.actualSec != null ? sTime(rd.actualSec) : '&mdash;') + '</span>');
     } else {
       var isVolunteer = rd.volunteer === true;
       // Attended tick column
