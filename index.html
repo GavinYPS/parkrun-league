@@ -1684,21 +1684,51 @@ function renderEtResultRows(evId) {
   var attending = getTournamentRunners(ev ? ev.tournamentId : null).filter(function(r) { return isAttended(res[r.id]); });
   if (!attending.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:1.5rem;">No attending runners.</td></tr>'; return; }
   tbody.innerHTML = attending.map(function(r) {
-    var rd = res[r.id] || {}; var actual = rd.actualSec != null ? rd.actualSec : null;
+    var rd = res[r.id] || {};
+    var isVolunteer = rd.volunteer === true || (isAttended(rd) && rd.actualSec == null);
+    var actual = rd.actualSec != null ? rd.actualSec : null;
     var baseline = getTournamentBaselinePb(r.id, ev ? ev.tournamentId : null);
     var diff = (actual != null && baseline != null) ? actual - baseline : null;
-    var bp = (diff != null && isParkrun(ev ? ev.tournamentId : null) && r.band) ? getBandPtsForRunner(diff, r.band, ts) : (diff != null ? {pts:0, label: r.band ? 'No improvement' : 'No band assigned'} : null);
+
+    // Points breakdown for this event
+    var bandPts = 0; var bandLabel = '';
+    if (!isVolunteer && diff != null && isParkrun(ev ? ev.tournamentId : null) && r.band) {
+      var bp = getBandPtsForRunner(diff, r.band, ts);
+      bandPts = bp.pts; bandLabel = bp.label;
+    }
+    var attPts = isVolunteer ? 0 : (ts.attendanceBonus || 0);
+    var volPts = isVolunteer ? (ts.volunteerBonus || 0) : 0;
+    var eventTotal = bandPts + attPts + volPts;
+
     var bc = diff == null ? 'badge-neu' : diff < 0 ? 'badge-pos' : 'badge-neg';
-    var ptsColor = bp && bp.pts > 0 ? 'var(--orange)' : bp && bp.pts < 0 ? 'var(--red)' : 'var(--text)';
-    var ptsDisplay = bp != null ? ((bp.pts > 0 ? '+' : '') + bp.pts) : '--';
-    var baselineDisplay = baseline != null
-      ? '<span class="text-mono" style="color:var(--orange);">' + sTime(baseline) + '</span> <button onclick="editBaseline(' + evId + ',' + r.id + ')" style="background:none;border:none;cursor:pointer;padding:2px 4px;font-size:10px;color:var(--text3);">Edit</button>'
-      : '<span style="color:var(--text3);">--</span> <button onclick="editBaseline(' + evId + ',' + r.id + ')" style="background:none;border:none;cursor:pointer;padding:2px 4px;font-size:10px;color:var(--orange);">Set</button>';
+    var ptsColor = eventTotal > 0 ? 'var(--orange)' : eventTotal < 0 ? 'var(--red)' : 'var(--text)';
+    var ptsDisplay = (eventTotal > 0 ? '+' : '') + eventTotal;
+
+    // Build pts breakdown label
+    var breakdown = [];
+    if (bandPts !== 0) breakdown.push(bandLabel || bandPts + ' band pts');
+    if (attPts > 0) breakdown.push('+' + attPts + ' att.');
+    if (volPts > 0) breakdown.push('+' + volPts + ' vol.');
+    var breakdownStr = breakdown.join(' · ');
+
+    var baselineDisplay = isVolunteer ? '<span style="color:var(--text3);">—</span>'
+      : (baseline != null
+        ? '<span class="text-mono" style="color:var(--orange);">' + sTime(baseline) + '</span> <button onclick="editBaseline(' + evId + ',' + r.id + ')" style="background:none;border:none;cursor:pointer;padding:2px 4px;font-size:10px;color:var(--text3);">Edit</button>'
+        : '<span style="color:var(--text3);">--</span> <button onclick="editBaseline(' + evId + ',' + r.id + ')" style="background:none;border:none;cursor:pointer;padding:2px 4px;font-size:10px;color:var(--orange);">Set</button>');
     var nameCell = '<strong style="font-size:15px;text-transform:uppercase;">' + r.name + '</strong>' + (showPkId && r.rid ? '<br><span style="font-size:11px;color:var(--text3);">A' + r.rid + '</span>' : '');
+
+    if (isVolunteer) {
+      return '<tr><td>' + nameCell + '</td>'
+        + '<td><span style="font-size:12px;color:var(--blue);font-weight:600;">🙋 Volunteered</span></td>'
+        + '<td><span style="color:var(--text3);">—</span></td>'
+        + '<td></td>'
+        + '<td style="font-size:12px;color:var(--text2);">' + (volPts > 0 ? '+' + volPts + ' volunteer bonus' : 'No volunteer bonus') + '</td>'
+        + '<td style="font-weight:800;font-size:18px;color:' + ptsColor + ';">' + ptsDisplay + '</td></tr>';
+    }
     return '<tr><td>' + nameCell + '</td><td style="white-space:nowrap;">' + baselineDisplay + '</td>'
       + '<td class="text-mono">' + (actual != null ? sTime(actual) : '<span style="color:var(--text3)">--</span>') + '</td>'
       + '<td>' + (diff != null ? '<span class="badge ' + bc + '">' + dStr(diff) + '</span>' : '') + '</td>'
-      + '<td style="font-size:12px;color:var(--text2);">' + (bp ? bp.label : '') + '</td>'
+      + '<td style="font-size:12px;color:var(--text2);">' + breakdownStr + '</td>'
       + '<td style="font-weight:800;font-size:18px;color:' + ptsColor + ';">' + ptsDisplay + '</td></tr>';
   }).join('');
 }
@@ -1725,7 +1755,9 @@ function renderEnterTimesRows(evId) {
         ? '<span style="color:var(--text3);font-size:12px;">&mdash;</span>'
         : (isVolunteer
           ? '<span style="font-size:12px;color:var(--blue);font-weight:600;">🙋 Volunteered</span>'
-          : '<span style="font-size:12px;color:var(--orange);font-weight:600;">🏃 Raced</span>');
+          : (rd.actualSec != null
+            ? '<span style="font-size:12px;color:var(--orange);font-weight:600;">🏃 Raced</span>'
+            : '<span style="font-size:12px;color:var(--blue);font-weight:600;">🙋 Volunteered</span>'));
       timeCell = !attended ? '<span style="color:var(--text3);font-size:12px;">&mdash;</span>'
         : (isVolunteer ? '<span style="color:var(--text3);font-size:12px;">&mdash;</span>'
         : '<span class="text-mono" style="font-size:14px;">' + (rd.actualSec != null ? sTime(rd.actualSec) : '&mdash;') + '</span>');
@@ -1825,7 +1857,7 @@ function editBaseline(evId, rId) {
 function viewResultsValidated(evId) {
   var res = S.results[evId] || {}; var ev = S.events.find(function(e) { return e.id === evId; });
   var eligible = getTournamentRunners(ev ? ev.tournamentId : null);
-  var missing = eligible.filter(function(r) { var rd = res[r.id] || {}; return isAttended(rd) && !rd.actualSec; });
+  var missing = eligible.filter(function(r) { var rd = res[r.id] || {}; return isAttended(rd) && !rd.volunteer && !rd.actualSec; });
   if (missing.length) {
     var names = missing.map(function(r) { return r.name; }).join(', ');
     confirmModal('Missing Times', missing.length + ' runner' + (missing.length > 1 ? 's have' : ' has') + ' no time: ' + names + '. Continue anyway?', 'View Results', function() {});
