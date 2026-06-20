@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
@@ -868,7 +868,7 @@ function updateAddRunnerBandSuggestion() {
 function addRunner() {
   var url = document.getElementById('r-url').value.trim();
   var name = document.getElementById('r-name').value.trim();
-  var ridM = url.match(/\b(\d{4,9})\b/); var rid = ridM ? ridM[1] : '';
+  var cleaned = url.replace(/^A+/i, ""); var ridM = cleaned.match(/\b(\d{4,9})\b/); var rid = ridM ? ridM[1] : "";
   if (!name) { alert('Please enter a name.'); return; }
   if (rid && S.runners.some(function(r) { return r.rid === rid; })) { alert('Runner A' + rid + ' already added.'); return; }
   var types = S.activityTypes || DEFAULT_ACTIVITY_TYPES; var pbs = {};
