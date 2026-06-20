@@ -1699,7 +1699,7 @@ function renderEnterTimesRows(evId) {
   var tbody = document.getElementById('et-tbody-' + evId); if (!tbody) return;
   var ev = S.events.find(function(e) { return e.id === evId; }); var showPkId = isParkrun(ev ? ev.tournamentId : null);
   var res = S.results[evId] || {}; var eligible = getTournamentRunners(ev ? ev.tournamentId : null);
-  if (!eligible.length) { tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--text3);padding:1.5rem;">No runners enrolled.</td></tr>'; return; }
+  if (!eligible.length) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text3);padding:1.5rem;">No runners enrolled.</td></tr>'; return; }
   var readonly = !etEditMode;
   var tickedSvg = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><polyline points="9 12 11 14 15 10" stroke="#fff" stroke-width="2.5" fill="none"/></svg>';
   var emptySvg = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/></svg>';
@@ -1716,16 +1716,19 @@ function renderEnterTimesRows(evId) {
         : '<span class="text-mono" style="font-size:14px;">' + (rd.actualSec != null ? sTime(rd.actualSec) : '00:00:00') + '</span>';
     } else {
       var isVolunteer = rd.volunteer === true;
-      var volSvg = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="' + (isVolunteer ? 'var(--blue)' : 'var(--text3)') + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>';
-      attendedCell = '<div style="display:flex;align-items:center;gap:4px;">'
-        + '<button onclick="toggleAttendanceEt(' + evId + ',' + r.id + ')" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;" title="' + (attended ? 'Mark as not attended' : 'Mark as attended') + '">' + (attended ? tickedSvg : emptySvg) + '</button>'
-        + '<button onclick="toggleVolunteerEt(' + evId + ',' + r.id + ')" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;" title="' + (isVolunteer ? 'Remove volunteer status' : 'Volunteer — attended but did not race. Gets attendance bonus, no band points.') + '">' + volSvg + '</button>'
-        + '</div>';
+      // Attended tick column
+      attendedCell = '<button onclick="toggleAttendanceEt(' + evId + ',' + r.id + ')" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;" title="' + (attended ? 'Mark as not attended' : 'Mark as attended') + '">' + (attended ? tickedSvg : emptySvg) + '</button>';
+      // Type column — only shown when attended; defaults to Raced
+      var typeCell = !attended ? '<span style="color:var(--text3);font-size:12px;">&mdash;</span>'
+        : '<div style="display:flex;gap:4px;">'
+          + '<button onclick="setRunnerTypeEt(' + evId + ',' + r.id + ',false)" style="font-size:11px;padding:2px 8px;border-radius:3px;cursor:pointer;border:1px solid ' + (!isVolunteer ? 'var(--orange)' : 'var(--border2)') + ';background:' + (!isVolunteer ? 'var(--orange-dim)' : 'none') + ';color:' + (!isVolunteer ? 'var(--orange)' : 'var(--text3)') + ';font-weight:700;">🏃 Raced</button>'
+          + '<button onclick="setRunnerTypeEt(' + evId + ',' + r.id + ',true)" style="font-size:11px;padding:2px 8px;border-radius:3px;cursor:pointer;border:1px solid ' + (isVolunteer ? 'var(--blue)' : 'var(--border2)') + ';background:' + (isVolunteer ? 'rgba(90,159,212,.15)' : 'none') + ';color:' + (isVolunteer ? 'var(--blue)' : 'var(--text3)') + ';font-weight:700;">🙋 Volunteered</button>'
+          + '</div>';
       timeCell = !attended ? '<span style="font-size:12px;color:var(--text3);">&mdash;</span>'
-        : (isVolunteer ? '<span style="font-size:12px;color:var(--blue);font-weight:600;">🙋 Volunteer</span>'
+        : (isVolunteer ? '<span style="font-size:12px;color:var(--text3);">&mdash;</span>'
         : '<input type="time" step="1" id="et-time-' + evId + '-' + r.id + '" value="' + mVal + '" style="max-width:140px;"/>');
     }
-    return '<tr><td>' + nameCell + '</td><td>' + attendedCell + '</td><td>' + timeCell + '</td></tr>';
+    return '<tr><td>' + nameCell + '</td><td style="text-align:center;">' + attendedCell + '</td><td>' + typeCell + '</td><td>' + timeCell + '</td></tr>';
   }).join('');
 }
 
@@ -1757,6 +1760,15 @@ function toggleVolunteerEt(evId, rId) {
   } else {
     S.results[evId][rId].volunteer = false;
   }
+  renderEnterTimesRows(evId);
+}
+
+function setRunnerTypeEt(evId, rId, isVolunteer) {
+  if (!S.results[evId]) S.results[evId] = {};
+  if (!S.results[evId][rId]) S.results[evId][rId] = {};
+  S.results[evId][rId].attended = true;
+  S.results[evId][rId].volunteer = isVolunteer;
+  if (isVolunteer) S.results[evId][rId].actualSec = null;
   renderEnterTimesRows(evId);
 }
 
