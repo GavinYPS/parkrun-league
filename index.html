@@ -2061,7 +2061,9 @@ sw('leaderboard');
 if (ghIsConfigured()) ghPull();
 
 // ═══════════════════════════════════════════════════════════════════════════
-// PARKRUN AUTO-IMPORT  v3
+// PARKRUN AUTO-IMPORT  v4
+// Uses window.parkrunResultsData (already in the page) + club filter
+// No iframe, no cross-origin issues
 // ═══════════════════════════════════════════════════════════════════════════
 
 (function injectImportStyles() {
@@ -2072,7 +2074,6 @@ if (ghIsConfigured()) ghPull();
     .im-box{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);width:100%;max-width:720px;max-height:92vh;display:flex;flex-direction:column;box-shadow:0 8px 56px rgba(0,0,0,.95);margin:1rem;}
     .im-head{padding:.85rem 1.25rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;gap:8px;}
     .im-head h3{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;margin:0;}
-    .im-phase{font-size:12px;color:var(--text3);font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.08em;}
     .im-status{font-size:13px;padding:.5rem 1.25rem;background:var(--bg3);border-bottom:1px solid var(--border);color:var(--text2);display:none;align-items:center;gap:8px;flex-shrink:0;}
     .im-body{overflow-y:auto;padding:.85rem 1.25rem;flex:1;min-height:0;}
     .im-foot{padding:.7rem 1.25rem;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;align-items:center;flex-shrink:0;flex-wrap:wrap;}
@@ -2086,7 +2087,7 @@ if (ghIsConfigured()) ghPull();
     .im-vhdr{display:grid;grid-template-columns:18px 1fr 1fr;gap:8px;padding:4px 0;border-bottom:2px solid var(--border2);font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;}
     .im-vrow{display:grid;grid-template-columns:18px 1fr 1fr;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;}
     .im-vrow:last-child{border-bottom:none;}
-    .im-new-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;}
+    .im-new-row{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;}
     .im-new-row:last-child{border-bottom:none;}
     .im-chk{width:15px;height:15px;accent-color:var(--orange);cursor:pointer;margin-top:2px;}
     .im-prname{font-weight:600;line-height:1.3;}
@@ -2103,26 +2104,25 @@ if (ghIsConfigured()) ghPull();
     .im-absent:last-child{border-bottom:none;}
     .btn-import{color:var(--blue);border-color:rgba(90,159,212,.3);background:rgba(90,159,212,.08);}
     .btn-import:hover{background:rgba(90,159,212,.2);}
-    .im-iframe{position:fixed;width:1280px;height:900px;opacity:0;pointer-events:none;left:-9999px;top:-9999px;}
+    .im-step-box{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:1rem;margin-bottom:.75rem;}
+    .im-step-box ol{padding-left:1.2rem;margin:.5rem 0 0;}
+    .im-step-box li{font-size:13px;color:var(--text2);margin-bottom:.4rem;line-height:1.5;}
+    .im-paste-area{width:100%;min-height:80px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);font-size:12px;padding:.5rem;font-family:'SF Mono','Fira Code',monospace;resize:vertical;margin-top:.5rem;}
+    .im-paste-area:focus{outline:none;border-color:var(--orange);}
   `;
   document.head.appendChild(s);
 })();
 
-// ── URL builder ─────────────────────────────────────────────────────────────
-// Uses location.eventPage slug OR location.slug to build:
-// https://www.parkrun.org.uk/{slug}/results/{date}/
+// ── URL builder ──────────────────────────────────────────────────────────────
 function prBuildUrl(ev) {
   var loc = S.locations.find(function(l){ return l.id === ev.locationId; });
   if (!loc || !ev.date) return null;
   var slug = null;
-  // First try eventPage URL
   if (loc.eventPage) {
     var m = loc.eventPage.match(/parkrun\.org\.uk\/([a-z0-9-]+)/i);
     if (m) slug = m[1].toLowerCase();
   }
-  // Fall back to stored slug field
   if (!slug && loc.slug) slug = loc.slug.toLowerCase();
-  // Fall back to slugifying the name
   if (!slug && loc.name) slug = loc.name.toLowerCase().replace(/\s+parkrun.*/i,'').replace(/[^a-z0-9]/g,'');
   if (!slug) return null;
   return 'https://www.parkrun.org.uk/' + slug + '/results/' + ev.date + '/';
@@ -2154,133 +2154,38 @@ function prSec(str) {
   return null;
 }
 
-// ── Read DOM after club filter is applied ────────────────────────────────────
-function prReadDom(doc) {
-  var finishers = [], volunteers = [];
-  var bodyText = doc.body ? (doc.body.innerText || doc.body.textContent || '') : '';
-  var lines = bodyText.split('\n').map(function(l){ return l.trim(); }).filter(Boolean);
-  var inVols = false;
+// ── Parse pasted page text ───────────────────────────────────────────────────
+// Accepts the raw innerText of a Parkrun results page after club filter applied
+function prParseText(text) {
+  var finishers = [], volunteers = [], inVols = false;
+  var lines = text.split('\n').map(function(l){ return l.trim(); }).filter(Boolean);
+  // Role keywords to skip in volunteer section
+  var roleWords = /^(run director|timekeeper|barcode|marshal|funnel|tail|token|setup|photographer|report|pacer|first timer|course check|photographer|equipment)/i;
 
   for (var i = 0; i < lines.length; i++) {
     var line = lines[i];
-    if (line.toLowerCase().includes('thanks to the volunteers')) { inVols = true; continue; }
-
+    if (line.toLowerCase().includes('thanks to the volunteers')) { inVols=true; continue; }
     if (!inVols) {
-      // Finisher: "671  Rebecca BETTISON  28:03"
       var chunk = [line, lines[i+1]||'', lines[i+2]||''].join(' ').replace(/\s+/g,' ').trim();
       var m = chunk.match(/^(\d+)\s+([A-Za-z\u00C0-\u024F][a-zA-Z\u00C0-\u024F\s'\-\.]+?)\s+(\d{1,2}:\d{2}(?::\d{2})?)(?:\s|$)/);
       if (m) {
         var name = m[2].trim();
-        if (name && name.toLowerCase() !== 'unknown') {
+        if (name && name.toLowerCase()!=='unknown') {
           finishers.push({ pos:m[1], name:name, time:m[3], timeSec:prSec(m[3]) });
           i++;
         }
       }
     } else {
-      // Volunteer names — skip sort/ui lines
-      if (line.match(/^sort by/i)||line.match(/^compact|detailed/i)||line.length<3||line.match(/^\d/)) continue;
-      if (line.match(/^[A-Z][a-zA-Z\u00C0-\u024F\s'\-\.]+$/)&&!line.match(/\d/)) {
+      if (line.match(/^sort by/i)||line.match(/^compact|detailed/i)||line.length<3||line.match(/^\d/)||roleWords.test(line)) continue;
+      if (line.match(/^[A-Z\u00C0-\u024F][a-zA-Z\u00C0-\u024F\s'\-\.]+$/)&&!line.match(/\d/)) {
         volunteers.push({ name:line });
       }
     }
   }
-
-  // Deduplicate finishers
+  // Deduplicate
   var seen={};
-  finishers = finishers.filter(function(f){
-    var k=f.name+f.time; if(seen[k]) return false; seen[k]=true; return true;
-  });
-
+  finishers = finishers.filter(function(f){ var k=f.name+f.time; if(seen[k]) return false; seen[k]=true; return true; });
   return { finishers:finishers, volunteers:volunteers };
-}
-
-// ── Scrape via iframe ─────────────────────────────────────────────────────────
-function prScrapeViaIframe(url, clubName) {
-  return new Promise(function(resolve, reject) {
-    var iframe = document.createElement('iframe');
-    iframe.className = 'im-iframe';
-    iframe.src = url;
-    document.body.appendChild(iframe);
-
-    var giveUp = setTimeout(function(){
-      iframe.remove();
-      reject(new Error('Timed out loading Parkrun page (20s)'));
-    }, 20000);
-
-    iframe.onload = function() {
-      // Wait for parkrun JS to initialise
-      setTimeout(function() {
-        try {
-          var id = iframe.contentDocument;
-
-          // Find search input
-          var searchBox = id.querySelector('input[type="search"]') ||
-            Array.from(id.querySelectorAll('input')).find(function(el){
-              return (el.placeholder||'').toLowerCase().includes('search') ||
-                     (el.className||'').toLowerCase().includes('search');
-            });
-
-          if (!searchBox) {
-            // No search box — read DOM as-is (may be unfiltered)
-            clearTimeout(giveUp);
-            var data = prReadDom(id);
-            iframe.remove();
-            resolve({ data:data, filtered:false });
-            return;
-          }
-
-          // Type club name to trigger autocomplete
-          searchBox.focus();
-          searchBox.value = clubName;
-          ['input','keyup','change'].forEach(function(ev){
-            searchBox.dispatchEvent(new Event(ev,{bubbles:true}));
-          });
-
-          // Poll for the group chip in dropdown
-          var attempts = 0;
-          var poll = setInterval(function(){
-            attempts++;
-            var allEls = Array.from(id.querySelectorAll('li, button, [role="option"], [class*="suggest"], [class*="chip"], [class*="dropdown"] *'));
-            var chip = allEls.find(function(el){
-              var t = (el.textContent||'').trim();
-              return t.toLowerCase().includes(clubName.toLowerCase()) &&
-                     (t.toLowerCase().includes('group')||t.toLowerCase().includes('club'));
-            });
-
-            if (chip) {
-              clearInterval(poll);
-              chip.click();
-              // Wait for filtered results to render
-              setTimeout(function(){
-                clearTimeout(giveUp);
-                var data = prReadDom(id);
-                iframe.remove();
-                resolve({ data:data, filtered:true });
-              }, 2500);
-            } else if (attempts > 40) {
-              clearInterval(poll);
-              // Dropdown didn't appear — read whatever is rendered
-              clearTimeout(giveUp);
-              var data = prReadDom(id);
-              iframe.remove();
-              resolve({ data:data, filtered:false });
-            }
-          }, 100);
-
-        } catch(e) {
-          clearTimeout(giveUp);
-          iframe.remove();
-          reject(new Error('Cross-origin block or page error: ' + e.message));
-        }
-      }, 3500);
-    };
-
-    iframe.onerror = function(){
-      clearTimeout(giveUp);
-      iframe.remove();
-      reject(new Error('Failed to load page in iframe'));
-    };
-  });
 }
 
 // ── Modal state ──────────────────────────────────────────────────────────────
@@ -2294,6 +2199,7 @@ function imOpen(eventId) {
   _imS.tId = ev.tournamentId;
   var url = prBuildUrl(ev);
   var loc = S.locations.find(function(l){ return l.id===ev.locationId; });
+  var clubName = getClubName();
 
   if (!_imModal) {
     _imModal = document.createElement('div');
@@ -2301,7 +2207,7 @@ function imOpen(eventId) {
     _imModal.innerHTML =
       '<div class="im-box">' +
         '<div class="im-head">' +
-          '<div><h3 id="im-title">Import from Parkrun</h3><div class="im-phase" id="im-phase"></div></div>' +
+          '<h3 id="im-title">Import from Parkrun</h3>' +
           '<button class="btn btn-sm" onclick="imClose()">&#10005; Close</button>' +
         '</div>' +
         '<div class="im-status" id="im-status"></div>' +
@@ -2318,44 +2224,50 @@ function imOpen(eventId) {
   _imModal.classList.add('open');
   document.getElementById('im-title').textContent =
     'Import \u2014 ' + (loc ? loc.name : 'Event') + ' \u00B7 ' + (ev.date||'');
-  document.getElementById('im-phase').textContent = '';
   document.getElementById('im-status').style.display = 'none';
   document.getElementById('im-commit').disabled = true;
   document.getElementById('im-count').textContent = '';
 
   if (!url) {
     document.getElementById('im-body').innerHTML =
-      '<div class="im-warn">Cannot build results URL.<br>' +
-      'Make sure the location has an Event Page URL set (e.g. https://www.parkrun.org.uk/macclesfield/) ' +
-      'or a slug field, and the event has a date.</div>';
+      '<div class="im-warn">Cannot build results URL \u2014 make sure the location has a slug or Event Page URL set and the event has a date.</div>';
     return;
   }
 
-  var clubName = getClubName();
+  // Show instructions + paste area
   document.getElementById('im-body').innerHTML =
-    '<div class="im-info">\uD83D\uDCCD <strong>' + url + '</strong><br>' +
-    '\uD83D\uDD0D Filtering by club: <strong>' + clubName + '</strong></div>' +
-    '<div class="notice"><span class="im-spin"></span>&nbsp; Loading Parkrun page&hellip;</div>';
-  document.getElementById('im-phase').textContent = 'Opening page\u2026';
-
-  prScrapeViaIframe(url, clubName).then(function(result) {
-    document.getElementById('im-phase').textContent = '';
-    imBuild(result.data, result.filtered, url, clubName);
-  }).catch(function(err) {
-    document.getElementById('im-phase').textContent = '';
-    document.getElementById('im-body').innerHTML =
-      '<div class="im-warn">Could not load results: ' + err.message + '</div>' +
-      '<div class="im-info">Parkrun may block iframes — try opening the page manually and entering times.<br>' +
-      '<a href="' + url + '" target="_blank" class="btn btn-sm btn-info" style="margin-top:8px;">Open results page \u2197</a></div>';
-  });
+    '<div class="im-step-box">' +
+      '<strong style="font-size:13px;color:var(--text);">Step 1 \u2014 Get the filtered results</strong>' +
+      '<ol>' +
+        '<li>Click this link to open the results page: <a href="' + url + '" target="_blank" style="color:var(--blue);">' + url + ' \u2197</a></li>' +
+        '<li>In the search box, type <strong>' + clubName + '</strong> and click the <strong>Group</strong> suggestion</li>' +
+        '<li>Press <strong>Ctrl+A</strong> then <strong>Ctrl+C</strong> to copy the entire filtered page</li>' +
+        '<li>Paste it into the box below and click <strong>Read Results</strong></li>' +
+      '</ol>' +
+    '</div>' +
+    '<textarea id="im-paste" class="im-paste-area" placeholder="Paste the Parkrun results page here\u2026"></textarea>' +
+    '<div class="btn-group" style="margin-top:10px;">' +
+      '<button class="btn btn-primary" onclick="imReadPaste()">Read Results</button>' +
+    '</div>';
 }
 
-function imBuild(data, filtered, url, clubName) {
-  var tRunners = getTournamentRunners(_imS.tId);
-  var finishers = data.finishers;
-  var volunteers = data.volunteers;
+function imReadPaste() {
+  var text = (document.getElementById('im-paste')||{}).value||'';
+  if (!text.trim()) { showToast('Paste the page text first'); return; }
+  var data = prParseText(text);
+  if (!data.finishers.length) {
+    document.getElementById('im-body').innerHTML =
+      '<div class="im-warn">No results found in pasted text. Make sure you copied the full page <em>after</em> applying the club filter.</div>' +
+      '<div class="btn-group"><button class="btn" onclick="imOpen(_imS.evId)">Try again</button></div>';
+    return;
+  }
+  imBuild(data);
+}
 
-  _imS.rows = finishers.map(function(f){
+function imBuild(data) {
+  var tRunners = getTournamentRunners(_imS.tId);
+
+  _imS.rows = data.finishers.map(function(f){
     var m = prMatch(f.name, tRunners);
     return { prRow:f, runner:m.conf!=='none'?m.runner:null, conf:m.conf,
              checked:m.conf==='strong'&&!!f.timeSec, override:null };
@@ -2365,7 +2277,7 @@ function imBuild(data, filtered, url, clubName) {
     .filter(function(r){ return r.conf==='none'; })
     .map(function(r){ return { prName:r.prRow.name, time:r.prRow.time, timeSec:r.prRow.timeSec, pos:r.prRow.pos, add:false }; });
 
-  _imS.vols = volunteers.map(function(v){
+  _imS.vols = data.volunteers.map(function(v){
     var m = prMatch(v.name, tRunners);
     return { prName:v.name, runner:m.conf!=='none'?m.runner:null, conf:m.conf,
              checked:m.conf==='strong', override:null };
@@ -2374,22 +2286,16 @@ function imBuild(data, filtered, url, clubName) {
   var matchedIds = _imS.rows
     .filter(function(r){ return r.runner||r.override; })
     .map(function(r){ return String(r.override||(r.runner&&r.runner.id)); });
-  _imS.absent = tRunners.filter(function(r){
-    return !matchedIds.includes(String(r.id));
-  });
+  _imS.absent = tRunners.filter(function(r){ return !matchedIds.includes(String(r.id)); });
 
-  imRender(filtered, url, clubName, finishers.length);
+  imRender();
 }
 
-function imRender(filtered, url, clubName, total) {
+function imRender() {
   var tRunners = getTournamentRunners(_imS.tId);
-  var html = '<div class="im-info">';
-  html += filtered
-    ? '\u2705 Club filter applied: <strong>' + clubName + '</strong> &middot; ' + total + ' finisher(s) found<br>'
-    : '\u26A0 Club filter could not be applied automatically &mdash; showing all results<br>';
-  html += 'Source: <a href="' + url + '" target="_blank" style="color:var(--blue);">' + url + ' \u2197</a></div>';
+  var html = '';
 
-  // ── Matched runners ──
+  // Matched runners
   var matched = _imS.rows.filter(function(r){ return r.conf!=='none'; });
   if (matched.length) {
     html += '<div class="im-sec">Matched Tournament Runners (' + matched.length + ')</div>';
@@ -2412,22 +2318,21 @@ function imRender(filtered, url, clubName, total) {
     });
   }
 
-  // ── Unrecognised (new) runners ──
+  // Unrecognised — suggest adding
   if (_imS.newR.length) {
     html += '<div class="im-sec">Not in Tournament \u2014 Suggest Adding (' + _imS.newR.length + ')</div>';
-    html += '<div class="im-info">Found under your club filter but not in the tournament roster. Tick to add as a new runner and record their time.</div>';
+    html += '<div class="im-info">Found in results but not in your tournament roster. Tick to add as a new runner.</div>';
     _imS.newR.forEach(function(nr, i){
       html += '<div class="im-new-row">' +
         '<div style="display:flex;align-items:start;gap:10px;">' +
           '<input type="checkbox" class="im-chk" id="imnew-'+i+'" onchange="imToggleNew('+i+',this.checked)" style="margin-top:3px;">' +
           '<div><div class="im-prname">'+nr.prName+'</div>' +
-            '<div style="font-size:11px;color:var(--text3);">Position #'+nr.pos+' &middot; Not in roster</div></div>' +
-        '</div>' +
+            '<div style="font-size:11px;color:var(--text3);">Position #'+nr.pos+' &middot; Not in roster</div></div></div>' +
         '<div class="im-time">'+nr.time+'</div></div>';
     });
   }
 
-  // ── Volunteers ──
+  // Volunteers
   if (_imS.vols.length) {
     html += '<div class="im-sec">Volunteers (' + _imS.vols.length + ')</div>';
     html += '<div class="im-vhdr"><span></span><span>Parkrun Name</span><span>Tournament Runner</span></div>';
@@ -2444,10 +2349,10 @@ function imRender(filtered, url, clubName, total) {
     });
   }
 
-  // ── Absent runners ──
+  // Absent
   if (_imS.absent.length) {
     html += '<div class="im-sec">Not Found in Results (' + _imS.absent.length + ')</div>';
-    html += '<div class="im-info">These tournament runners had no matching result under the club filter.</div>';
+    html += '<div class="im-info">These tournament runners had no matching result.</div>';
     _imS.absent.forEach(function(r){
       var existing = S.results[_imS.evId] && S.results[_imS.evId][r.id];
       var note = existing && existing.actualSec
@@ -2514,7 +2419,7 @@ function imCommit(){
   if(typeof renderRunners==='function') renderRunners();
 }
 
-// ── Inject button into Enter Times tab ───────────────────────────────────────
+// ── Inject Import button into Enter Times tab ────────────────────────────────
 var _origRET = renderEnterTimes;
 renderEnterTimes = function(){
   _origRET();
@@ -2532,7 +2437,7 @@ function imInjectButton(){
   var btn=document.createElement('button');
   btn.id='im-import-btn';
   btn.className='btn btn-import';
-  btn.title=url?'Will fetch: '+url:'Add location Event Page URL and event date to enable';
+  btn.title=url?'Import from: '+url:'Add location slug/URL and event date to enable';
   btn.innerHTML='\u2B07 Import from Parkrun';
   btn.disabled=!url;
   btn.onclick=function(){ imOpen(evId); };
