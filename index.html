@@ -1869,8 +1869,14 @@ function viewResultsValidated(evId) {
 }
 
 function renderLbSel() {
-  var sel = document.getElementById('lb-tournament-sel'); var cur = sel.value;
+  var sel = document.getElementById('lb-tournament-sel'); var cur = sel ? sel.value : '';
+  if (!sel) return;
   sel.innerHTML = '<option value="">-- select tournament --</option>' + S.tournaments.map(function(t) { return '<option value="' + t.id + '" ' + (String(t.id) === cur ? 'selected' : '') + '>' + (t.archived ? '[Archived] ' : '') + t.name + '</option>'; }).join('');
+  // Auto-select first active tournament if none selected
+  if (!cur && S.tournaments.length) {
+    var first = S.tournaments.find(function(t){ return !t.archived; }) || S.tournaments[0];
+    if (first) { sel.value = String(first.id); renderLeaderboard(); }
+  }
 }
 
 function renderLeaderboard() {
@@ -2075,7 +2081,7 @@ document.getElementById('confirm-modal').addEventListener('click', function(e) {
 
 renderNav(); loadLogo(); renderRunners(); renderTournaments(); renderEnterTimesSel(); renderLbSel(); renderGlobalSettings();
 sw('leaderboard');
-if (ghIsConfigured()) ghPull();
+if (ghIsConfigured()) ghPull().then(function(){ renderLbSel(); }).catch(function(){});
 
 // ═══════════════════════════════════════════════════════════════════════════
 // PARKRUN AUTO-IMPORT  v6
