@@ -1903,8 +1903,7 @@ function renderLeaderboard() {
       if (isAttended(rd)) {
         if (ev.wildcard) { wildcardPts += (ts.wildcardBonus || 2); }
         else if (rd.volunteer) {
-          // Volunteer: separate volunteer bonus, no attendance bonus, no band points
-          attendancePts += (ts.volunteerBonus || 0);
+          // Volunteer: points handled in separate volunteer loop below
         } else if (rd.actualSec != null) {
           // Racer: attendance bonus + band points
           attendancePts += (ts.attendanceBonus || 0);
@@ -1932,7 +1931,7 @@ function renderLeaderboard() {
       }
     });
     return {runner:r, bandPts:bandPts, runs:runs, attendancePts:attendancePts, wildcardPts:wildcardPts, volunteerPts:volunteerPts, bonus:getBonus(runs, ts), total:bandPts + attendancePts + wildcardPts + volunteerPts + getBonus(runs, ts)};
-  }).filter(function(s) { return s.runs > 0; }).sort(function(a,b) { return b.total - a.total || a.runner.name.localeCompare(b.runner.name); });
+  }).filter(function(s) { return s.runs > 0 || s.volunteerPts > 0 || s.wildcardPts > 0; }).sort(function(a,b) { return b.total - a.total || a.runner.name.localeCompare(b.runner.name); });
 
   var totalPts = scores.reduce(function(sum, s) { return sum + s.total; }, 0);
   var ts = getTournamentSettings(parseInt(tid));
