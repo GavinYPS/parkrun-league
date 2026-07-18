@@ -2237,10 +2237,7 @@ function imOpen(eventId) {
   document.getElementById('im-commit').disabled=true;
   document.getElementById('im-count').textContent='';
 
-  // Open the consolidated club report in a new tab immediately
-  window.open(consolidatedUrl, '_blank');
-
-  // Show waiting state with both options
+  // Show both options — user opens whichever page they want
   var eventUrl = prBuildEventUrl(ev);
   document.getElementById('im-body').innerHTML =
     '<div class="im-waiting">'+
@@ -2251,12 +2248,12 @@ function imOpen(eventId) {
       '<div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.75rem;margin-bottom:.5rem;">'+
         '<div style="font-family:\'Barlow Condensed\',sans-serif;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--orange);margin-bottom:.3rem;">Option 1 &mdash; Club Report (may lag 1-2 hrs)</div>'+
         '<div style="font-size:12px;color:var(--text2);margin-bottom:.5rem;">Already filtered to your club. Shows all members across all parkruns that day.</div>'+
-        '<a href="'+consolidatedUrl+'" target="_blank" class="btn btn-sm btn-import" style="display:inline-block;">Open Club Report &nearr;</a>'+
+        '<button class="btn btn-sm btn-import" onclick="window.open(\''+consolidatedUrl+'\',\'_blank\');">Open Club Report &nearr;</button>'+
       '</div>'+
       '<div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.75rem;margin-bottom:.75rem;">'+
         '<div style="font-family:\'Barlow Condensed\',sans-serif;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--blue);margin-bottom:.3rem;">Option 2 &mdash; Event Results (live immediately)</div>'+
         '<div style="font-size:12px;color:var(--text2);margin-bottom:.5rem;">Type <strong>'+getClubName()+'</strong> in the search box and click the Group chip, then Ctrl+A Ctrl+C.</div>'+
-        (eventUrl ? '<a href="'+eventUrl+'" target="_blank" class="btn btn-sm btn-import" style="display:inline-block;">Open Event Results &nearr;</a>' : '<span style="font-size:12px;color:var(--text3);">No event URL &mdash; add location slug to enable</span>')+
+        (eventUrl ? '<button class="btn btn-sm btn-import" onclick="window.open(\''+eventUrl+'\',\'_blank\');">Open Event Results &nearr;</button>' : '<span style="font-size:12px;color:var(--text3);">No event URL &mdash; add location slug to enable</span>')+
       '</div>'+
       '<div style="font-size:13px;color:var(--text2);margin-bottom:.5rem;">Once copied: <strong>Ctrl+A</strong> &rarr; <strong>Ctrl+C</strong> on the results page, then:</div>'+
       '<button class="btn btn-primary" onclick="imShowPaste()">&#8615; Paste Results</button>'+
@@ -2491,19 +2488,108 @@ function imCommit(){
     });
     n++;
   });
+  var newRunnersAdded = [];
   _imS.newR.forEach(function(nr){
     if(!nr.add||!nr.timeSec) return;
     var newId=uid();
-    S.runners.push({id:newId,name:nr.prName,rid:'',pbs:{},band:null,pbSec:null});
-    enrollRunner(tId,newId,null);
-    S.results[evId][newId]={actualSec:nr.timeSec,attended:true,importSource:'parkrun',importedAt:new Date().toISOString()};
+    // Use the imported time as initial PB for parkrun
+    var pbs = {}; pbs['parkrun'] = nr.timeSec;
+    var band = calcBand ? calcBand(nr.timeSec) : null;
+    S.runners.push({id:newId, name:nr.prName, rid:'', homeSlug:'', pbs:pbs, pbSec:nr.timeSec, band:band});
+    // Enrol with their run time as baseline
+    enrollRunner(tId, newId, nr.timeSec);
+    S.results[evId][newId]={actualSec:nr.timeSec, attended:true, importSource:'parkrun', importedAt:new Date().toISOString()};
+    newRunnersAdded.push({id:newId, name:nr.prName, time:nr.time, timeSec:nr.timeSec});
     n++;
   });
   persist();
   imClose();
-  showToast(n+' result'+(n!==1?'s':'')+' committed \u2713');
+
+  if(newRunnersAdded.length) {
+    // Show a follow-up modal to set PBs for new runners
+    setTimeout(function(){ imShowNewRunnerPbs(newRunnersAdded, tId); }, 300);
+    showToast(n+' result'+(n!==1?'s':'')+' committed \u2713 \u2014 set PBs for new runners');
+  } else {
+    showToast(n+' result'+(n!==1?'s':'')+' committed \u2713');
+  }
   if(typeof renderEnterTimes==='function') renderEnterTimes();
   if(typeof renderRunners==='function') renderRunners();
+}
+
+function imCloseNewPb(el){ el.closest(".im-overlay").remove(); }
+
+function imShowNewRunnerPbs(newRunners, tId) {
+  var types = S.activityTypes || ['parkrun'];
+  var modal = document.createElement('div');
+  modal.className = 'im-overlay open';
+  modal.style.zIndex = '900';
+
+  var rows = newRunners.map(function(nr, i) {
+    var pbInputs = types.map(function(type) {
+      // Pre-fill parkrun with their imported time
+      var preVal = type === 'parkrun' ? nr.time : '';
+      return '<div style="display:flex;align-items:center;gap:8px;margin-top:6px;">'+
+        '<label style="font-size:12px;color:var(--text2);width:70px;">'+type+'</label>'+
+        '<input id="newpb-'+i+'-'+type+'" type="text" class="input" style="width:90px;font-family:monospace;" '+
+          'placeholder="MM:SS" value="'+preVal+'">'+
+      '</div>';
+    }).join('');
+
+    return '<div style="border-bottom:1px solid var(--border);padding:.75rem 0;">'+
+      '<div style="font-weight:700;font-size:14px;margin-bottom:4px;">'+nr.name+'</div>'+
+      '<div style="font-size:12px;color:var(--text3);margin-bottom:6px;">Imported time: <span style="color:var(--orange);font-family:monospace;">'+nr.time+'</span> &mdash; set as parkrun PB baseline</div>'+
+      pbInputs+
+    '</div>';
+  }).join('');
+
+  // Store data globally so onclick can access without inline JSON
+  window._imNewRunners = newRunners;
+  window._imNewTid = tId;
+
+  modal.innerHTML =
+    '<div class="im-box">'+
+      '<div class="im-head">'+
+        '<h3>Set Baselines for New Runners</h3>'+
+        '<button class="btn btn-sm" onclick="imCloseNewPb(this)">&#10005; Skip</button>'+
+      '</div>'+
+      '<div class="im-body">'+
+        '<div class="im-info">These runners were added from Parkrun. Their imported time has been set as their parkrun PB. Adjust if needed &mdash; this becomes their handicap baseline.</div>'+
+        rows+
+      '</div>'+
+      '<div class="im-foot">'+
+        '<button class="btn" onclick="imCloseNewPb(this)">Skip</button>'+
+        '<button class="btn btn-primary" onclick="imSaveNewPbs(window._imNewRunners, window._imNewTid, this)">Save Baselines</button>'+
+      '</div>'+
+    '</div>';
+  document.body.appendChild(modal);
+}
+
+function imSaveNewPbs(newRunners, tId, btn) {
+  var types = S.activityTypes || ['parkrun'];
+  newRunners.forEach(function(nr, i) {
+    var runner = S.runners.find(function(r){ return r.id === nr.id; });
+    if (!runner) return;
+    var bestSec = null;
+    types.forEach(function(type) {
+      var el = document.getElementById('newpb-'+i+'-'+type);
+      if (!el || !el.value.trim()) return;
+      var sec = prSec(el.value.trim());
+      if (!sec) return;
+      runner.pbs[type] = sec;
+      if (!bestSec || sec < bestSec) bestSec = sec;
+    });
+    if (bestSec) {
+      runner.pbSec = bestSec;
+      runner.band = calcBand ? calcBand(bestSec) : null;
+      // Update tournament baseline
+      enrollRunner(tId, nr.id, bestSec);
+    }
+  });
+  persist();
+  if(typeof renderRunners==='function') renderRunners();
+  if(typeof renderTournaments==='function') renderTournaments();
+  btn.closest('.im-overlay').remove();
+  showToast('Baselines saved \u2713');
 }
 
 // ── Inject Import button ─────────────────────────────────────────────────────
