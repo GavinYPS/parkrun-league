@@ -203,10 +203,12 @@ table tbody tr:hover{background:var(--bg3)}
       </div>
       <div id="club-view-state">
         <div class="form-row" style="margin-bottom:4px;"><label>Club name</label><span id="club-name-display" style="font-size:14px;color:var(--text);font-weight:500;"></span></div>
-        <p class="form-hint">Used for the club filter on Parkrun results pages.</p>
+        <div class="form-row" style="margin-bottom:4px;"><label>Parkrun Group #</label><span id="club-groupnum-display" style="font-size:14px;color:var(--text);font-family:'SF Mono','Fira Code',monospace;font-weight:500;"></span></div>
+        <p class="form-hint">Used to fetch your club's consolidated results report automatically.</p>
       </div>
       <div id="club-edit-state" style="display:none;">
         <div class="form-row"><label>Club name</label><input type="text" id="setting-club-name" placeholder="e.g. Rundamentalist Run Club" style="max-width:320px;"/></div>
+        <div class="form-row"><label>Parkrun Group #</label><input type="text" id="setting-club-groupnum" placeholder="e.g. 28709" style="max-width:160px;font-family:'SF Mono','Fira Code',monospace;" oninput="this.value=this.value.replace(/[^0-9]/g,'')"/></div>
         <p class="form-hint">Used for the club filter on Parkrun results pages.</p>
         <div class="btn-group">
           <button class="btn btn-primary btn-sm" onclick="saveGlobalSettings()">Save</button>
@@ -1966,6 +1968,11 @@ function renderGlobalSettings() {
   var input = document.getElementById('setting-club-name'); var display = document.getElementById('club-name-display');
   if (input) input.value = name; if (display) display.textContent = name;
   toggleClubEdit(false); renderActivityTypes(false);
+  var gnDisplay = document.getElementById('club-groupnum-display');
+  var gnInput = document.getElementById('setting-club-groupnum');
+  var gn = S.clubGroupNum || '';
+  if (gnDisplay) gnDisplay.textContent = gn || 'Not set';
+  if (gnInput) gnInput.value = gn || '';
   var ghCfg = ghLoadConfig();
   var ghT = document.getElementById('gh-token'); var ghR = document.getElementById('gh-repo'); var ghP = document.getElementById('gh-path');
   if (ghT) ghT.value = ghCfg.token || ''; if (ghR) ghR.value = ghCfg.repo || 'GavinYPS/parkrun-league'; if (ghP) ghP.value = ghCfg.path || 'data.json';
@@ -2223,6 +2230,7 @@ function imOpen(eventId) {
 
   var loc = S.locations.find(function(l){ return l.id===ev.locationId; });
   var consolidatedUrl = prBuildConsolidatedUrl(_imS.evDate);
+  var eventUrl = prBuildEventUrl(ev);
 
   if (!_imModal) {
     _imModal = document.createElement('div');
@@ -2506,7 +2514,7 @@ function imCommit(){
     var newId=uid();
     // Use the imported time as initial PB for parkrun
     var pbs = {}; pbs['parkrun'] = nr.timeSec;
-    var band = calcBand ? calcBand(nr.timeSec) : null;
+    var band = suggestBand ? suggestBand(nr.timeSec) : null;
     S.runners.push({id:newId, name:nr.prName, rid:'', homeSlug:'', pbs:pbs, pbSec:nr.timeSec, band:band});
     // Enrol with their run time as baseline
     enrollRunner(tId, newId, nr.timeSec);
@@ -2592,7 +2600,7 @@ function imSaveNewPbs(newRunners, tId, btn) {
     });
     if (bestSec) {
       runner.pbSec = bestSec;
-      runner.band = calcBand ? calcBand(bestSec) : null;
+      runner.band = suggestBand ? suggestBand(bestSec) : null;
       // Update tournament baseline
       enrollRunner(tId, nr.id, bestSec);
     }
