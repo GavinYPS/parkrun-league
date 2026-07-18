@@ -154,13 +154,14 @@
     {
       "id": 1784391787746,
       "name": "Amy MAHON",
-      "rid": "",
+      "rid": "11402291",
       "homeSlug": "",
       "pbs": {
         "parkrun": 1572
       },
       "pbSec": 1572,
-      "band": "D"
+      "band": "D",
+      "isLeader": false
     }
   ],
   "tournaments": [
@@ -471,6 +472,6 @@
       }
     ]
   },
-  "_savedAt": 1784392860068,
+  "_savedAt": 1784393152551,
   "_logo": null
 }
