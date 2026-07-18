@@ -128,7 +128,7 @@ table tbody tr:hover{background:var(--bg3)}
     <div id="f-runner" class="card card-accent" style="display:none;">
       <div class="card-title">New Runner</div>
       <div class="form-row"><label>Name</label><input type="text" id="r-name" placeholder="Enter name"/></div>
-      <div class="form-row"><label>Parkrun ID</label><input type="text" id="r-url" placeholder="e.g. 8416304" oninput="scheduleRunnerLookup()" style="max-width:180px;font-family:'SF Mono','Fira Code',monospace;"/></div>
+      <div class="form-row"><label>Parkrun ID</label><input type="text" id="r-url" placeholder="e.g. 8416304 or A8416304" oninput="scheduleRunnerLookup()" style="max-width:180px;font-family:'SF Mono','Fira Code',monospace;"/></div>
       <div class="form-row" id="r-profile-row" style="display:none;"><label></label><a id="r-profile-link" href="#" target="_blank" class="btn btn-sm btn-info">Open Parkrun profile &#8599;</a></div>
       <div class="url-status" id="r-url-status"></div>
       <div id="r-pb-fields"></div>
@@ -814,7 +814,8 @@ function scheduleRunnerLookup() {
   var val = document.getElementById('r-url').value.trim();
   var row = document.getElementById('r-profile-row'); var link = document.getElementById('r-profile-link');
   if (!row || !link) return;
-  var m = val.match(/\b(\d{4,9})\b/);
+  var cleaned = val.replace(/^A+/i, '').trim();
+  var m = cleaned.match(/\b(\d{4,9})\b/);
   if (!m) { row.style.display = 'none'; return; }
   link.href = 'https://www.parkrun.org.uk/parkrunner/' + m[1] + '/'; row.style.display = 'flex';
 }
@@ -890,7 +891,7 @@ function editRunnerName(id) {
   var metaEl = h3.closest('.runner-info') ? h3.closest('.runner-info').querySelector('.runner-meta') : null;
   if (metaEl && !metaEl.querySelector('[data-rid-edit]')) {
     var div = document.createElement('div'); div.setAttribute('data-rid-edit','1'); div.style.cssText = 'margin-top:6px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;';
-    div.innerHTML = '<div style="display:flex;align-items:center;gap:6px;"><span style="font-size:12px;color:var(--text2);">Parkrun ID</span><input type="text" id="runner-rid-input-' + id + '" value="' + (r.rid||'') + '" placeholder="e.g. 8416304" style="max-width:120px;font-family:SF Mono,Fira Code,monospace;font-size:13px;padding:4px 8px;"/></div>'
+    div.innerHTML = '<div style="display:flex;align-items:center;gap:6px;"><span style="font-size:12px;color:var(--text2);">Parkrun ID</span><input type="text" id="runner-rid-input-' + id + '" value="' + (r.rid||'') + '" placeholder="e.g. 8416304 or A8416304" style="max-width:120px;font-family:SF Mono,Fira Code,monospace;font-size:13px;padding:4px 8px;"/></div>'
       + '<label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;color:var(--text2);"><input type="checkbox" id="runner-leader-input-' + id + '" ' + (r.isLeader ? 'checked' : '') + ' style="width:14px;height:14px;accent-color:var(--orange);"/> Run Leader</label>';
     metaEl.prepend(div);
   }
@@ -2017,7 +2018,16 @@ function toggleClubEdit(forceState) {
 function saveGlobalSettings() {
   var nameEl = document.getElementById('setting-club-name'); var name = nameEl ? nameEl.value.trim() : '';
   if (!name) { alert('Club name is required.'); return; }
-  S.clubName = name; persist(); document.getElementById('club-name-display').textContent = name; toggleClubEdit(false);
+  S.clubName = name;
+  // Save Parkrun group number
+  var gnEl = document.getElementById('setting-club-groupnum');
+  var gn = gnEl ? parseInt(gnEl.value.trim()) : 0;
+  if (gn) S.clubGroupNum = gn;
+  persist();
+  document.getElementById('club-name-display').textContent = name;
+  var gnDisplay = document.getElementById('club-groupnum-display');
+  if (gnDisplay) gnDisplay.textContent = gn || S.clubGroupNum || 'Not set';
+  toggleClubEdit(false);
   var msg = document.getElementById('global-settings-saved'); if (msg) { msg.style.display = 'inline'; setTimeout(function() { msg.style.display = 'none'; }, 2000); }
 }
 
@@ -2115,15 +2125,15 @@ if (ghIsConfigured()) ghPull();
 })();
 
 // ── Constants ────────────────────────────────────────────────────────────────
-var PR_CLUB_NUM = 28709;  // Rundamentalist Run Club parkrun group ID
+var PR_CLUB_NUM = 28709;  // Default - overridden by S.clubGroupNum from settings
 var PR_LS_KEY   = 'pr_import_data';   // localStorage key for cross-tab data
 var PR_LS_REQ   = 'pr_import_request'; // key app writes to trigger scrape
 
 // ── URL builder ──────────────────────────────────────────────────────────────
 function prBuildConsolidatedUrl(date) {
-  // date: "2026-07-11"
-  // Returns the consolidated club report URL for that week's date
-  return 'https://www.parkrun.com/results/consolidatedclub/?clubNum=' + PR_CLUB_NUM
+  // Uses club group number from Global Settings (falls back to default)
+  var groupNum = getClubGroupNum();
+  return 'https://www.parkrun.com/results/consolidatedclub/?clubNum=' + groupNum
        + (date ? '&eventdate=' + date : '');
 }
 
@@ -2238,26 +2248,24 @@ function imOpen(eventId) {
   document.getElementById('im-count').textContent='';
 
   // Show both options — user opens whichever page they want
-  var eventUrl = prBuildEventUrl(ev);
   document.getElementById('im-body').innerHTML =
     '<div class="im-waiting">'+
-      '<div style="display:flex;align-items:center;justify-content:center;gap:10px;font-family:\'Barlow Condensed\',sans-serif;font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;">'+
-        '<span class="im-spin"></span> Opening results pages&hellip;'+
-      '</div>'+
-      '<p style="margin:.75rem 0 .5rem;">Two options below &mdash; copy from whichever has results published:</p>'+
+      '<p style="margin:0 0 .75rem;font-size:14px;color:var(--text);">Choose a source, copy the results, then paste below:</p>'+
+
       '<div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.75rem;margin-bottom:.5rem;">'+
-        '<div style="font-family:\'Barlow Condensed\',sans-serif;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--orange);margin-bottom:.3rem;">Option 1 &mdash; Club Report (may lag 1-2 hrs)</div>'+
+        '<div style="font-family:\'Barlow Condensed\',sans-serif;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--orange);margin-bottom:.3rem;">Option 1 — Club Report <span style="font-weight:400;color:var(--text3);">(may lag 1–2 hrs)</span></div>'+
         '<div style="font-size:12px;color:var(--text2);margin-bottom:.5rem;">Already filtered to your club. Shows all members across all parkruns that day.</div>'+
-        '<button class="btn btn-sm btn-import" onclick="window.open(\''+consolidatedUrl+'\',\'_blank\');">Open Club Report &nearr;</button>'+
+        '<a href="'+consolidatedUrl+'" target="_blank" class="btn btn-sm btn-import">Open Club Report ↗</a>'+
       '</div>'+
+
       '<div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.75rem;margin-bottom:.75rem;">'+
-        '<div style="font-family:\'Barlow Condensed\',sans-serif;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--blue);margin-bottom:.3rem;">Option 2 &mdash; Event Results (live immediately)</div>'+
-        '<div style="font-size:12px;color:var(--text2);margin-bottom:.5rem;">Type <strong>'+getClubName()+'</strong> in the search box and click the Group chip, then Ctrl+A Ctrl+C.</div>'+
-        (eventUrl ? '<button class="btn btn-sm btn-import" onclick="window.open(\''+eventUrl+'\',\'_blank\');">Open Event Results &nearr;</button>' : '<span style="font-size:12px;color:var(--text3);">No event URL &mdash; add location slug to enable</span>')+
+        '<div style="font-family:\'Barlow Condensed\',sans-serif;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--blue);margin-bottom:.3rem;">Option 2 — Event Results <span style="font-weight:400;color:var(--text3);">(live immediately)</span></div>'+
+        '<div style="font-size:12px;color:var(--text2);margin-bottom:.5rem;">Type <strong>'+getClubName()+'</strong> in the search box, click the Group chip, then Ctrl+A → Ctrl+C.</div>'+
+        (eventUrl ? '<a href="'+eventUrl+'" target="_blank" class="btn btn-sm btn-import">Open Event Results ↗</a>' : '<span style="font-size:12px;color:var(--text3);">No event URL — add location slug to enable</span>')+
       '</div>'+
-      '<div style="font-size:13px;color:var(--text2);margin-bottom:.5rem;">Once copied: <strong>Ctrl+A</strong> &rarr; <strong>Ctrl+C</strong> on the results page, then:</div>'+
+
+      '<div style="font-size:13px;color:var(--text2);margin-bottom:.5rem;"><strong>Ctrl+A → Ctrl+C</strong> on whichever page has results, then:</div>'+
       '<button class="btn btn-primary" onclick="imShowPaste()">&#8615; Paste Results</button>'+
-      '<div id="im-progress" style="margin-top:.5rem;font-size:12px;color:var(--text3);text-align:center;"></div>'+
     '</div>';
 }
 
