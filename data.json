@@ -313,28 +313,45 @@
     "1778261483755": {
       "1778105007125": {
         "attended": true,
+        "volunteer": false,
         "actualSec": 1344,
         "baselinePbSec": 1211
       },
       "1778260052500": {
         "attended": true,
+        "volunteer": false,
         "actualSec": 1565,
         "baselinePbSec": 1385
       },
       "1778260144770": {
         "attended": true,
+        "volunteer": false,
         "actualSec": 1701,
         "baselinePbSec": 1742
       },
       "1778260241566": {
         "attended": true,
+        "volunteer": false,
         "actualSec": 2035,
         "baselinePbSec": 2083
       },
       "1784391787746": {
         "attended": true,
+        "volunteer": false,
         "actualSec": 1572,
         "baselinePbSec": 1572
+      },
+      "1778260209630": {
+        "attended": true,
+        "volunteer": true,
+        "actualSec": null,
+        "baselinePbSec": null
+      },
+      "1778260092370": {
+        "attended": true,
+        "volunteer": true,
+        "actualSec": null,
+        "baselinePbSec": null
       }
     },
     "1778261493129": {
@@ -473,6 +490,6 @@
       }
     ]
   },
-  "_savedAt": 1784394984565,
+  "_savedAt": 1784410222313,
   "_logo": null
 }
