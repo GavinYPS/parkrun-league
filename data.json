@@ -198,7 +198,8 @@
             "label": "30s-1 min faster"
           }
         ],
-        "attendanceBonus": 2
+        "attendanceBonus": 2,
+        "volunteerBonus": 2
       }
     }
   ],
@@ -472,6 +473,6 @@
       }
     ]
   },
-  "_savedAt": 1784393152551,
+  "_savedAt": 1784393752990,
   "_logo": null
 }
