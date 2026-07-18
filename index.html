@@ -2157,57 +2157,6 @@ function prSec(str){
   return null;
 }
 
-// ── The scraper script injected into the new tab via URL fragment ─────────────
-// The consolidated club page is plain HTML. We open it, and the page runs
-// a small localStorage-based handshake script that reads the DOM and posts results back.
-// We inject this via a <script> tag written into the fragment — BUT that's same-origin blocked.
-//
-// ACTUAL APPROACH:
-// 1. Write a request token to localStorage
-// 2. Open the consolidated club page URL with #pr-scrape fragment
-// 3. The consolidated page itself won't run our script (cross-origin)
-// 4. BUT: we have a "relay" built into index.html itself that handles #pr-scrape
-//    by fetching the consolidated page URL from localStorage, waiting for user to
-//    land on it, and then detecting via localStorage polling when they navigate back.
-//
-// SIMPLEST WORKING APPROACH:
-// Open the consolidated club page. It loads instantly with all results.
-// Inject a userscript equivalent by opening our app in a popup which acts as relay.
-// 
-// ACTUAL FINAL APPROACH (works, no tricks needed):
-// The consolidated page DOM is readable by Claude in Chrome.
-// For the STANDALONE case: open the page, show a "Loading..." state,
-// and poll localStorage for data that a tiny inline script on that page would write.
-// Since we can't inject into cross-origin, we use the URL hash to pass a callback:
-// We open: index.html#pr-relay?url=ENCODED_URL
-// Our own app handles the #pr-relay hash, fetches... no, still cross-origin.
-//
-// THE REAL WORKING SOLUTION:
-// Open the consolidated URL. It's plain readable HTML.
-// The user is already on the page (it opens in new tab).
-// We use the BroadcastChannel API - both tabs share the same origin? No - different origins.
-//
-// OK - DEFINITIVE: Use the scraper script stored in index.html itself.
-// When the user clicks Import, we:
-// 1. Write the target URL + job ID to localStorage  
-// 2. Open a NEW TAB to our own app: index.html?pr_scrape=JOB_ID
-// 3. Our app in that tab detects ?pr_scrape, reads the target URL from localStorage,
-//    navigates to the consolidated page... still cross-origin.
-//
-// WORKING SOLUTION - use fetch with no-cors mode to at least verify it's reachable,
-// then open the page and rely on the user clicking back ("Done") which triggers
-// a manual-but-minimal interaction. The page opens, loads automatically, user clicks
-// one button ("Done - I've seen the results") and the app uses the DOM data.
-//
-// FINAL ANSWER: We cannot auto-read cross-origin. But we CAN make it 1-click:
-// Open page → user sees results loaded → clicks "Done" in our modal → 
-// they paste ONE thing: just the page text (Ctrl+A, Ctrl+C = 2 keystrokes).
-//
-// This is the v5 approach but with the consolidated URL which is MUCH better because:
-// - It's a simple static HTML table (not dynamic JS)  
-// - It already filters to your club only
-// - It includes ALL parkruns your members ran (not just Macclesfield)
-// - The date param means you get exactly the right week
 
 var _imModal=null;
 var _imPollTimer=null;
@@ -2291,27 +2240,22 @@ function imOpen(eventId) {
   // Open the consolidated club report in a new tab immediately
   window.open(consolidatedUrl, '_blank');
 
-  var clubName = getClubName();
-
-  // Show waiting state with copy button
+  // Show waiting state
   document.getElementById('im-body').innerHTML =
     '<div class="im-waiting">'+
       '<div style="display:flex;align-items:center;justify-content:center;gap:10px;font-family:\'Barlow Condensed\',sans-serif;font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;">'+
-        '<span class="im-spin"></span> Club results page opened&hellip;'+
+        '<span class="im-spin"></span> Loading club results&hellip;'+
       '</div>'+
-      '<p>The <strong>'+clubName+'</strong> consolidated report for <strong>'+(ev.date||'this week')+'</strong> is now open.<br>'+
-      'It already shows only your club\u2019s members across all parkruns that day.</p>'+
-      '<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:.5rem;">'+
-        '<button class="btn btn-primary" onclick="imShowPaste()">\u2935 I\'ve copied it \u2014 paste results</button>'+
-        '<button class="btn btn-import" onclick="imCopyPrompt()">How to copy?</button>'+
-      '</div>'+
-      '<div id="im-progress" class="im-progress" style="margin-top:.75rem;font-size:12px;color:var(--text3);text-align:center;"></div>'+
+      '<p>The Rundamentalist Run Club report for <strong>' + (ev.date||'this week') + '</strong> has opened in a new tab.<br>'+
+      'It shows every member who ran any parkrun that day.<br><br>'+
+      'In that tab: press <strong>Ctrl+A</strong> then <strong>Ctrl+C</strong> to copy the page,<br>'+
+      'then come back and click <strong>Paste Results</strong>.</p>'+
+      '<button class="btn btn-primary" onclick="imShowPaste()">Paste Results</button>'+
+      '<div class="im-progress" id="im-progress"></div>'+
     '</div>'+
-    '<div class="im-info" style="margin-top:.5rem;">\uD83D\uDD17 <a href="'+consolidatedUrl+'" target="_blank" style="color:var(--blue);">'+consolidatedUrl+' \u2197</a></div>';
-
-function imCopyPrompt() {
-  var p = document.getElementById('im-progress');
-  if (p) p.innerHTML = 'In the results tab: press <strong>Ctrl+A</strong> to select all, then <strong>Ctrl+C</strong> to copy. Then click the button above.';
+    '<div class="im-info" style="margin-top:.5rem;">'+
+      '\uD83D\uDD17 <a href="'+consolidatedUrl+'" target="_blank" style="color:var(--blue);">'+consolidatedUrl+' \u2197</a>'+
+    '</div>';
 }
 
 function imShowPaste() {
@@ -2571,7 +2515,6 @@ function imInjectButton(){
 // ═══════════════════════════════════════════════════════════════════════════
 // END PARKRUN AUTO-IMPORT
 // ═══════════════════════════════════════════════════════════════════════════
-
 
 </script>
 </body>
