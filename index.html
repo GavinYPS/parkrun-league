@@ -2516,10 +2516,10 @@ function imCommit(){
 
 // ── Inject button into Enter Times tab ───────────────────────────────────────
 var _origRET = renderEnterTimes;
-function renderEnterTimes(){
+renderEnterTimes = function(){
   _origRET();
   imInjectButton();
-}
+};
 function imInjectButton(){
   var sel=document.getElementById('et-ev-sel');
   if(!sel||!sel.value) return;
