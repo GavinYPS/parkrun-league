@@ -2240,21 +2240,27 @@ function imOpen(eventId) {
   // Open the consolidated club report in a new tab immediately
   window.open(consolidatedUrl, '_blank');
 
-  // Show waiting state
+  // Show waiting state with both options
+  var eventUrl = prBuildEventUrl(ev);
   document.getElementById('im-body').innerHTML =
     '<div class="im-waiting">'+
       '<div style="display:flex;align-items:center;justify-content:center;gap:10px;font-family:\'Barlow Condensed\',sans-serif;font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;">'+
-        '<span class="im-spin"></span> Loading club results&hellip;'+
+        '<span class="im-spin"></span> Opening results pages&hellip;'+
       '</div>'+
-      '<p>The Rundamentalist Run Club report for <strong>' + (ev.date||'this week') + '</strong> has opened in a new tab.<br>'+
-      'It shows every member who ran any parkrun that day.<br><br>'+
-      'In that tab: press <strong>Ctrl+A</strong> then <strong>Ctrl+C</strong> to copy the page,<br>'+
-      'then come back and click <strong>Paste Results</strong>.</p>'+
-      '<button class="btn btn-primary" onclick="imShowPaste()">Paste Results</button>'+
-      '<div class="im-progress" id="im-progress"></div>'+
-    '</div>'+
-    '<div class="im-info" style="margin-top:.5rem;">'+
-      '\uD83D\uDD17 <a href="'+consolidatedUrl+'" target="_blank" style="color:var(--blue);">'+consolidatedUrl+' \u2197</a>'+
+      '<p style="margin:.75rem 0 .5rem;">Two options below &mdash; copy from whichever has results published:</p>'+
+      '<div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.75rem;margin-bottom:.5rem;">'+
+        '<div style="font-family:\'Barlow Condensed\',sans-serif;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--orange);margin-bottom:.3rem;">Option 1 &mdash; Club Report (may lag 1-2 hrs)</div>'+
+        '<div style="font-size:12px;color:var(--text2);margin-bottom:.5rem;">Already filtered to your club. Shows all members across all parkruns that day.</div>'+
+        '<a href="'+consolidatedUrl+'" target="_blank" class="btn btn-sm btn-import" style="display:inline-block;">Open Club Report &nearr;</a>'+
+      '</div>'+
+      '<div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.75rem;margin-bottom:.75rem;">'+
+        '<div style="font-family:\'Barlow Condensed\',sans-serif;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--blue);margin-bottom:.3rem;">Option 2 &mdash; Event Results (live immediately)</div>'+
+        '<div style="font-size:12px;color:var(--text2);margin-bottom:.5rem;">Type <strong>'+getClubName()+'</strong> in the search box and click the Group chip, then Ctrl+A Ctrl+C.</div>'+
+        (eventUrl ? '<a href="'+eventUrl+'" target="_blank" class="btn btn-sm btn-import" style="display:inline-block;">Open Event Results &nearr;</a>' : '<span style="font-size:12px;color:var(--text3);">No event URL &mdash; add location slug to enable</span>')+
+      '</div>'+
+      '<div style="font-size:13px;color:var(--text2);margin-bottom:.5rem;">Once copied: <strong>Ctrl+A</strong> &rarr; <strong>Ctrl+C</strong> on the results page, then:</div>'+
+      '<button class="btn btn-primary" onclick="imShowPaste()">&#8615; Paste Results</button>'+
+      '<div id="im-progress" style="margin-top:.5rem;font-size:12px;color:var(--text3);text-align:center;"></div>'+
     '</div>';
 }
 
@@ -2289,32 +2295,52 @@ function imReadPaste() {
   imBuild(results);
 }
 
-// Plain text fallback parser
+// Parser for consolidated club report paste (tab-separated) or plain text
 function prParseText(text) {
   var results = [], currentLoc = '';
-  var lines = text.split('\n').map(function(l){ return l.trim(); }).filter(Boolean);
-  var roleWords = /^(run director|timekeeper|barcode|marshal|funnel|tail|token|setup|photographer|report|pacer|first timer|course|equipment|sort by|compact|detailed)/i;
+  var lines = text.split('\n').map(function(l){ return l.trimRight(); }).filter(Boolean);
 
   for (var i=0; i<lines.length; i++) {
     var line = lines[i];
-    // Location heading detection
-    if (line.match(/parkrun$/i) && !line.match(/\d{1,2}:\d{2}/) && line.length < 60) {
-      currentLoc = line.replace(/parkrun$/i,'').trim();
+    var trimmed = line.trim();
+
+    // Detect location heading: "Macclesfield parkrun" style
+    if (trimmed.match(/parkrun$/i) && !trimmed.match(/\d{1,2}:\d{2}/) && trimmed.length < 80) {
+      currentLoc = trimmed.replace(/\s*parkrun$/i,'').trim();
       continue;
     }
-    var chunk = [line, lines[i+1]||'', lines[i+2]||''].join(' ').replace(/\s+/g,' ').trim();
+
+    // Tab-separated row: pos \t genderPos \t name \t club \t time
+    if (line.indexOf('\t') >= 0) {
+      var parts = line.split('\t').map(function(p){ return p.trim(); });
+      if (parts.length >= 5 && parts[0].match(/^\d+$/) && parts[4].match(/\d+:\d{2}/)) {
+        var t = parts[4].replace(/^00:/,'');
+        results.push({ pos:parts[0], name:parts[2], club:parts[3], time:t, timeSec:prSec(parts[4]), location:currentLoc });
+        continue;
+      }
+    }
+
+    // Fallback: regex match for "29  Gavin TREVENA  22:14" style
+    var chunk = [trimmed, (lines[i+1]||'').trim(), (lines[i+2]||'').trim()].join(' ').replace(/\s+/g,' ');
     var m = chunk.match(/^(\d+)\s+([A-Za-z\u00C0-\u024F][a-zA-Z\u00C0-\u024F\s'\-\.]+?)\s+(\d{1,2}:\d{2}(?::\d{2})?)(?:\s|$)/);
     if (m) {
       var nm = m[2].trim();
-      if (nm && nm.toLowerCase()!=='unknown') {
-        var t = m[3].replace(/^00:/,'');
-        results.push({ pos:m[1], name:nm, time:t, timeSec:prSec(m[3]), location:currentLoc, club:'Rundamentalist Run Club' });
+      if (nm && nm.toLowerCase() !== 'unknown' && !nm.match(/position|parkrunner/i)) {
+        var t2 = m[3].replace(/^00:/,'');
+        results.push({ pos:m[1], name:nm, time:t2, timeSec:prSec(m[3]), location:currentLoc, club:'' });
         i++;
       }
     }
   }
-  var seen={};
-  return results.filter(function(f){ var k=f.name+f.time; if(seen[k]) return false; seen[k]=true; return true; });
+
+  // Deduplicate
+  var seen = {};
+  return results.filter(function(f){
+    var k = f.name + f.time;
+    if (seen[k]) return false;
+    seen[k] = true;
+    return true;
+  });
 }
 
 // ── Build review UI ──────────────────────────────────────────────────────────
