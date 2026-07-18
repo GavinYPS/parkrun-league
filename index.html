@@ -2130,6 +2130,10 @@ var PR_LS_KEY   = 'pr_import_data';   // localStorage key for cross-tab data
 var PR_LS_REQ   = 'pr_import_request'; // key app writes to trigger scrape
 
 // ── URL builder ──────────────────────────────────────────────────────────────
+function getClubGroupNum() {
+  return parseInt((S && S.clubGroupNum) || 28709) || 28709;
+}
+
 function prBuildConsolidatedUrl(date) {
   // Uses club group number from Global Settings (falls back to default)
   var groupNum = getClubGroupNum();
