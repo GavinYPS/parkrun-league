@@ -19,10 +19,10 @@ function showAddEvent(lid) {
   var locEvents = S.events.filter(function(e) { return e.locationId === lid; }).sort(function(a,b) { return b.runNumber - a.runNumber; });
   var lastEv = locEvents[0]; var suggestedRun = lastEv ? lastEv.runNumber + 1 : ''; var suggestedDate = parkrun ? suggestNextDate(locEvents, suggestedRun || undefined) : prevSaturday();
   var form = document.createElement('div'); form.id = formId; form.className = 'inline-form';
-  form.innerHTML = '<div style="font-size:11px;color:var(--text3);margin-bottom:.75rem;">Add Event</div>'
-    + '<div class="form-row"><label>Date</label><input type="date" id="evdate-' + lid + '" value="' + suggestedDate + '" style="max-width:190px;"' + (parkrun ? ' oninput="autoRunFromDate(' + lid + ')"' : '') + '/>' + (parkrun ? '<span id="evdate-hint-' + lid + '" style="font-size:11px;color:var(--text3);margin-left:4px;">sets run number</span>' : '') + '</div>'
+  form.innerHTML = '<div class="u-hint-11">Add Event</div>'
+    + '<div class="form-row"><label>Date</label><input class="u-maxw-190" type="date" id="evdate-' + lid + '" value="' + suggestedDate + '"' + (parkrun ? ' oninput="autoRunFromDate(' + lid + ')"' : '') + '/>' + (parkrun ? '<span id="evdate-hint-' + lid + '" style="font-size:11px;color:var(--text3);margin-left:4px;">sets run number</span>' : '') + '</div>'
     + '<div class="form-row"><label>' + (parkrun ? 'Run number' : 'Event number') + '</label><input type="number" min="1" id="evnum-' + lid + '" value="' + suggestedRun + '" style="max-width:130px;font-family:SF Mono,Fira Code,monospace;"/></div>'
-    + '<div class="btn-group" style="margin-top:8px;"><button class="btn btn-primary btn-sm" onclick="saveEvent(' + lid + ')">Save Event</button><button class="btn btn-sm" onclick="document.getElementById(\'f-ev-' + lid + '\').remove()">Cancel</button></div>';
+    + '<div class="btn-group u-mt-8"><button class="btn btn-primary btn-sm" onclick="saveEvent(' + lid + ')">Save Event</button><button class="btn btn-sm" onclick="document.getElementById(\'f-ev-' + lid + '\').remove()">Cancel</button></div>';
   var evlist = document.getElementById('loc-body-' + lid); if (evlist) evlist.prepend(form);
   if (parkrun) autoRunFromDate(lid);
   setTimeout(function() { var inp = document.getElementById('evdate-' + lid); if (inp) inp.focus(); }, 50);
@@ -59,10 +59,10 @@ function editEvent(eid) {
   var formId = 'f-edit-ev-' + eid; var existing = document.getElementById(formId); if (existing) { existing.remove(); return; }
   var row = document.getElementById('evrow-' + eid); if (!row) return;
   var form = document.createElement('div'); form.id = formId; form.className = 'inline-form'; form.style.marginTop = '6px';
-  form.innerHTML = '<div style="font-size:11px;color:var(--text3);margin-bottom:.75rem;">Edit Event</div>'
+  form.innerHTML = '<div class="u-hint-11">Edit Event</div>'
     + '<div class="form-row"><label>Run number</label><input type="number" min="1" id="edit-evnum-' + eid + '" value="' + ev.runNumber + '" style="max-width:130px;font-family:SF Mono,Fira Code,monospace;"/></div>'
-    + '<div class="form-row"><label>Date</label><input type="date" id="edit-evdate-' + eid + '" value="' + (ev.date||'') + '" style="max-width:190px;"/></div>'
-    + '<div class="btn-group" style="margin-top:8px;"><button class="btn btn-primary btn-sm" onclick="saveEventEdit(' + eid + ')">Save</button><button class="btn btn-sm" onclick="document.getElementById(\'f-edit-ev-' + eid + '\').remove()">Cancel</button></div>';
+    + '<div class="form-row"><label>Date</label><input class="u-maxw-190" type="date" id="edit-evdate-' + eid + '" value="' + (ev.date||'') + '"/></div>'
+    + '<div class="btn-group u-mt-8"><button class="btn btn-primary btn-sm" onclick="saveEventEdit(' + eid + ')">Save</button><button class="btn btn-sm" onclick="document.getElementById(\'f-edit-ev-' + eid + '\').remove()">Cancel</button></div>';
   row.insertAdjacentElement('afterend', form); setTimeout(function() { var inp = document.getElementById('edit-evnum-' + eid); if (inp) inp.focus(); }, 50);
 }
 

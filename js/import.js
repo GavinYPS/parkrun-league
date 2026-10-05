@@ -196,7 +196,7 @@ function imOpen(eventId) {
       '<div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.75rem;margin-bottom:.75rem;">'+
         '<div style="font-family:\'Barlow Condensed\',sans-serif;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--blue);margin-bottom:.3rem;">Option 2 — Event Results <span style="font-weight:400;color:var(--text3);">(live immediately)</span></div>'+
         '<div style="font-size:12px;color:var(--text2);margin-bottom:.5rem;">Type <strong>'+getClubName()+'</strong> in the search box, click the Group chip, then Ctrl+A → Ctrl+C.</div>'+
-        (eventUrl ? '<a href="'+eventUrl+'" target="_blank" class="btn btn-sm btn-import">Open Event Results ↗</a>' : '<span style="font-size:12px;color:var(--text3);">No event URL — add location slug to enable</span>')+
+        (eventUrl ? '<a href="'+eventUrl+'" target="_blank" class="btn btn-sm btn-import">Open Event Results ↗</a>' : '<span class="u-muted-12">No event URL — add location slug to enable</span>')+
       '</div>'+
 
       '<div style="font-size:13px;color:var(--text2);margin-bottom:.5rem;"><strong>Ctrl+A → Ctrl+C</strong> on whichever page has results, then:</div>'+
@@ -228,7 +228,7 @@ function imReadPaste() {
     document.getElementById('im-body').innerHTML =
       '<div class="im-warn">No results found in pasted content.<br>'+
       'Make sure you copied the consolidated club report page (not the individual event page).</div>'+
-      '<button class="btn" style="margin-top:8px;" onclick="imOpen(_imS.evId)">Try again</button>';
+      '<button class="btn u-mt-8" onclick="imOpen(_imS.evId)">Try again</button>';
     return;
   }
 

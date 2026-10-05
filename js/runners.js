@@ -54,7 +54,7 @@ function clearRunnerForm() {
 }
 
 function bandSuggHtml(selId, suggId, band) {
-  return '<span style="font-size:12px;color:var(--text3);">Suggested: <button type="button"'
+  return '<span class="u-muted-12">Suggested: <button type="button"'
     + ' onclick="document.getElementById(\'' + selId + '\').value=\'' + band + '\';document.getElementById(\'' + suggId + '\').innerHTML=\'<span style=&quot;font-size:12px;color:var(--green);&quot;>&#10003; Band ' + band + ' applied</span>\';"'
     + ' style="background:var(--orange-dim);border:1px solid var(--orange);color:var(--orange);font-weight:700;font-size:12px;padding:1px 8px;border-radius:3px;cursor:pointer;">'
     + 'Use Band ' + band + '</button></span>';
@@ -69,7 +69,7 @@ function updateAddRunnerBandSuggestion() {
   if (suggested) {
     suggEl.innerHTML = bandSuggHtml('r-band-select', 'r-band-suggestion', suggested);
   } else {
-    suggEl.innerHTML = sec ? '<span style="font-size:12px;color:var(--text3);">Time outside standard bands \u2014 assign manually</span>' : '';
+    suggEl.innerHTML = sec ? '<span class="u-muted-12">Time outside standard bands \u2014 assign manually</span>' : '';
   }
 }
 
@@ -96,7 +96,7 @@ function editRunnerName(id) {
   var metaEl = h3.closest('.runner-info') ? h3.closest('.runner-info').querySelector('.runner-meta') : null;
   if (metaEl && !metaEl.querySelector('[data-rid-edit]')) {
     var div = document.createElement('div'); div.setAttribute('data-rid-edit','1'); div.style.cssText = 'margin-top:6px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;';
-    div.innerHTML = '<div style="display:flex;align-items:center;gap:6px;"><span style="font-size:12px;color:var(--text2);">Parkrun ID</span><input type="text" id="runner-rid-input-' + id + '" value="' + (r.rid||'') + '" placeholder="e.g. 8416304 or A8416304" style="max-width:120px;font-family:SF Mono,Fira Code,monospace;font-size:13px;padding:4px 8px;"/></div>'
+    div.innerHTML = '<div style="display:flex;align-items:center;gap:6px;"><span class="u-sub-12">Parkrun ID</span><input type="text" id="runner-rid-input-' + id + '" value="' + (r.rid||'') + '" placeholder="e.g. 8416304 or A8416304" style="max-width:120px;font-family:SF Mono,Fira Code,monospace;font-size:13px;padding:4px 8px;"/></div>'
       + '<label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;color:var(--text2);"><input type="checkbox" id="runner-leader-input-' + id + '" ' + (r.isLeader ? 'checked' : '') + ' style="width:14px;height:14px;accent-color:var(--orange);"/> Run Leader</label>';
     metaEl.prepend(div);
   }
@@ -133,7 +133,7 @@ function editRunnerPB(id) {
     var tLine = enrolledT.map(function(t) { var entry = getTournamentRunnerEntry(t.id, r.id); return entry && entry.baselineSec != null ? '<div style="font-size:11px;color:var(--text3);margin-top:2px;display:flex;align-items:center;gap:6px;"><span style="font-size:10px;background:var(--bg3);border:1px solid var(--border2);border-radius:3px;padding:1px 5px;color:var(--orange);">' + t.name + '</span><span class="text-mono">' + sTime(entry.baselineSec) + '</span></div>' : ''; }).join('');
     var history = r.pbHistory && r.pbHistory[type] ? r.pbHistory[type].slice().reverse() : [];
     var histHtml = history.length ? '<div style="margin-top:6px;padding:6px 0 2px;border-top:1px solid var(--border);"><div style="font-size:10px;color:var(--text3);margin-bottom:4px;">' + type + ' Previous Times</div>' + history.map(function(h) { return '<div style="font-size:12px;color:var(--text3);display:flex;gap:10px;padding:2px 0;"><span class="text-mono">' + sTime(h.sec) + '</span><span>' + h.date + '</span></div>'; }).join('') + '</div>' : '';
-    html += '<div style="margin-bottom:12px;"><div class="form-row" style="margin-bottom:0;"><label style="min-width:110px;font-size:13px;color:var(--text2);">' + label + '</label><input type="time" id="pb-input-' + id + '-' + type.replace(/\s+/g,'-') + '" step="1" value="' + curVal + '" style="max-width:150px;" ' + (type === 'parkrun' ? 'oninput="updateBandSuggestion(' + id + ')"' : '') + '/></div>' + tLine + histHtml;
+    html += '<div style="margin-bottom:12px;"><div class="form-row u-mb-0"><label style="min-width:110px;font-size:13px;color:var(--text2);">' + label + '</label><input type="time" id="pb-input-' + id + '-' + type.replace(/\s+/g,'-') + '" step="1" value="' + curVal + '" style="max-width:150px;" ' + (type === 'parkrun' ? 'oninput="updateBandSuggestion(' + id + ')"' : '') + '/></div>' + tLine + histHtml;
     if (type === 'parkrun') {
       var suggested = suggestBand(r.pbs && r.pbs['parkrun'] != null ? r.pbs['parkrun'] : r.pbSec);
       var bandOpts = '<option value="">No band assigned</option>' + BAND_LABELS.map(function(b) { return '<option value="' + b + '" ' + (r.band === b ? 'selected' : '') + '>Band ' + b + ' &mdash; ' + BAND_TIME_RANGES[b] + '</option>'; }).join('');
@@ -143,7 +143,7 @@ function editRunnerPB(id) {
         + '<select id="band-input-' + id + '" style="max-width:240px;font-size:13px;">' + bandOpts + '</select>'
         + '</div>'
         + '<div id="band-suggestion-' + id + '" style="padding-left:118px;min-height:20px;">'
-        + (suggested && suggested !== r.band ? '<span style="font-size:12px;color:var(--text3);">Suggested from baseline: <button onclick="document.getElementById(\'band-input-' + id + '\').value=\'' + suggested + '\';document.getElementById(\'band-suggestion-' + id + '\').innerHTML=\'\';" style="background:var(--orange-dim);border:1px solid var(--orange);color:var(--orange);font-weight:700;font-size:12px;padding:1px 8px;border-radius:3px;cursor:pointer;">Use Band ' + suggested + '</button></span>' : '')
+        + (suggested && suggested !== r.band ? '<span class="u-muted-12">Suggested from baseline: <button onclick="document.getElementById(\'band-input-' + id + '\').value=\'' + suggested + '\';document.getElementById(\'band-suggestion-' + id + '\').innerHTML=\'\';" style="background:var(--orange-dim);border:1px solid var(--orange);color:var(--orange);font-weight:700;font-size:12px;padding:1px 8px;border-radius:3px;cursor:pointer;">Use Band ' + suggested + '</button></span>' : '')
         + '</div>'
         + '</div>';
     }
@@ -171,9 +171,9 @@ function updateBandSuggestion(id) {
   var sec = tSec(inp.value);
   var suggested = suggestBand(sec);
   if (suggested) {
-    suggEl.innerHTML = '<span style="font-size:12px;color:var(--text3);">Suggested from baseline: <button onclick="document.getElementById(\'band-input-' + id + '\').value=\'' + suggested + '\';document.getElementById(\'band-suggestion-' + id + '\').innerHTML=\'<span style=\\\'font-size:12px;color:var(--green);\\\'>&#10003; Band ' + suggested + ' applied</span>\';" style="background:var(--orange-dim);border:1px solid var(--orange);color:var(--orange);font-weight:700;font-size:12px;padding:1px 8px;border-radius:3px;cursor:pointer;">Use Band ' + suggested + '</button></span>';
+    suggEl.innerHTML = '<span class="u-muted-12">Suggested from baseline: <button onclick="document.getElementById(\'band-input-' + id + '\').value=\'' + suggested + '\';document.getElementById(\'band-suggestion-' + id + '\').innerHTML=\'<span style=\\\'font-size:12px;color:var(--green);\\\'>&#10003; Band ' + suggested + ' applied</span>\';" style="background:var(--orange-dim);border:1px solid var(--orange);color:var(--orange);font-weight:700;font-size:12px;padding:1px 8px;border-radius:3px;cursor:pointer;">Use Band ' + suggested + '</button></span>';
   } else {
-    suggEl.innerHTML = sec ? '<span style="font-size:12px;color:var(--text3);">Time outside standard bands — assign manually</span>' : '';
+    suggEl.innerHTML = sec ? '<span class="u-muted-12">Time outside standard bands — assign manually</span>' : '';
   }
 }
 
@@ -191,8 +191,8 @@ function renderRunners() {
     var nameDisplay = (r.isLeader ? '\uD83C\uDFBD ' : '') + r.name + (isArchived ? ' <span style="font-size:10px;color:var(--text3);background:var(--bg3);border-radius:4px;padding:1px 5px;">Archived</span>' : '');
     var editBtn = isArchived ? '' : '<button onclick="editRunnerName(' + r.id + ')" style="background:none;border:none;cursor:pointer;padding:2px;color:var(--text3);vertical-align:middle;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>';
     var actions = isArchived
-      ? '<button class="btn btn-sm" onclick="restoreRunner(' + r.id + ')" style="font-size:10px;padding:3px 8px;">Restore</button><button class="btn btn-sm btn-danger" onclick="deleteRunner(' + r.id + ')" style="font-size:10px;padding:3px 8px;">Delete</button>'
-      : '<button class="btn btn-sm btn-info" onclick="editRunnerPB(' + r.id + ')" style="font-size:10px;padding:3px 8px;">Baselines</button><button class="btn btn-sm btn-danger" onclick="removeRunner(' + r.id + ')" style="font-size:10px;padding:3px 8px;">Archive</button>';
+      ? '<button class="btn btn-sm u-btn-xs" onclick="restoreRunner(' + r.id + ')">Restore</button><button class="btn btn-sm btn-danger u-btn-xs" onclick="deleteRunner(' + r.id + ')">Delete</button>'
+      : '<button class="btn btn-sm btn-info u-btn-xs" onclick="editRunnerPB(' + r.id + ')">Baselines</button><button class="btn btn-sm btn-danger u-btn-xs" onclick="removeRunner(' + r.id + ')">Archive</button>';
     return '<div class="runner-card" data-runner-id="' + r.id + '" style="' + (isArchived ? 'opacity:.5;' : '') + '"><div class="runner-info" style="min-width:0;"><h3 id="runner-name-' + r.id + '" style="font-size:15px;">' + nameDisplay + ' ' + editBtn + '</h3><div class="runner-meta">' + meta + '</div></div><div class="runner-actions">' + actions + '</div></div>';
   }
 
@@ -209,7 +209,7 @@ function renderRunners() {
 
   var html = active.length ? renderGrid(active, false) : '<div class="notice" style="margin-bottom:1rem;">No active runners.</div>';
   if (archived.length) {
-    html += '<div style="margin-top:1.5rem;"><div onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display===\'none\'?\'block\':\'none\'" style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:6px 0;border-top:1px solid var(--border);"><span style="font-size:11px;color:var(--text3);">Archived Runners (' + archived.length + ')</span></div><div style="display:none;">' + renderGrid(archived, true) + '</div></div>';
+    html += '<div style="margin-top:1.5rem;"><div onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display===\'none\'?\'block\':\'none\'" style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:6px 0;border-top:1px solid var(--border);"><span class="u-muted-11">Archived Runners (' + archived.length + ')</span></div><div style="display:none;">' + renderGrid(archived, true) + '</div></div>';
   }
   el.innerHTML = html;
 }

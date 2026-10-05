@@ -26,7 +26,8 @@ Review as if it were someone else's PR:
 - Scripts are classic (non-module) and share one global scope. Load order lives in `index.html` and matters only for top-level statements: `config` → `bands` → `state` first, `app.js` last.
 - New code goes in the file that owns that feature (see README "Project structure"). Create a new `js/<feature>.js` rather than growing an unrelated file; add its `<script>` tag before `app.js`.
 - No new top-level statements that run at load outside `state.js`/`app.js`/`import.js`.
-- CSS: use existing `var(--x)` tokens in `css/styles.css`; no raw hex where a token exists.
+- CSS: use existing `var(--x)` tokens in `css/styles.css`; no raw hex where a token exists. Prefer the `.u-*` utility classes (end of `styles.css`) over new inline styles. Caution: a single-class utility loses to existing more-specific rules (e.g. on `input`), so visually verify; `u-input-sm` was tried and reverted for this reason.
+- Use `getTournament/getRunner/getLocation/getEvent(id)` instead of `S.x.find(...)`.
 
 ## 4. Security & secrets
 - Never add tokens, passwords, or keys to source. The admin pastes the GitHub token in Settings; it lives only in that browser's localStorage. Anything client-side is public on GitHub Pages.

@@ -103,20 +103,20 @@ function buildSettingsPanel(tid) {
       + '</div>';
   }).join('');
 
-  return '<div class="card card-accent" style="margin-bottom:0;"><div class="card-title">Scoring Settings</div>'
+  return '<div class="card card-accent u-mb-0"><div class="card-title">Scoring Settings</div>'
     + '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.25rem;margin-bottom:1.25rem;">'
     // Col 1: Attendance + Wildcard
     + '<div>'
     + '<div class="ss-label">&#9989; Attendance Bonus</div>'
-    + '<p style="font-size:11px;color:var(--text3);margin-bottom:.5rem;">Points awarded to every runner who races at an event (has a recorded time).</p>'
-    + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:1rem;"><input type="number" id="attendance-bonus-' + tid + '" value="' + (s.attendanceBonus || 0) + '" min="0" class="text-mono" style="padding:5px 8px;font-size:13px;max-width:70px;" onchange="updateAttendanceBonus(' + tid + ',this.value)"/><span style="font-size:12px;color:var(--text2);">pts per race</span></div>'
+    + '<p class="u-hint-11-sm">Points awarded to every runner who races at an event (has a recorded time).</p>'
+    + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:1rem;"><input style="padding:5px 8px;font-size:13px;max-width:70px;" type="number" id="attendance-bonus-' + tid + '" value="' + (s.attendanceBonus || 0) + '" min="0" class="text-mono" onchange="updateAttendanceBonus(' + tid + ',this.value)"/><span class="u-sub-12">pts per race</span></div>'
     + '<div class="ss-label">&#129309; Volunteer Bonus</div>'
-    + '<p style="font-size:11px;color:var(--text3);margin-bottom:.5rem;">Flat points for attending as a volunteer. Separate from race attendance bonus.</p>'
-    + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:1rem;"><input type="number" id="volunteer-bonus-' + tid + '" value="' + (s.volunteerBonus || 0) + '" min="0" class="text-mono" style="padding:5px 8px;font-size:13px;max-width:70px;" onchange="updateVolunteerBonus(' + tid + ',this.value)"/><span style="font-size:12px;color:var(--text2);">pts per session</span></div>'
-    + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:1rem;"><input type="number" id="volunteer-max-' + tid + '" value="' + (s.volunteerMaxSessions != null ? s.volunteerMaxSessions : 1) + '" min="0" class="text-mono" style="padding:5px 8px;font-size:13px;max-width:70px;" onchange="updateVolunteerMax(' + tid + ',this.value)"/><span style="font-size:12px;color:var(--text2);">max sessions per tournament <span style="color:var(--text3);">(0 = unlimited)</span></span></div>'
+    + '<p class="u-hint-11-sm">Flat points for attending as a volunteer. Separate from race attendance bonus.</p>'
+    + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:1rem;"><input style="padding:5px 8px;font-size:13px;max-width:70px;" type="number" id="volunteer-bonus-' + tid + '" value="' + (s.volunteerBonus || 0) + '" min="0" class="text-mono" onchange="updateVolunteerBonus(' + tid + ',this.value)"/><span class="u-sub-12">pts per session</span></div>'
+    + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:1rem;"><input style="padding:5px 8px;font-size:13px;max-width:70px;" type="number" id="volunteer-max-' + tid + '" value="' + (s.volunteerMaxSessions != null ? s.volunteerMaxSessions : 1) + '" min="0" class="text-mono" onchange="updateVolunteerMax(' + tid + ',this.value)"/><span class="u-sub-12">max sessions per tournament <span style="color:var(--text3);">(0 = unlimited)</span></span></div>'
     + '<div class="ss-label">&#9889; Wildcard Events</div>'
-    + '<p style="font-size:11px;color:var(--text3);margin-bottom:.5rem;">Special events where all attendees get bonus points instead of band scoring.</p>'
-    + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:.5rem;"><input type="number" id="wildcard-bonus-' + tid + '" value="' + (s.wildcardBonus || 2) + '" min="0" class="text-mono" style="padding:5px 8px;font-size:13px;max-width:70px;" onchange="updateWildcardBonus(' + tid + ',this.value)"/><span style="font-size:12px;color:var(--text2);">pts per wildcard</span></div>'
+    + '<p class="u-hint-11-sm">Special events where all attendees get bonus points instead of band scoring.</p>'
+    + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:.5rem;"><input style="padding:5px 8px;font-size:13px;max-width:70px;" type="number" id="wildcard-bonus-' + tid + '" value="' + (s.wildcardBonus || 2) + '" min="0" class="text-mono" onchange="updateWildcardBonus(' + tid + ',this.value)"/><span class="u-sub-12">pts per wildcard</span></div>'
     + '</div>'
     // Col 2: Wildcard event toggles
     + '<div>'
@@ -126,7 +126,7 @@ function buildSettingsPanel(tid) {
     // Col 3: Bonus tiers
     + '<div>'
     + '<div class="ss-label">&#127919; Attendance Bonus Tiers</div>'
-    + '<p style="font-size:11px;color:var(--text3);margin-bottom:.5rem;">Extra bonus for runners who race at multiple events. Highest qualifying tier wins. Volunteer sessions do not count.</p>'
+    + '<p class="u-hint-11-sm">Extra bonus for runners who race at multiple events. Highest qualifying tier wins. Volunteer sessions do not count.</p>'
     + '<div style="display:grid;grid-template-columns:1fr 1fr 28px;gap:5px;font-size:10px;color:var(--text3);margin-bottom:4px;"><span>Min events</span><span>Pts</span><span></span></div>'
     + '<div id="tiers-list-' + tid + '">' + tierRows + '</div>'
     + '<button class="btn btn-sm" style="margin-top:4px;" onclick="addTier(' + tid + ')">+ Add Tier</button>'
@@ -135,8 +135,8 @@ function buildSettingsPanel(tid) {
     // Band scoring — full width
     + '<div style="border-top:1px solid var(--border);padding-top:1rem;">'
     + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;">'
-    + '<div class="ss-label" style="margin-bottom:0;">&#9201; Band Scoring (A–G)</div>'
-    + '<button class="btn btn-sm btn-danger" style="font-size:10px;padding:3px 8px;" onclick="resetBandTable(' + tid + ')">Reset</button>'
+    + '<div class="ss-label u-mb-0">&#9201; Band Scoring (A–G)</div>'
+    + '<button class="btn btn-sm btn-danger u-btn-xs" onclick="resetBandTable(' + tid + ')">Reset</button>'
     + '</div>'
     + '<div style="border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;overflow-x:auto;" id="bands-list-' + tid + '">' + bandRows + '</div>'
     + '</div>'

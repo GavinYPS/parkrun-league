@@ -93,20 +93,20 @@ function renderEtResultRows(evId) {
       : (baseline != null
         ? '<span class="text-mono" style="color:var(--orange);">' + sTime(baseline) + '</span> <button onclick="editBaseline(' + evId + ',' + r.id + ')" style="background:none;border:none;cursor:pointer;padding:2px 4px;font-size:10px;color:var(--text3);">Edit</button>'
         : '<span style="color:var(--text3);">--</span> <button onclick="editBaseline(' + evId + ',' + r.id + ')" style="background:none;border:none;cursor:pointer;padding:2px 4px;font-size:10px;color:var(--orange);">Set</button>');
-    var nameCell = '<strong style="font-size:15px;text-transform:uppercase;">' + r.name + '</strong>' + (showPkId && r.rid ? '<br><span style="font-size:11px;color:var(--text3);">A' + r.rid + '</span>' : '');
+    var nameCell = '<strong style="font-size:15px;text-transform:uppercase;">' + r.name + '</strong>' + (showPkId && r.rid ? '<br><span class="u-muted-11">A' + r.rid + '</span>' : '');
 
     if (isVolunteer) {
       return '<tr><td>' + nameCell + '</td>'
         + '<td><span style="font-size:12px;color:var(--blue);font-weight:600;">🙋 Volunteered</span></td>'
         + '<td><span style="color:var(--text3);">—</span></td>'
         + '<td></td>'
-        + '<td style="font-size:12px;color:var(--text2);">' + (volPts > 0 ? '+' + volPts + ' volunteer bonus' : 'No volunteer bonus') + '</td>'
+        + '<td class="u-sub-12">' + (volPts > 0 ? '+' + volPts + ' volunteer bonus' : 'No volunteer bonus') + '</td>'
         + '<td style="font-weight:800;font-size:18px;color:' + ptsColor + ';">' + ptsDisplay + '</td></tr>';
     }
     return '<tr><td>' + nameCell + '</td><td style="white-space:nowrap;">' + baselineDisplay + '</td>'
       + '<td class="text-mono">' + (actual != null ? sTime(actual) : '<span style="color:var(--text3)">--</span>') + '</td>'
       + '<td>' + (diff != null ? '<span class="badge ' + bc + '">' + dStr(diff) + '</span>' : '') + '</td>'
-      + '<td style="font-size:12px;color:var(--text2);">' + breakdownStr + '</td>'
+      + '<td class="u-sub-12">' + breakdownStr + '</td>'
       + '<td style="font-weight:800;font-size:18px;color:' + ptsColor + ';">' + ptsDisplay + '</td></tr>';
   }).join('');
 }
@@ -122,7 +122,7 @@ function renderEnterTimesRows(evId) {
   var emptySvg = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/></svg>';
   tbody.innerHTML = eligible.map(function(r) {
     var rd = res[r.id] || {}; var attended = isAttended(rd); var mVal = rd.actualSec != null ? sHMS(rd.actualSec) : '00:00:00';
-    var nameCell = '<strong style="font-size:15px;text-transform:uppercase;">' + r.name + '</strong>' + (showPkId && r.rid ? '<br><span style="font-size:11px;color:var(--text3);">A' + r.rid + '</span>' : '');
+    var nameCell = '<strong style="font-size:15px;text-transform:uppercase;">' + r.name + '</strong>' + (showPkId && r.rid ? '<br><span class="u-muted-11">A' + r.rid + '</span>' : '');
     var attendedCell, timeCell;
     if (readonly) {
       var isVolunteer = rd.volunteer === true;
@@ -130,27 +130,27 @@ function renderEnterTimesRows(evId) {
         ? '<span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--orange);">' + tickedSvg + '</span>'
         : '<span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--text3);">' + emptySvg + '</span>';
       var typeCell = !attended
-        ? '<span style="color:var(--text3);font-size:12px;">&mdash;</span>'
+        ? '<span class="u-muted-12">&mdash;</span>'
         : (isVolunteer
           ? '<span style="font-size:12px;color:var(--blue);font-weight:600;">🙋 Volunteered</span>'
           : (rd.actualSec != null
             ? '<span style="font-size:12px;color:var(--orange);font-weight:600;">🏃 Raced</span>'
             : '<span style="font-size:12px;color:var(--blue);font-weight:600;">🙋 Volunteered</span>'));
-      timeCell = !attended ? '<span style="color:var(--text3);font-size:12px;">&mdash;</span>'
-        : (isVolunteer ? '<span style="color:var(--text3);font-size:12px;">&mdash;</span>'
+      timeCell = !attended ? '<span class="u-muted-12">&mdash;</span>'
+        : (isVolunteer ? '<span class="u-muted-12">&mdash;</span>'
         : '<span class="text-mono" style="font-size:14px;">' + (rd.actualSec != null ? sTime(rd.actualSec) : '&mdash;') + '</span>');
     } else {
       var isVolunteer = rd.volunteer === true;
       // Attended tick column
       attendedCell = '<button onclick="toggleAttendanceEt(' + evId + ',' + r.id + ')" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;" title="' + (attended ? 'Mark as not attended' : 'Mark as attended') + '">' + (attended ? tickedSvg : emptySvg) + '</button>';
       // Type column — only shown when attended; defaults to Raced
-      var typeCell = !attended ? '<span style="color:var(--text3);font-size:12px;">&mdash;</span>'
+      var typeCell = !attended ? '<span class="u-muted-12">&mdash;</span>'
         : '<div style="display:flex;gap:4px;">'
           + '<button onclick="setRunnerTypeEt(' + evId + ',' + r.id + ',false)" style="font-size:11px;padding:2px 8px;border-radius:3px;cursor:pointer;border:1px solid ' + (!isVolunteer ? 'var(--orange)' : 'var(--border2)') + ';background:' + (!isVolunteer ? 'var(--orange-dim)' : 'none') + ';color:' + (!isVolunteer ? 'var(--orange)' : 'var(--text3)') + ';font-weight:700;">🏃 Raced</button>'
           + '<button onclick="setRunnerTypeEt(' + evId + ',' + r.id + ',true)" style="font-size:11px;padding:2px 8px;border-radius:3px;cursor:pointer;border:1px solid ' + (isVolunteer ? 'var(--blue)' : 'var(--border2)') + ';background:' + (isVolunteer ? 'rgba(90,159,212,.15)' : 'none') + ';color:' + (isVolunteer ? 'var(--blue)' : 'var(--text3)') + ';font-weight:700;">🙋 Volunteered</button>'
           + '</div>';
-      timeCell = !attended ? '<span style="font-size:12px;color:var(--text3);">&mdash;</span>'
-        : (isVolunteer ? '<span style="font-size:12px;color:var(--text3);">&mdash;</span>'
+      timeCell = !attended ? '<span class="u-muted-12">&mdash;</span>'
+        : (isVolunteer ? '<span class="u-muted-12">&mdash;</span>'
         : '<input type="time" step="1" id="et-time-' + evId + '-' + r.id + '" value="' + mVal + '" style="max-width:140px;"/>');
     }
     return '<tr><td>' + nameCell + '</td><td style="text-align:center;">' + attendedCell + '</td><td>' + typeCell + '</td><td>' + timeCell + '</td></tr>';

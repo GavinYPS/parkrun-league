@@ -75,12 +75,12 @@ function renderLeaderboard() {
   var colDef = '40px 1fr' + (showAttBonus ? ' 75px' : '') + (showVolBonus ? ' 75px' : '') + (showWcBonus ? ' 75px' : '') + ' 75px 90px 80px';
   var hdr = '<span style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;">#</span>'
     + '<span style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;">Runner</span>'
-    + (showAttBonus ? '<span style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;text-align:right;">&#9989; Att.</span>' : '')
-    + (showVolBonus ? '<span style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;text-align:right;">&#129309; Vol.</span>' : '')
-    + (showWcBonus ? '<span style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;text-align:right;">&#9889; WC</span>' : '')
-    + '<span style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;text-align:right;">&#9201; Speed</span>'
-    + '<span style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;text-align:right;">&#127919; Bonus</span>'
-    + '<span style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;text-align:right;">&#127942; Total</span>';
+    + (showAttBonus ? '<span class="u-th-right">&#9989; Att.</span>' : '')
+    + (showVolBonus ? '<span class="u-th-right">&#129309; Vol.</span>' : '')
+    + (showWcBonus ? '<span class="u-th-right">&#9889; WC</span>' : '')
+    + '<span class="u-th-right">&#9201; Speed</span>'
+    + '<span class="u-th-right">&#127919; Bonus</span>'
+    + '<span class="u-th-right">&#127942; Total</span>';
   var posStyles = ['background:var(--orange);color:#fff;', 'background:#555;color:#fff;', 'background:#7a3d10;color:#fff;'];
   var rows = scores.length ? scores.map(function(s, i) {
     var bandColor = s.bandPts > 0 ? 'var(--green)' : s.bandPts < 0 ? 'var(--red)' : 'var(--text)';

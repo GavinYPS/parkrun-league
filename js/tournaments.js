@@ -16,11 +16,11 @@ function editTournament(tid) {
   var formId = 'f-edit-t-' + tid; var existing = document.getElementById(formId); if (existing) { existing.remove(); return; }
   var form = document.createElement('div'); form.id = formId; form.className = 'inline-form card-accent'; form.style.marginBottom = '.75rem';
   var opts = (S.activityTypes || DEFAULT_ACTIVITY_TYPES).map(function(type) { return '<option value="' + type + '" ' + ((t.type || 'parkrun') === type ? 'selected' : '') + '>' + type + '</option>'; }).join('');
-  form.innerHTML = '<div style="font-size:11px;color:var(--text3);margin-bottom:.75rem;">Edit Tournament</div>'
+  form.innerHTML = '<div class="u-hint-11">Edit Tournament</div>'
     + '<div class="form-row"><label>Name</label><input type="text" id="edit-t-name-' + tid + '" value="' + t.name.replace(/"/g,'&quot;') + '"/></div>'
     + '<div class="form-row"><label>Description</label><input type="text" id="edit-t-desc-' + tid + '" value="' + (t.desc||'').replace(/"/g,'&quot;') + '"/></div>'
     + '<div class="form-row"><label>Type</label><select id="edit-t-type-' + tid + '" style="max-width:220px;">' + opts + '</select></div>'
-    + '<div class="btn-group" style="margin-top:8px;"><button class="btn btn-primary btn-sm" onclick="saveTournamentEdit(' + tid + ')">Save</button><button class="btn btn-sm" onclick="document.getElementById(\'f-edit-t-' + tid + '\').remove()">Cancel</button></div>';
+    + '<div class="btn-group u-mt-8"><button class="btn btn-primary btn-sm" onclick="saveTournamentEdit(' + tid + ')">Save</button><button class="btn btn-sm" onclick="document.getElementById(\'f-edit-t-' + tid + '\').remove()">Cancel</button></div>';
   var tbody = document.getElementById('tbody-' + tid); if (tbody) tbody.prepend(form);
   setTimeout(function() { var inp = document.getElementById('edit-t-name-' + tid); if (inp) inp.focus(); }, 50);
 }
@@ -103,7 +103,7 @@ function renderTournaments() {
 
   var html = active.map(function(t) { return renderCard(t, false); }).join('');
   if (archived.length) {
-    html += '<div style="margin-top:1.5rem;"><div onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display===\'none\'?\'block\':\'none\'" style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:6px 0;border-top:1px solid var(--border);"><span style="font-size:11px;color:var(--text3);">Archived Tournaments (' + archived.length + ')</span></div><div style="display:none;">' + archived.map(function(t) { return renderCard(t, true); }).join('') + '</div></div>';
+    html += '<div style="margin-top:1.5rem;"><div onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display===\'none\'?\'block\':\'none\'" style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:6px 0;border-top:1px solid var(--border);"><span class="u-muted-11">Archived Tournaments (' + archived.length + ')</span></div><div style="display:none;">' + archived.map(function(t) { return renderCard(t, true); }).join('') + '</div></div>';
   }
   el.innerHTML = html;
 }

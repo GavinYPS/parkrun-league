@@ -6,17 +6,17 @@ function showAddLocation(tid) {
   var formId = 'f-loc-' + tid; var existing = document.getElementById(formId); if (existing) { existing.remove(); return; }
   var form = document.createElement('div'); form.id = formId; form.className = 'inline-form';
   if (isParkrun(tid)) {
-    form.innerHTML = '<div style="font-size:11px;color:var(--text3);margin-bottom:.75rem;">Add Location</div>'
+    form.innerHTML = '<div class="u-hint-11">Add Location</div>'
       + '<div class="form-row"><label>Parkrun URL</label><input type="url" id="loc-url-' + tid + '" placeholder="https://www.parkrun.org.uk/macclesfield/" oninput="scheduleLocLookup(' + tid + ')"/></div>'
       + '<div class="url-status" id="loc-status-' + tid + '"></div>'
-      + '<div class="btn-group" style="margin-top:8px;"><button class="btn btn-primary btn-sm" onclick="addLocation(' + tid + ')">Add Location</button><button class="btn btn-sm" onclick="document.getElementById(\'f-loc-' + tid + '\').remove()">Cancel</button></div>';
+      + '<div class="btn-group u-mt-8"><button class="btn btn-primary btn-sm" onclick="addLocation(' + tid + ')">Add Location</button><button class="btn btn-sm" onclick="document.getElementById(\'f-loc-' + tid + '\').remove()">Cancel</button></div>';
   } else {
-    form.innerHTML = '<div style="font-size:11px;color:var(--text3);margin-bottom:.75rem;">Add Event</div>'
+    form.innerHTML = '<div class="u-hint-11">Add Event</div>'
       + '<div class="form-row"><label>Name</label><input type="text" id="loc-name-' + tid + '" placeholder="e.g. Heaton Park 10k"/></div>'
-      + '<div class="form-row"><label>Date</label><input type="date" id="loc-date-' + tid + '" style="max-width:190px;"/></div>'
+      + '<div class="form-row"><label>Date</label><input class="u-maxw-190" type="date" id="loc-date-' + tid + '"/></div>'
       + '<div class="form-row"><label>Event page</label><input type="url" id="loc-eventpage-' + tid + '" placeholder="https://..."/></div>'
       + '<div class="form-row"><label>Results URL</label><input type="url" id="loc-results-' + tid + '" placeholder="https://..."/></div>'
-      + '<div class="btn-group" style="margin-top:8px;"><button class="btn btn-primary btn-sm" onclick="addLocationGeneric(' + tid + ')">Add Event</button><button class="btn btn-sm" onclick="document.getElementById(\'f-loc-' + tid + '\').remove()">Cancel</button></div>';
+      + '<div class="btn-group u-mt-8"><button class="btn btn-primary btn-sm" onclick="addLocationGeneric(' + tid + ')">Add Event</button><button class="btn btn-sm" onclick="document.getElementById(\'f-loc-' + tid + '\').remove()">Cancel</button></div>';
   }
   var tbody = document.getElementById('tbody-' + tid); if (tbody) tbody.prepend(form);
   setTimeout(function() { var inp = document.getElementById('loc-url-' + tid) || document.getElementById('loc-name-' + tid); if (inp) inp.focus(); }, 50);
@@ -39,12 +39,12 @@ function editLocationGeneric(lid) {
   var loc = getLocation(lid); if (!loc) return;
   var formId = 'f-edit-loc-' + lid; var existing = document.getElementById(formId); if (existing) { existing.remove(); return; }
   var form = document.createElement('div'); form.id = formId; form.className = 'inline-form'; form.style.cssText = 'margin:.5rem 0;';
-  form.innerHTML = '<div style="font-size:11px;color:var(--text3);margin-bottom:.75rem;">Edit Event</div>'
+  form.innerHTML = '<div class="u-hint-11">Edit Event</div>'
     + '<div class="form-row"><label>Name</label><input type="text" id="edit-loc-name-' + lid + '" value="' + loc.name.replace(/"/g,'&quot;') + '"/></div>'
-    + '<div class="form-row"><label>Date</label><input type="date" id="edit-loc-date-' + lid + '" value="' + (loc.date||'') + '" style="max-width:190px;"/></div>'
+    + '<div class="form-row"><label>Date</label><input class="u-maxw-190" type="date" id="edit-loc-date-' + lid + '" value="' + (loc.date||'') + '"/></div>'
     + '<div class="form-row"><label>Event page</label><input type="url" id="edit-loc-eventpage-' + lid + '" value="' + (loc.eventPage||'').replace(/"/g,'&quot;') + '"/></div>'
     + '<div class="form-row"><label>Results URL</label><input type="url" id="edit-loc-results-' + lid + '" value="' + (loc.resultsUrl||'').replace(/"/g,'&quot;') + '"/></div>'
-    + '<div class="btn-group" style="margin-top:8px;"><button class="btn btn-primary btn-sm" onclick="saveLocationGeneric(' + lid + ')">Save</button><button class="btn btn-sm" onclick="document.getElementById(\'f-edit-loc-' + lid + '\').remove()">Cancel</button></div>';
+    + '<div class="btn-group u-mt-8"><button class="btn btn-primary btn-sm" onclick="saveLocationGeneric(' + lid + ')">Save</button><button class="btn btn-sm" onclick="document.getElementById(\'f-edit-loc-' + lid + '\').remove()">Cancel</button></div>';
   var allBlocks = document.querySelectorAll('.location-block'); var targetBlock = null;
   allBlocks.forEach(function(b) { if (b.innerHTML.indexOf('editLocationGeneric(' + lid + ')') !== -1) targetBlock = b; });
   if (targetBlock) targetBlock.insertAdjacentElement('afterend', form);
