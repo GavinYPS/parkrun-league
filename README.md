@@ -31,7 +31,7 @@ rundamentalist/     Separate club marketing page
 | leaderboard.js | Leaderboard page |
 | global-settings.js | Global settings, activity types |
 | export.js | CSV export |
-| import.js | parkrun auto-import |
+| import.js | parkrun import: club report paste or results screenshot (OCR via Tesseract.js, loaded from a CDN on demand) |
 | app.js | Startup wiring and initial render (**must load last**) |
 
 Add a new feature as a new `js/<feature>.js` with a `<script>` tag before `app.js`.

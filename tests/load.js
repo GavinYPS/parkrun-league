@@ -4,7 +4,7 @@ const path = require('path');
 const vm = require('vm');
 
 const ROOT = path.join(__dirname, '..');
-const PURE_FILES = ['config', 'bands', 'state', 'utils', 'tournament-data', 'github-sync'];
+const PURE_FILES = ['config', 'bands', 'state', 'utils', 'tournament-data', 'github-sync', 'import'];
 
 function memoryStorage(initial) {
   const m = Object.assign({}, initial);
@@ -20,7 +20,8 @@ function loadApp(local) {
   const ctx = vm.createContext({
     localStorage: memoryStorage(local),
     sessionStorage: memoryStorage(),
-    document: { getElementById: () => null, querySelector: () => null },
+    document: { getElementById: () => null, querySelector: () => null, createElement: () => ({}), head: { appendChild() {} } },
+    renderEnterTimes() {},  // import.js wraps this at load
     console,
   });
   PURE_FILES.forEach(f => {

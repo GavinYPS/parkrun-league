@@ -210,8 +210,56 @@ function imShowPaste() {
       'From the club results tab, press <strong>Ctrl+A</strong> then <strong>Ctrl+C</strong>, then paste below:'+
     '</div>'+
     '<textarea id="im-paste" style="width:100%;min-height:120px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);font-size:12px;padding:.5rem;font-family:\'SF Mono\',monospace;resize:vertical;box-sizing:border-box;" placeholder="Paste here\u2026" autofocus></textarea>'+
-    '<button class="btn btn-primary" style="margin-top:10px;" onclick="imReadPaste()">Read Results</button>';
-  setTimeout(function(){ var el=document.getElementById('im-paste'); if(el) el.focus(); }, 100);
+    '<button class="btn btn-primary" style="margin-top:10px;" onclick="imReadPaste()">Read Results</button>'+
+    '<div class="im-info" style="margin-top:14px;">Or use a <strong>screenshot</strong> of the results: paste it here (Ctrl+V) or choose a file. It is read in your browser and goes straight to the review step.</div>'+
+    '<input type="file" accept="image/*" id="im-shot" onchange="imOcrFile(this.files[0])">'+
+    '<div id="im-ocr-status" class="im-progress"></div>';
+  setTimeout(function(){
+    var el=document.getElementById('im-paste');
+    if(el) { el.focus(); el.onpaste = imOnPaste; }
+  }, 100);
+}
+
+// ── Screenshot (OCR) import ──────────────────────────────────────────────────
+// Reads a screenshot of the parkrun results table with Tesseract.js (loaded on demand from a CDN),
+// then feeds the recognised text through the same parser + review step as pasted text.
+var TESSERACT_SRC = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
+
+function imOnPaste(e) {
+  var items = (e.clipboardData && e.clipboardData.items) || [];
+  for (var i = 0; i < items.length; i++) {
+    if (items[i].type.indexOf('image/') === 0) { e.preventDefault(); imOcrFile(items[i].getAsFile()); return; }
+  }
+}
+
+function imLoadTesseract() {
+  if (window.Tesseract) return Promise.resolve(window.Tesseract);
+  return new Promise(function(resolve, reject) {
+    var sc = document.createElement('script');
+    sc.src = TESSERACT_SRC;
+    sc.onload = function() { resolve(window.Tesseract); };
+    sc.onerror = function() { reject(new Error('Could not load the OCR library (check your connection).')); };
+    document.head.appendChild(sc);
+  });
+}
+
+function imOcrFile(file) {
+  if (!file) return;
+  var status = document.getElementById('im-ocr-status');
+  function say(msg) { if (status) status.textContent = msg; }
+  say('Loading text reader...');
+  imLoadTesseract().then(function(T) {
+    return T.recognize(file, 'eng', { logger: function(m) {
+      if (m.status === 'recognizing text') say('Reading screenshot... ' + Math.round(m.progress * 100) + '%');
+    }});
+  }).then(function(res) {
+    var text = (res && res.data && res.data.text) || '';
+    var ta = document.getElementById('im-paste');
+    if (ta) ta.value = text;
+    if (!prParseText(text).length) { say('No results found in that screenshot. Make sure position, name and time are all visible.'); return; }
+    say('');
+    imReadPaste();
+  }).catch(function(err) { say('Screenshot read failed: ' + (err && err.message ? err.message : err)); });
 }
 
 function imReadPaste() {
@@ -261,14 +309,17 @@ function prParseText(text) {
     }
 
     // Fallback: regex match for "29  Gavin TREVENA  22:14" style
+    // A row that is complete on one line (e.g. from a screenshot) must not swallow the next line.
+    var rowRe = /^(\d+)\s+([A-Za-zÀ-ɏ][a-zA-ZÀ-ɏ\s'\-\.]+?)\s+(\d{1,2}:\d{2}(?::\d{2})?)(?:\s|$)/;
+    var single = trimmed.replace(/\s+/g,' ').match(rowRe);
     var chunk = [trimmed, (lines[i+1]||'').trim(), (lines[i+2]||'').trim()].join(' ').replace(/\s+/g,' ');
-    var m = chunk.match(/^(\d+)\s+([A-Za-z\u00C0-\u024F][a-zA-Z\u00C0-\u024F\s'\-\.]+?)\s+(\d{1,2}:\d{2}(?::\d{2})?)(?:\s|$)/);
+    var m = single || chunk.match(/^(\d+)\s+([A-Za-z\u00C0-\u024F][a-zA-Z\u00C0-\u024F\s'\-\.]+?)\s+(\d{1,2}:\d{2}(?::\d{2})?)(?:\s|$)/);
     if (m) {
       var nm = m[2].trim();
       if (nm && nm.toLowerCase() !== 'unknown' && !nm.match(/position|parkrunner/i)) {
         var t2 = m[3].replace(/^00:/,'');
         results.push({ pos:m[1], name:nm, time:t2, timeSec:prSec(m[3]), location:currentLoc, club:'' });
-        i++;
+        if (!single) i++;
       }
     }
   }
