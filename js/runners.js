@@ -87,7 +87,7 @@ function addRunner() {
 }
 
 function editRunnerName(id) {
-  var r = S.runners.find(function(x) { return x.id === id; }); if (!r) return;
+  var r = getRunner(id); if (!r) return;
   var h3 = document.getElementById('runner-name-' + id); if (!h3) return;
   document.querySelectorAll('.runner-card').forEach(function(card) { if (card.dataset.runnerId !== String(id)) card.style.display = 'none'; });
   h3.innerHTML = '<input type="text" id="runner-name-input-' + id + '" value="' + r.name.replace(/"/g,'&quot;') + '" style="font-size:inherit;font-family:inherit;font-weight:inherit;padding:2px 6px;max-width:200px;"/>'
@@ -104,7 +104,7 @@ function editRunnerName(id) {
 }
 
 function saveRunnerName(id) {
-  var r = S.runners.find(function(x) { return x.id === id; }); if (!r) return;
+  var r = getRunner(id); if (!r) return;
   var inp = document.getElementById('runner-name-input-' + id); var val = inp ? inp.value.trim() : '';
   if (!val) { alert('Name cannot be empty.'); return; }
   r.name = val;
@@ -117,7 +117,7 @@ function saveRunnerName(id) {
 function showRunnerActions(id, show) { var card = document.querySelector('[data-runner-id="' + id + '"]'); if (!card) return; var actions = card.querySelector('.runner-actions'); if (actions) actions.style.visibility = show ? 'visible' : 'hidden'; }
 
 function editRunnerPB(id) {
-  var r = S.runners.find(function(x) { return x.id === id; }); if (!r) return;
+  var r = getRunner(id); if (!r) return;
   var cardId = 'edit-pb-' + id; var existing = document.getElementById(cardId);
   if (existing) { existing.remove(); showRunnerActions(id, true); return; }
   var card = document.querySelector('[data-runner-id="' + id + '"]'); if (!card) return;
@@ -155,7 +155,7 @@ function editRunnerPB(id) {
 }
 
 function saveRunnerPB(id) {
-  var r = S.runners.find(function(x) { return x.id === id; }); if (!r) return;
+  var r = getRunner(id); if (!r) return;
   var types = S.activityTypes || DEFAULT_ACTIVITY_TYPES;
   types.forEach(function(type) { var el = document.getElementById('pb-input-' + id + '-' + type.replace(/\s+/g,'-')); if (!el) return; var s = tSec(el.value); if (s != null) setBaseline(id, type, s, null); else if (r.pbs) delete r.pbs[type]; });
   r.pbSec = r.pbs && r.pbs['parkrun'] != null ? r.pbs['parkrun'] : (Object.values(r.pbs || {})[0] || null);
@@ -214,6 +214,6 @@ function renderRunners() {
   el.innerHTML = html;
 }
 
-function removeRunner(id) { var r = S.runners.find(function(x) { return x.id === id; }); confirmModal('Archive Runner', 'Archive ' + (r ? r.name : 'this runner') + '?', 'Archive', function() { var runner = S.runners.find(function(x) { return x.id === id; }); if (runner) { runner.archived = true; persist(); renderRunners(); } }); }
-function restoreRunner(id) { var r = S.runners.find(function(x) { return x.id === id; }); if (r) { r.archived = false; persist(); renderRunners(); } }
-function deleteRunner(id) { var r = S.runners.find(function(x) { return x.id === id; }); confirmModal('Permanently Delete', 'Delete ' + (r ? r.name : 'this runner') + '? Cannot be undone.', 'Delete', function() { S.runners = S.runners.filter(function(x) { return x.id !== id; }); for (var evId in S.results) delete S.results[evId][id]; for (var tid in S.tournamentRunners) S.tournamentRunners[tid] = S.tournamentRunners[tid].filter(function(e) { return e.rId !== id; }); persist(); renderRunners(); }); }
+function removeRunner(id) { var r = getRunner(id); confirmModal('Archive Runner', 'Archive ' + (r ? r.name : 'this runner') + '?', 'Archive', function() { var runner = getRunner(id); if (runner) { runner.archived = true; persist(); renderRunners(); } }); }
+function restoreRunner(id) { var r = getRunner(id); if (r) { r.archived = false; persist(); renderRunners(); } }
+function deleteRunner(id) { var r = getRunner(id); confirmModal('Permanently Delete', 'Delete ' + (r ? r.name : 'this runner') + '? Cannot be undone.', 'Delete', function() { S.runners = S.runners.filter(function(x) { return x.id !== id; }); for (var evId in S.results) delete S.results[evId][id]; for (var tid in S.tournamentRunners) S.tournamentRunners[tid] = S.tournamentRunners[tid].filter(function(e) { return e.rId !== id; }); persist(); renderRunners(); }); }

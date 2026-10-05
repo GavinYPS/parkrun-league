@@ -1,0 +1,8 @@
+{
+  "name": "parkrun-league",
+  "private": true,
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "check": "node -e \"require('fs').readdirSync('js').forEach(f=>new (require('vm').Script)(require('fs').readFileSync('js/'+f,'utf8'),{filename:f}))\""
+  }
+}

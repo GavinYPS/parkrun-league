@@ -1,9 +1,15 @@
 // Tournament/runner data accessors, enrolment, baselines
+// ── Lookups by id (strict match, returns undefined if not found) ──
+function getTournament(id) { return S.tournaments.find(function(x) { return x.id === id; }); }
+function getRunner(id) { return S.runners.find(function(x) { return x.id === id; }); }
+function getLocation(id) { return S.locations.find(function(x) { return x.id === id; }); }
+function getEvent(id) { return S.events.find(function(x) { return x.id === id; }); }
 
-function getTournamentSettings(tid) { var t = S.tournaments.find(function(t) { return t.id === tid; }); return (t && t.settings) ? t.settings : defaultTournamentSettings(); }
-function isParkrun(tid) { var t = S.tournaments.find(function(t) { return t.id === tid; }); return !t || !t.type || t.type === 'parkrun'; }
-function getTournamentActivityType(tid) { var t = S.tournaments.find(function(x) { return x.id === tid; }); var type = (t && t.type) || 'parkrun'; if (type === 'generic') { return (S.activityTypes || DEFAULT_ACTIVITY_TYPES).find(function(t) { return t !== 'parkrun'; }) || '10k'; } return type; }
-function getRunnerPb(rId, at) { var r = S.runners.find(function(x) { return x.id === rId; }); if (!r) return null; if (r.pbs && r.pbs[at] != null) return r.pbs[at]; if (at === 'parkrun' && r.pbSec != null) return r.pbSec; return null; }
+
+function getTournamentSettings(tid) { var t = getTournament(tid); return (t && t.settings) ? t.settings : defaultTournamentSettings(); }
+function isParkrun(tid) { var t = getTournament(tid); return !t || !t.type || t.type === 'parkrun'; }
+function getTournamentActivityType(tid) { var t = getTournament(tid); var type = (t && t.type) || 'parkrun'; if (type === 'generic') { return (S.activityTypes || DEFAULT_ACTIVITY_TYPES).find(function(t) { return t !== 'parkrun'; }) || '10k'; } return type; }
+function getRunnerPb(rId, at) { var r = getRunner(rId); if (!r) return null; if (r.pbs && r.pbs[at] != null) return r.pbs[at]; if (at === 'parkrun' && r.pbSec != null) return r.pbSec; return null; }
 function getTournamentRunners(tid) { if (!tid) return S.runners.filter(function(r) { return !r.archived; }); var key = String(tid); var enrolled = S.tournamentRunners[key] || []; return S.runners.filter(function(r) { return !r.archived && enrolled.some(function(e) { return String(e.rId) === String(r.id); }); }); }
 function getTournamentRunnerEntry(tid, rId) { var key = String(tid); return (S.tournamentRunners[key] || []).find(function(e) { return String(e.rId) === String(rId); }) || null; }
 function isEnrolled(tid, rId) { var key = String(tid); return (S.tournamentRunners[key] || []).some(function(e) { return String(e.rId) === String(rId); }); }
@@ -11,7 +17,7 @@ function enrollRunner(tid, rId, baselineSec) { var key = String(tid); if (!S.tou
 function unenrollRunner(tid, rId) { var key = String(tid); if (!S.tournamentRunners[key]) return; S.tournamentRunners[key] = S.tournamentRunners[key].filter(function(e) { return String(e.rId) !== String(rId); }); }
 
 function setBaseline(rId, actType, sec, tid) {
-  var r = S.runners.find(function(x) { return x.id === rId; }); if (!r) return;
+  var r = getRunner(rId); if (!r) return;
   if (tid != null) {
     var entry = getTournamentRunnerEntry(tid, rId);
     var prev = entry ? entry.baselineSec : null;

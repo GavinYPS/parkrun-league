@@ -15,7 +15,7 @@ function suggestNextDate(locEvents, suggestedRun) {
 
 function showAddEvent(lid) {
   var formId = 'f-ev-' + lid; var existing = document.getElementById(formId); if (existing) { existing.remove(); return; }
-  var loc = S.locations.find(function(l) { return l.id === lid; }); var parkrun = isParkrun(loc ? loc.tournamentId : null);
+  var loc = getLocation(lid); var parkrun = isParkrun(loc ? loc.tournamentId : null);
   var locEvents = S.events.filter(function(e) { return e.locationId === lid; }).sort(function(a,b) { return b.runNumber - a.runNumber; });
   var lastEv = locEvents[0]; var suggestedRun = lastEv ? lastEv.runNumber + 1 : ''; var suggestedDate = parkrun ? suggestNextDate(locEvents, suggestedRun || undefined) : prevSaturday();
   var form = document.createElement('div'); form.id = formId; form.className = 'inline-form';
@@ -40,7 +40,7 @@ function autoRunFromDate(lid) {
 }
 
 function saveEvent(lid) {
-  var loc = S.locations.find(function(l) { return l.id === lid; }); if (!loc) return;
+  var loc = getLocation(lid); if (!loc) return;
   var numEl = document.getElementById('evnum-' + lid); var num = parseInt(numEl ? numEl.value : '');
   var dateEl = document.getElementById('evdate-' + lid); var date = dateEl ? dateEl.value : '';
   if (!num || num < 1) { alert('Run number must be 1 or greater.'); return; }
@@ -50,12 +50,12 @@ function saveEvent(lid) {
 }
 
 function removeEvent(eid) {
-  var ev = S.events.find(function(e) { return e.id === eid; });
+  var ev = getEvent(eid);
   confirmModal('Remove Event', 'Remove run #' + (ev ? ev.runNumber : 'this event') + ' and all its results?', 'Remove', function() { S.events = S.events.filter(function(e) { return e.id !== eid; }); delete S.results[eid]; persist(); renderTournaments(); renderEnterTimesSel(); });
 }
 
 function editEvent(eid) {
-  var ev = S.events.find(function(e) { return e.id === eid; }); if (!ev) return;
+  var ev = getEvent(eid); if (!ev) return;
   var formId = 'f-edit-ev-' + eid; var existing = document.getElementById(formId); if (existing) { existing.remove(); return; }
   var row = document.getElementById('evrow-' + eid); if (!row) return;
   var form = document.createElement('div'); form.id = formId; form.className = 'inline-form'; form.style.marginTop = '6px';
@@ -67,7 +67,7 @@ function editEvent(eid) {
 }
 
 function saveEventEdit(eid) {
-  var ev = S.events.find(function(e) { return e.id === eid; }); if (!ev) return;
+  var ev = getEvent(eid); if (!ev) return;
   var numEl = document.getElementById('edit-evnum-' + eid); var num = parseInt(numEl ? numEl.value : '');
   var dateEl = document.getElementById('edit-evdate-' + eid); var date = dateEl ? dateEl.value : '';
   if (!num || num < 1) { alert('Run number must be 1 or greater.'); return; }
@@ -76,7 +76,7 @@ function saveEventEdit(eid) {
 }
 
 function toggleWildcard(eid) {
-  var ev = S.events.find(function(e) { return e.id === eid; }); if (!ev) return;
+  var ev = getEvent(eid); if (!ev) return;
   ev.wildcard = !ev.wildcard; persist();
   var panel = document.getElementById('settings-panel-' + ev.tournamentId); if (panel) panel.innerHTML = buildSettingsPanel(ev.tournamentId);
   renderTournaments();

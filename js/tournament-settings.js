@@ -9,11 +9,11 @@ function toggleTournamentSettings(tid) {
 }
 
 function buildSettingsPanel(tid) {
-  var t = S.tournaments.find(function(x) { return x.id === tid; }); if (!t) return '';
+  var t = getTournament(tid); if (!t) return '';
   var s = t.settings;
   var tEvents = S.events.filter(function(e) { return e.tournamentId === tid; }).sort(function(a,b) { if (a.date && b.date) return a.date.localeCompare(b.date); return a.runNumber - b.runNumber; });
   var wcRows = tEvents.length ? tEvents.map(function(ev) {
-    var loc = S.locations.find(function(l) { return l.id === ev.locationId; }); var isWc = ev.wildcard === true;
+    var loc = getLocation(ev.locationId); var isWc = ev.wildcard === true;
     var label = '#' + ev.runNumber + (ev.date ? ' &middot; ' + fmtDate(ev.date) : '') + (loc ? ' &middot; ' + loc.name : '');
     return '<label style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid var(--border);cursor:pointer;font-size:12px;color:var(--text2);">'
       + '<input type="checkbox" ' + (isWc ? 'checked' : '') + ' onchange="toggleWildcard(' + ev.id + ')" style="width:14px;height:14px;accent-color:#c084fc;flex-shrink:0;"/>'
@@ -148,7 +148,7 @@ function buildSettingsPanel(tid) {
 }
 
 function btEnsureTable(tid) {
-  var t = S.tournaments.find(function(x) { return x.id === tid; }); if (!t) return null;
+  var t = getTournament(tid); if (!t) return null;
   if (!t.settings.bandTable) t.settings.bandTable = JSON.parse(JSON.stringify(DEFAULT_BAND_TABLE));
   return t;
 }
@@ -229,16 +229,16 @@ function btSetSlower(tid, band, pts, field, val) {
 }
 function resetBandTable(tid) {
   if (!confirm('Reset band scoring to defaults?')) return;
-  var t = S.tournaments.find(function(x) { return x.id === tid; }); if (!t) return;
+  var t = getTournament(tid); if (!t) return;
   t.settings.bandTable = JSON.parse(JSON.stringify(DEFAULT_BAND_TABLE));
   var p = document.getElementById('settings-panel-' + tid); if (p) p.innerHTML = buildSettingsPanel(tid);
 }
 
-function updateAttendanceBonus(tid, val) { var t = S.tournaments.find(function(x) { return x.id === tid; }); if (t) t.settings.attendanceBonus = parseInt(val) || 0; }
-function updateVolunteerBonus(tid, val) { var t = S.tournaments.find(function(x) { return x.id === tid; }); if (t) t.settings.volunteerBonus = parseInt(val) || 0; }
-function updateVolunteerMax(tid, val) { var t = S.tournaments.find(function(x) { return x.id === tid; }); if (t) t.settings.volunteerMaxSessions = parseInt(val) || 0; }
-function updateWildcardBonus(tid, val) { var t = S.tournaments.find(function(x) { return x.id === tid; }); if (t) t.settings.wildcardBonus = parseInt(val) || 0; }
-function updateTier(tid, i, field, val) { var t = S.tournaments.find(function(x) { return x.id === tid; }); if (!t) return; t.settings.bonusTiers[i][field] = parseInt(val) || 0; }
-function removeTier(tid, i) { if (!confirm('Remove this tier?')) return; var t = S.tournaments.find(function(x) { return x.id === tid; }); if (!t) return; t.settings.bonusTiers.splice(i, 1); var p = document.getElementById('settings-panel-' + tid); if (p) p.innerHTML = buildSettingsPanel(tid); }
-function addTier(tid) { var t = S.tournaments.find(function(x) { return x.id === tid; }); if (!t) return; t.settings.bonusTiers.push({minRuns:1,points:1}); var p = document.getElementById('settings-panel-' + tid); if (p) p.innerHTML = buildSettingsPanel(tid); }
+function updateAttendanceBonus(tid, val) { var t = getTournament(tid); if (t) t.settings.attendanceBonus = parseInt(val) || 0; }
+function updateVolunteerBonus(tid, val) { var t = getTournament(tid); if (t) t.settings.volunteerBonus = parseInt(val) || 0; }
+function updateVolunteerMax(tid, val) { var t = getTournament(tid); if (t) t.settings.volunteerMaxSessions = parseInt(val) || 0; }
+function updateWildcardBonus(tid, val) { var t = getTournament(tid); if (t) t.settings.wildcardBonus = parseInt(val) || 0; }
+function updateTier(tid, i, field, val) { var t = getTournament(tid); if (!t) return; t.settings.bonusTiers[i][field] = parseInt(val) || 0; }
+function removeTier(tid, i) { if (!confirm('Remove this tier?')) return; var t = getTournament(tid); if (!t) return; t.settings.bonusTiers.splice(i, 1); var p = document.getElementById('settings-panel-' + tid); if (p) p.innerHTML = buildSettingsPanel(tid); }
+function addTier(tid) { var t = getTournament(tid); if (!t) return; t.settings.bonusTiers.push({minRuns:1,points:1}); var p = document.getElementById('settings-panel-' + tid); if (p) p.innerHTML = buildSettingsPanel(tid); }
 function saveSettingsInline(tid) { persist(); if (ghIsConfigured()) ghPush(); var msg = document.getElementById('settings-saved-' + tid); if (msg) msg.style.display = 'inline'; setTimeout(function() { var p = document.getElementById('settings-panel-' + tid); if (p) p.remove(); }, 800); }

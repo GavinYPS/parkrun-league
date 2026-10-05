@@ -17,7 +17,7 @@ function exportCSV(type) {
   } else if (type === 'results') {
     var rows = [['Tournament','Location','Run #','Date','Runner','Runner ID','Baseline','Time','Diff (s)','Points','Attended']];
     S.events.filter(function(e) { return !e.date || e.date <= today; }).forEach(function(ev) {
-      var t = S.tournaments.find(function(x) { return x.id === ev.tournamentId; }); var ts = getTournamentSettings(ev.tournamentId); var res = S.results[ev.id] || {};
+      var t = getTournament(ev.tournamentId); var ts = getTournamentSettings(ev.tournamentId); var res = S.results[ev.id] || {};
       S.runners.forEach(function(r) {
         var rd = res[r.id] || {}; var attended = isAttended(rd); var actual = attended ? (rd.actualSec != null ? rd.actualSec : null) : null;
         var baseline = getTournamentBaselinePb(r.id, ev.tournamentId) || r.pbSec; var diff = (actual != null && baseline != null) ? actual - baseline : null; var bp = diff != null ? getBandPts(diff, ts) : null;

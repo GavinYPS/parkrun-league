@@ -36,5 +36,8 @@ rundamentalist/     Separate club marketing page
 
 Add a new feature as a new `js/<feature>.js` with a `<script>` tag before `app.js`.
 
+## Tests
+`npm test` runs Node's built-in test runner (no dependencies) against the real scripts, including a check that `data.json` still loads and scores. `npm run check` syntax-checks `js/`.
+
 ## Local dev
 `python -m http.server 8765` then open http://localhost:8765. Syntax check: `for f in js/*.js; do node --check "$f"; done`.

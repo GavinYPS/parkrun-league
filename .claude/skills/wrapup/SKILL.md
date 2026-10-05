@@ -37,7 +37,7 @@ Review as if it were someone else's PR:
 for f in js/*.js; do node --check "$f"; done          # syntax
 python -m http.server 8765                              # serve, then load http://localhost:8765
 ```
-Smoke test in a browser (Playwright works): page loads with no `pageerror`, leaderboard renders, and the changed path is exercised (log in via settings, click through the feature). A syntax check does not prove the UI works.
+Run `npm test` (scoring, merge and data.json compatibility tests) and `npm run check` (syntax). Then smoke test in a browser (Playwright works): page loads with no `pageerror`, leaderboard renders, and the changed path is exercised (log in via settings, click through the feature). A syntax check does not prove the UI works.
 
 ## 5b. Other parts of the repo
 - `rundamentalist/rundamentalist.html` is a separate, self-contained marketing page (own CSS, large embedded assets). Don't apply `js/`/`css/` conventions to it or mix the two.

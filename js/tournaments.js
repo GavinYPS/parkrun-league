@@ -8,11 +8,11 @@ function addTournament() {
   persist(); renderTournaments(); renderLbSel();
 }
 
-function archiveTournament(tid) { var t = S.tournaments.find(function(x) { return x.id === tid; }); if (!t) return; confirmModal('Archive Tournament', 'Archive "' + t.name + '"?', 'Archive', function() { t.archived = true; delete S.tournamentRunners[String(tid)]; persist(); renderTournaments(); renderLbSel(); }); }
-function restoreTournament(tid) { var t = S.tournaments.find(function(x) { return x.id === tid; }); if (!t) return; t.archived = false; persist(); renderTournaments(); renderLbSel(); }
+function archiveTournament(tid) { var t = getTournament(tid); if (!t) return; confirmModal('Archive Tournament', 'Archive "' + t.name + '"?', 'Archive', function() { t.archived = true; delete S.tournamentRunners[String(tid)]; persist(); renderTournaments(); renderLbSel(); }); }
+function restoreTournament(tid) { var t = getTournament(tid); if (!t) return; t.archived = false; persist(); renderTournaments(); renderLbSel(); }
 
 function editTournament(tid) {
-  var t = S.tournaments.find(function(x) { return x.id === tid; }); if (!t) return;
+  var t = getTournament(tid); if (!t) return;
   var formId = 'f-edit-t-' + tid; var existing = document.getElementById(formId); if (existing) { existing.remove(); return; }
   var form = document.createElement('div'); form.id = formId; form.className = 'inline-form card-accent'; form.style.marginBottom = '.75rem';
   var opts = (S.activityTypes || DEFAULT_ACTIVITY_TYPES).map(function(type) { return '<option value="' + type + '" ' + ((t.type || 'parkrun') === type ? 'selected' : '') + '>' + type + '</option>'; }).join('');
@@ -26,7 +26,7 @@ function editTournament(tid) {
 }
 
 function saveTournamentEdit(tid) {
-  var t = S.tournaments.find(function(x) { return x.id === tid; }); if (!t) return;
+  var t = getTournament(tid); if (!t) return;
   var nameEl = document.getElementById('edit-t-name-' + tid); var name = nameEl ? nameEl.value.trim() : '';
   var descEl = document.getElementById('edit-t-desc-' + tid); var desc = descEl ? descEl.value.trim() : '';
   var typeEl = document.getElementById('edit-t-type-' + tid); var type = typeEl ? typeEl.value : 'parkrun';

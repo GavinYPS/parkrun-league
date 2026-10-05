@@ -23,7 +23,7 @@ function renderEnterTimes() {
   var evId = parseInt(document.getElementById('et-ev-sel').value);
   var area = document.getElementById('enter-times-area');
   if (!evId) { area.innerHTML = '<div class="notice">Select an event above.</div>'; return; }
-  var ev = S.events.find(function(e) { return e.id === evId; }); if (!ev) return;
+  var ev = getEvent(evId); if (!ev) return;
   if (!S.results[evId]) S.results[evId] = {};
   var today = new Date().toISOString().substring(0,10);
   var parkrunLink = ev.date && isParkrun(ev.tournamentId) ? 'https://www.parkrun.org.uk/' + ev.slug + '/results/' + ev.date + '/' : '';
@@ -57,7 +57,7 @@ function renderEnterTimes() {
 
 function renderEtResultRows(evId) {
   var tbody = document.getElementById('et-tbody-' + evId); if (!tbody) return;
-  var ev = S.events.find(function(e) { return e.id === evId; });
+  var ev = getEvent(evId);
   var res = S.results[evId] || {}; var ts = getTournamentSettings(ev ? ev.tournamentId : null); var showPkId = isParkrun(ev ? ev.tournamentId : null);
   var attending = getTournamentRunners(ev ? ev.tournamentId : null).filter(function(r) { return isAttended(res[r.id]); });
   if (!attending.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:1.5rem;">No attending runners.</td></tr>'; return; }
@@ -113,7 +113,7 @@ function renderEtResultRows(evId) {
 
 function renderEnterTimesRows(evId) {
   var tbody = document.getElementById('et-tbody-' + evId); if (!tbody) return;
-  var ev = S.events.find(function(e) { return e.id === evId; }); var showPkId = isParkrun(ev ? ev.tournamentId : null);
+  var ev = getEvent(evId); var showPkId = isParkrun(ev ? ev.tournamentId : null);
   var res = S.results[evId] || {}; var eligible = getTournamentRunners(ev ? ev.tournamentId : null);
   if (!eligible.length) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text3);padding:1.5rem;">No runners enrolled.</td></tr>'; return; }
   var readonly = !etEditMode;
@@ -198,7 +198,7 @@ function setRunnerTypeEt(evId, rId, isVolunteer) {
 }
 
 function saveEnterTimes(evId) {
-  var ev = S.events.find(function(e) { return e.id === evId; }); if (!ev) return;
+  var ev = getEvent(evId); if (!ev) return;
   if (!S.results[evId]) S.results[evId] = {};
   var eligible = getTournamentRunners(ev ? ev.tournamentId : null);
   eligible.forEach(function(r) {
@@ -220,8 +220,8 @@ function saveEnterTimes(evId) {
 }
 
 function editBaseline(evId, rId) {
-  var r = S.runners.find(function(x) { return x.id === rId; }); if (!r) return;
-  var ev = S.events.find(function(e) { return e.id === evId; }); var tid = ev ? ev.tournamentId : null;
+  var r = getRunner(rId); if (!r) return;
+  var ev = getEvent(evId); var tid = ev ? ev.tournamentId : null;
   var actType = getTournamentActivityType(tid); var parkrun = isParkrun(tid);
   var current = parkrun ? (((S.results[evId] || {})[rId] || {}).baselinePbSec || getTournamentBaselinePb(rId, tid)) : getTournamentBaselinePb(rId, tid);
   confirmModal((parkrun ? 'Edit Event Baseline' : 'Edit Tournament Baseline') + ' - ' + r.name, '', 'Update', function() {
@@ -239,7 +239,7 @@ function editBaseline(evId, rId) {
 }
 
 function viewResultsValidated(evId) {
-  var res = S.results[evId] || {}; var ev = S.events.find(function(e) { return e.id === evId; });
+  var res = S.results[evId] || {}; var ev = getEvent(evId);
   var eligible = getTournamentRunners(ev ? ev.tournamentId : null);
   var missing = eligible.filter(function(r) { var rd = res[r.id] || {}; return isAttended(rd) && !rd.volunteer && !rd.actualSec; });
   if (missing.length) {

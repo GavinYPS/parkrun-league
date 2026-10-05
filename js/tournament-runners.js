@@ -8,7 +8,7 @@ function showTournamentRunners(tid) {
 
 function renderRunnersPanel(tid, editMode) {
   var panel = document.getElementById('runners-panel-' + tid); if (!panel) return;
-  var t = S.tournaments.find(function(x) { return x.id === tid; }); if (!t) return;
+  var t = getTournament(tid); if (!t) return;
   var actType = getTournamentActivityType(tid); var label = actType; var showPkId = isParkrun(tid);
   if (!editMode) {
     var enrolledRunners = S.runners.filter(function(r) { return !r.archived && isEnrolled(tid, r.id); });

@@ -36,7 +36,7 @@ function addLocationGeneric(tid) {
 }
 
 function editLocationGeneric(lid) {
-  var loc = S.locations.find(function(l) { return l.id === lid; }); if (!loc) return;
+  var loc = getLocation(lid); if (!loc) return;
   var formId = 'f-edit-loc-' + lid; var existing = document.getElementById(formId); if (existing) { existing.remove(); return; }
   var form = document.createElement('div'); form.id = formId; form.className = 'inline-form'; form.style.cssText = 'margin:.5rem 0;';
   form.innerHTML = '<div style="font-size:11px;color:var(--text3);margin-bottom:.75rem;">Edit Event</div>'
@@ -53,7 +53,7 @@ function editLocationGeneric(lid) {
 }
 
 function saveLocationGeneric(lid) {
-  var loc = S.locations.find(function(l) { return l.id === lid; }); if (!loc) return;
+  var loc = getLocation(lid); if (!loc) return;
   var nameEl = document.getElementById('edit-loc-name-' + lid); var name = nameEl ? nameEl.value.trim() : '';
   var dateEl = document.getElementById('edit-loc-date-' + lid); var date = dateEl ? dateEl.value : '';
   var epEl = document.getElementById('edit-loc-eventpage-' + lid); var eventPage = eu(epEl ? epEl.value.trim() : '');
@@ -85,7 +85,7 @@ function addLocation(tid) {
 }
 
 function removeLocation(lid) {
-  var loc = S.locations.find(function(l) { return l.id === lid; });
+  var loc = getLocation(lid);
   confirmModal('Remove Location', 'Remove "' + (loc ? loc.name : 'this location') + '" and all its events?', 'Remove', function() {
     S.events.filter(function(e) { return e.locationId === lid; }).forEach(function(e) { delete S.results[e.id]; });
     S.events = S.events.filter(function(e) { return e.locationId !== lid; }); S.locations = S.locations.filter(function(l) { return l.id !== lid; });
