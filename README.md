@@ -9,7 +9,6 @@ index.html          Markup only; loads css/ and js/
 css/styles.css      All styles (design tokens in :root)
 js/                 Classic scripts sharing one global scope (inline onclick handlers need globals)
 data.json           Synced league data (read via raw.githubusercontent.com)
-config.json         Written by the deploy workflow
 rundamentalist/     Separate club marketing page
 ```
 

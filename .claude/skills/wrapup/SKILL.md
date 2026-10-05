@@ -29,8 +29,8 @@ Review as if it were someone else's PR:
 - CSS: use existing `var(--x)` tokens in `css/styles.css`; no raw hex where a token exists.
 
 ## 4. Security & secrets
-- Never add tokens, passwords, or keys to source or `config.json`. The deploy workflow (`.github/workflows/deploy.yml`) overwrites `config.json` with `secrets.TOKEN` and commits it, so don't commit a real token there.
-- Known existing issues to keep flagging until fixed: a GitHub PAT in committed `config.json` and a split-string PAT seeded in `app.js`, plus the hardcoded settings password in `config.js`. Anything client-side is public on GitHub Pages.
+- Never add tokens, passwords, or keys to source. The admin pastes the GitHub token in Settings; it lives only in that browser's localStorage. Anything client-side is public on GitHub Pages.
+- Known existing issue to keep flagging: the hardcoded settings password in `config.js` (client-side only, not real security).
 
 ## 5. Verification
 ```bash
@@ -42,7 +42,7 @@ Smoke test in a browser (Playwright works): page loads with no `pageerror`, lead
 ## 5b. Other parts of the repo
 - `rundamentalist/rundamentalist.html` is a separate, self-contained marketing page (own CSS, large embedded assets). Don't apply `js/`/`css/` conventions to it or mix the two.
 - `data.json` is live league data (the app commits "Sync ..." changes to it). Never hand-edit or reformat it as part of a code change; keep it out of the diff unless that is the task.
-- `.github/workflows/deploy.yml` changes affect production Pages deploys — review carefully.
+- Pages deploys straight from `main`; there is no workflow or build.
 
 ## 6. Duplication
 Search `js/` for existing helpers (`utils.js`, `tournament-data.js`, `ui.js`) before adding new ones. Consolidate real duplication; don't invent abstractions for things that only look similar.

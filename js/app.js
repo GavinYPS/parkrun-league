@@ -2,9 +2,10 @@
 
 document.getElementById('confirm-modal').addEventListener('click', function(e) { if (e.target === this) confirmCancel(); });
 
+// Pre-fill the repo/path (not the token) so the admin only has to paste a token once in Settings.
 (function() {
   var ex = JSON.parse(localStorage.getItem(GH_CONFIG_KEY) || '{}');
-  if (!ex.token) { localStorage.setItem(GH_CONFIG_KEY, JSON.stringify({token:'ghp_NrUU3' + 'CrKaWia8X' + 'sFkz0C6GL' + '5w6yer21b' + '2gSR', repo:'GavinYPS/parkrun-league', path:'data.json'})); }
+  if (!ex.repo) { ex.repo = 'GavinYPS/parkrun-league'; ex.path = 'data.json'; localStorage.setItem(GH_CONFIG_KEY, JSON.stringify(ex)); }
 })();
 
 renderNav(); loadLogo(); renderRunners(); renderTournaments(); renderEnterTimesSel(); renderLbSel(); renderGlobalSettings();
