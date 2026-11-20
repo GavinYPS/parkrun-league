@@ -71,14 +71,14 @@ function renderLeaderboard() {
   var showVolBonus = hasVolunteers;
   var hasWildcard = filterEvs.some(function(e) { return e.wildcard === true; });
   var showWcBonus = hasWildcard && (ts.wildcardBonus || 2) > 0 && scores.some(function(s) { return s.wildcardPts > 0; });
-  var colDef = '40px 1fr' + (showAttBonus ? ' 75px' : '') + (showVolBonus ? ' 75px' : '') + (showWcBonus ? ' 75px' : '') + ' 75px 90px 80px';
+  var colDef = '40px 1fr' + (showAttBonus ? ' 75px' : '') + (showWcBonus ? ' 75px' : '') + ' 75px 90px' + (showVolBonus ? ' 75px' : '') + ' 80px';
   var hdr = '<span class="u-th-right" style="text-align:left;">#</span>'
     + '<span class="u-th-right" style="text-align:left;">Runner</span>'
     + (showAttBonus ? '<span class="u-th-right">&#9989; Att.</span>' : '')
-    + (showVolBonus ? '<span class="u-th-right">&#129309; Vol.</span>' : '')
     + (showWcBonus ? '<span class="u-th-right">&#9889; WC</span>' : '')
     + '<span class="u-th-right">&#9201; Speed</span>'
     + '<span class="u-th-right">&#127919; Bonus</span>'
+    + (showVolBonus ? '<span class="u-th-right">&#129309; Vol.</span>' : '')
     + '<span class="u-th-right">&#127942; Total</span>';
   var posStyles = ['background:var(--orange);color:#fff;', 'background:#555;color:#fff;', 'background:#7a3d10;color:#fff;'];
   var rows = scores.length ? scores.map(function(s, i) {
@@ -88,10 +88,10 @@ function renderLeaderboard() {
       + '<div><div class="lb-name">' + s.runner.name + '</div><div class="lb-sub">' + (s.runner.rid ? 'A' + s.runner.rid + ' &middot; ' : '') + s.runs + ' run' + (s.runs !== 1 ? 's' : '') + '</div></div>'
       + '<div class="lb-pts">'
       + (showAttBonus ? '<div class="text-right lb-pt" data-l="Att." style="color:var(--blue);">+' + s.attendancePts + '</div>' : '')
-      + (showVolBonus ? '<div class="text-right lb-pt" data-l="Vol." style="color:var(--green);">+' + s.volunteerPts + '</div>' : '')
       + (showWcBonus ? '<div class="text-right lb-pt" data-l="WC" style="color:#c084fc;">+' + s.wildcardPts + '</div>' : '')
       + '<div class="text-right lb-pt" data-l="Speed" style="color:' + bandColor + ';">' + (s.bandPts > 0 ? '+' : '') + s.bandPts + '</div>'
       + '<div class="text-right lb-pt" data-l="Bonus" style="color:var(--orange);">' + (s.bonus > 0 ? '+' : '') + s.bonus + '</div>'
+      + (showVolBonus ? '<div class="text-right lb-pt" data-l="Vol." style="color:var(--green);">+' + s.volunteerPts + '</div>' : '')
       + '</div>'
       + '<div class="text-right lb-total" style="color:' + (i === 0 ? 'var(--orange)' : 'var(--text)') + ';">' + s.total + '</div></div>';
   }).join('') : '<div class="notice">No results entered yet.</div>';
