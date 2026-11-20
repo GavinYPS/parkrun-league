@@ -53,15 +53,14 @@ function buildSettingsPanel(tid) {
       + (readOnly ? ' disabled' : ' onchange="' + onch + '"') + '/>';
   }
 
-  // Columns: band | baseline | 0.5pt | 1pt | [0] | 2pt | 3pt | 4pt | 5pt | 6pt | 7pt | 8pt
-  var colT = '24px 70px 1fr 1fr 28px 1fr 1fr 1fr 1fr 1fr 1fr 1fr';
+  // Columns: band | baseline | 0.5pt | 1pt | 2pt | 3pt | 4pt | 5pt | 6pt | 7pt | 8pt
+  var colT = '24px 70px 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr';
 
   var bandHdr =
     // Row 1: direction banners
     '<div style="display:grid;grid-template-columns:' + colT + ';gap:2px;padding:3px 6px 2px;border-bottom:1px solid var(--border2);align-items:center;">'
     + '<span></span><span></span>'
     + '<div style="grid-column:span 2;text-align:center;font-size:11px;font-weight:700;color:' + slowerCol + ';background:' + slowerBg + ';border-radius:3px;padding:3px 0;">▼ Slower than baseline</div>'
-    + '<span style="text-align:center;font-size:10px;font-weight:800;color:var(--text3);">0</span>'
     + '<div style="grid-column:span 7;text-align:center;font-size:11px;font-weight:700;color:' + fasterCol + ';background:' + fasterBg + ';border-radius:3px;padding:3px 0;">▲ Faster than baseline</div>'
     + '</div>'
     // Row 2: pt labels
@@ -69,7 +68,6 @@ function buildSettingsPanel(tid) {
     + '<span style="font-size:11px;color:var(--text3);">Band</span>'
     + '<span style="font-size:11px;color:var(--text3);">Baseline</span>'
     + SLOWER_TIERS.map(function(p){ return '<span style="text-align:center;font-size:12px;font-weight:700;color:' + slowerCol + ';">' + p + 'pt</span>'; }).join('')
-    + '<span style="text-align:center;font-size:9px;font-weight:800;color:var(--text3);">―</span>'
     + FASTER_TIERS.map(function(p){ return '<span style="text-align:center;font-size:12px;font-weight:700;color:' + fasterCol + ';">' + p + 'pt</span>'; }).join('')
     + '</div>'
     // Row 3: threshold labels
@@ -77,7 +75,6 @@ function buildSettingsPanel(tid) {
     + '<span></span><span style="font-size:10px;color:var(--text3);">mm:ss–mm:ss</span>'
     + '<span style="font-size:10px;color:' + slowerCol + ';text-align:center;">up to s</span>'
     + '<span style="font-size:10px;color:' + slowerCol + ';text-align:center;">up to s</span>'
-    + '<span></span>'
     + FASTER_TIERS.map(function(p){ return '<span style="font-size:10px;color:' + fasterCol + ';text-align:center;">up to s</span>'; }).join('')
     + '</div>';
 
@@ -105,7 +102,6 @@ function buildSettingsPanel(tid) {
       + '<input type="text" value="' + sTime(range[0]) + '–' + sTime(range[1]) + '" class="text-mono"'
       + ' style="padding:3px 4px;font-size:11px;width:100%;" onchange="updateBandRange(\'' + tid + '\',\'' + band + '\',this.value)"/>'
       + slowerCells
-      + '<div style="text-align:center;font-size:11px;font-weight:800;color:var(--text3);background:var(--bg3);border-radius:3px;padding:3px 0;">0</div>'
       + fasterCells
       + '</div><div class="bs-cap" id="bs-cap-' + tid + '-' + band + '">' + bandCaptionHtml(brackets, band) + '</div></div>';
   }).join('');
