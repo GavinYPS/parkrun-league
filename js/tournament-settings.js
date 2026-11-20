@@ -212,30 +212,49 @@ function updateBandRange(tid, band, val) {
   BAND_TIME_RANGES[band] = sTime(BAND_SEC_RANGES[band][0]) + '-' + sTime(BAND_SEC_RANGES[band][1]);
 }
 function btSetFaster(tid, band, pts, field, val) {
+  // Boxes hold each tier's upper limit; neighbouring tiers re-flow so there are never gaps or overlaps.
   var t = btEnsureTable(tid); if (!t) return;
   if (!t.settings.bandTable[band]) t.settings.bandTable[band] = [];
-  var existing = t.settings.bandTable[band].find(function(b){ return b.pts === pts && b.minFaster != null; });
-  if (!existing) { existing = {pts: pts, minFaster: null, maxFaster: null}; t.settings.bandTable[band].push(existing); }
-  var sec = parseInt(val);
-  if (field === 'from') existing.minFaster = (!isNaN(sec) && val !== '') ? sec : null;
-  if (field === 'to')   existing.maxFaster = (!isNaN(sec) && val !== '') ? sec : null;
-  // Remove entry entirely if both are null
-  if (existing.minFaster == null && existing.maxFaster == null) {
-    t.settings.bandTable[band] = t.settings.bandTable[band].filter(function(b){ return b !== existing; });
+  var tbl = t.settings.bandTable[band];
+  var asc = function(a,b){ return a.pts - b.pts; };
+  var chain = tbl.filter(function(b){ return b.minFaster != null; }).sort(asc);
+  var existing = chain.find(function(b){ return b.pts === pts; });
+  var sec = parseInt(val); var blank = isNaN(sec) || val === '';
+  if (blank) {
+    if (existing && existing !== chain[chain.length - 1]) tbl.splice(tbl.indexOf(existing), 1);  // blank = tier unused, neighbours cover its range
+    else if (existing) existing.maxFaster = null;                                               // top tier is open-ended
+  } else {
+    if (!existing) { existing = {pts: pts, minFaster: 0, maxFaster: null}; tbl.push(existing); }
+    existing.maxFaster = sec;
   }
-  var c = document.getElementById('bs-cap-' + tid + '-' + band); if (c) c.innerHTML = bandCaptionHtml(t.settings.bandTable[band], band);
+  chain = tbl.filter(function(b){ return b.minFaster != null; }).sort(asc);
+  chain.forEach(function(b, k) {
+    if (k === 0) b.minFaster = 0;
+    else { b.minFaster = chain[k-1].maxFaster == null ? b.minFaster : chain[k-1].maxFaster + 1; if (b.maxFaster != null && b.maxFaster < b.minFaster) b.maxFaster = b.minFaster; }
+    var inp = document.querySelector('#bands-list-' + tid + ' input[onchange*="btSetFaster(\'' + tid + '\',\'' + band + '\',' + b.pts + ',"]');
+    if (inp && inp !== document.activeElement) inp.value = b.maxFaster != null ? b.maxFaster : '';
+  });
+  var c = document.getElementById('bs-cap-' + tid + '-' + band); if (c) c.innerHTML = bandCaptionHtml(tbl, band);
 }
 function btSetSlower(tid, band, pts, field, val) {
+  // 1pt runs 0..X s slower and 0.5pt starts at X+1, so editing the 1pt box moves the 0.5pt start.
   var t = btEnsureTable(tid); if (!t) return;
   if (!t.settings.bandTable[band]) t.settings.bandTable[band] = [];
-  var existing = t.settings.bandTable[band].find(function(b){ return b.pts === pts && b.slowerFrom != null; });
-  if (!existing) { existing = {pts: pts, slowerFrom: 0, slowerTo: 0}; t.settings.bandTable[band].push(existing); }
+  var tbl = t.settings.bandTable[band];
+  var existing = tbl.find(function(b){ return b.pts === pts && b.slowerFrom != null; });
+  if (!existing) { existing = {pts: pts, slowerFrom: 0, slowerTo: 0}; tbl.push(existing); }
   var sec = parseInt(val);
-  if (field === 'from') existing.slowerFrom = isNaN(sec) ? 0 : sec;
-  if (field === 'to')   existing.slowerTo   = isNaN(sec) ? 0 : sec;
-  // 1pt always starts from 0
-  if (pts === 1) existing.slowerFrom = 0;
-  var c = document.getElementById('bs-cap-' + tid + '-' + band); if (c) c.innerHTML = bandCaptionHtml(t.settings.bandTable[band], band);
+  existing.slowerTo = isNaN(sec) ? 0 : sec;
+  if (pts === 1) {
+    existing.slowerFrom = 0;
+    var half = tbl.find(function(b){ return b.pts === 0.5 && b.slowerFrom != null; });
+    if (half) {
+      half.slowerFrom = existing.slowerTo + 1; if (half.slowerTo < half.slowerFrom) half.slowerTo = half.slowerFrom;
+      var inp = document.querySelector('#bands-list-' + tid + ' input[onchange*="btSetSlower(\'' + tid + '\',\'' + band + '\',0.5,"]');
+      if (inp) inp.value = half.slowerTo;
+    }
+  }
+  var c = document.getElementById('bs-cap-' + tid + '-' + band); if (c) c.innerHTML = bandCaptionHtml(tbl, band);
 }
 function resetBandTable(tid) {
   if (!confirm('Reset band scoring to defaults?')) return;
