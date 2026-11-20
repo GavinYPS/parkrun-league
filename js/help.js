@@ -28,6 +28,22 @@ function helpSeasonParts(runs, avgSpeed, wildcards, volunteered, settings) {
   ];
 }
 
+// For a baseline and band: each points tier with the finishing time (seconds) it needs, fastest tier first.
+// from/to are inclusive finishing times; from = null means "that time or quicker".
+function helpNeed(bs, band, table) {
+  var rows = (table[band] || []).map(function(b) {
+    if (b.minFaster != null) return { pts: b.pts, from: b.maxFaster == null ? null : bs - b.maxFaster, to: bs - b.minFaster, diff: -b.minFaster, vs: (b.maxFaster == null ? b.minFaster + 's+' : b.minFaster + '–' + b.maxFaster + 's') + ' faster' };
+    var lo = Math.max(b.slowerFrom, 1);
+    return { pts: b.pts, from: bs + lo, to: bs + b.slowerTo, diff: b.slowerTo, vs: lo + '–' + b.slowerTo + 's slower' };
+  });
+  return rows.sort(function(a, b) { return b.pts - a.pts || a.to - b.to; });
+}
+// A typical baseline for a band (midpoint, rounded to 15s) for the example buttons.
+function helpBandExample(band) { var r = BAND_SEC_RANGES[band]; return Math.round((r[0] + r[1]) / 2 / 15) * 15; }
+
+function helpPick(d) { var el = document.getElementById('help-diff'); if (el) { el.value = d; helpOne(); } }
+function helpPickBand(band) { document.getElementById('help-base').value = sTime(helpBandExample(band)); document.getElementById('help-diff').value = -40; helpOne(); }
+
 function helpPct(v, ax) { return (v - ax.lo) / (ax.hi - ax.lo) * 100; }
 function helpColor(pts, faster) {
   return faster ? 'color-mix(in srgb, var(--green) ' + (14 + pts * 7) + '%, var(--bg2))' : 'color-mix(in srgb, var(--red) ' + (pts < 1 ? 24 : 40) + '%, var(--bg2))';
@@ -39,7 +55,7 @@ function helpSegs(table, band, ax) {
     if (faster) { a = b.minFaster - .5; z = b.maxFaster == null ? ax.hi : b.maxFaster + .5; }
     else { a = -b.slowerTo - .5; z = -Math.max(b.slowerFrom, 1) + .5; }
     var w = helpPct(z, ax) - helpPct(a, ax);
-    out += '<div class="help-seg" style="left:' + helpPct(a, ax) + '%;width:' + w + '%;background:' + helpColor(b.pts, faster) + ';" title="' + b.pts + ' pts">' + (w > 3.2 ? b.pts : '') + '</div>';
+    out += '<div class="help-seg" style="left:' + helpPct(a, ax) + '%;width:' + w + '%;background:' + helpColor(b.pts, faster) + ';" title="' + b.pts + ' pts"' + (w < 3.5 ? ' data-narrow' : '') + '>' + b.pts + '</div>';
   });
   return out + '<div class="help-zero" style="left:' + helpPct(0, ax) + '%;"></div>';
 }
@@ -60,13 +76,23 @@ function helpOne() {
   if (!band) {
     document.getElementById('help-pts').textContent = '–';
     document.getElementById('help-line1').innerHTML = 'Enter a baseline between <b>21:00</b> and <b>41:00</b> (mm:ss).';
-    document.getElementById('help-line2').textContent = ''; strip.innerHTML = ''; return;
+    document.getElementById('help-line2').textContent = ''; strip.innerHTML = ''; document.getElementById('help-need').innerHTML = '';
+    document.querySelectorAll('.help-chip').forEach(function(c) { c.classList.remove('active'); }); return;
   }
+  document.querySelectorAll('.help-chip').forEach(function(c) { c.classList.toggle('active', c.getAttribute('data-band') === band); });
   var p = getBandPtsForRunner(d, band, h.settings).pts;
   document.getElementById('help-pts').textContent = p;
   document.getElementById('help-line1').innerHTML = 'Baseline <b>' + sTime(bs) + '</b> puts the runner in <b>Band ' + band + '</b> (' + sTime(BAND_SEC_RANGES[band][0]) + '&ndash;' + sTime(BAND_SEC_RANGES[band][1]) + ').';
   document.getElementById('help-line2').innerHTML = 'Finishing in <b>' + sTime(bs + d) + '</b> is ' + (d < 0 ? (-d) + 's faster than' : d > 0 ? d + 's slower than' : 'level with') + ' baseline: <b>' + p + ' speed point' + (p === 1 ? '' : 's') + '</b>' + (p === 0 ? ' (outside every tier)' : '') + '.';
   strip.innerHTML = helpSegs(table, band, ax) + '<div class="help-marker" style="left:' + helpPct(-d, ax) + '%;"></div>';
+  var need = helpNeed(bs, band, table), t = bs + d;
+  document.getElementById('help-need').innerHTML = '<div class="help-need-head"><span>Points</span><span>Finish in</span><span>Against baseline</span></div>'
+    + need.map(function(r) {
+      var when = r.from == null ? sTime(r.to) + ' or quicker' : r.from === r.to ? sTime(r.to) : sTime(r.from) + ' – ' + sTime(r.to);
+      var hit = (r.from == null || t >= r.from) && t <= r.to;
+      return '<button class="help-need-row' + (hit ? ' hit' : '') + '" onclick="helpPick(' + r.diff + ')"><b>' + r.pts + '</b><span>' + when + '</span><span>' + r.vs + '</span></button>';
+    }).join('')
+    + '<p class="help-note">Finish slower than ' + sTime(bs + (table[band].filter(function(b) { return b.slowerTo != null; }).reduce(function(m, b) { return Math.max(m, b.slowerTo); }, 0))) + ' and the race scores 0 speed points. Click a row to move the slider to the slowest time in that tier.</p>';
 }
 
 function helpSeason() {
@@ -154,12 +180,14 @@ function renderHelp() {
   body.innerHTML = '<div class="page-header"><h2>Help</h2>' + tabs + '</div>'
     + '<div id="help-p-scoring"><p class="help-lead">Every race is scored against the runner’s own baseline PB, so slower and faster runners earn points for the same relative effort. <span id="help-for"></span></p>'
     + '<div class="help-formula">' + terms + '</div>'
-    + '<div class="card"><div class="card-title">1 &middot; One race</div>'
+    + '<div class="card"><div class="card-title">1 &middot; What do I need?</div>'
+    + '<p class="help-note">Pick a band to see an example, or type your own baseline PB. The table shows the finishing time needed for each points tier.</p>'
+    + '<div class="help-chips">' + BAND_LABELS.map(function(b) { return '<button class="help-chip" data-band="' + b + '" onclick="helpPickBand(\'' + b + '\')">Band ' + b + '<small>' + sTime(BAND_SEC_RANGES[b][0]) + '&ndash;' + sTime(BAND_SEC_RANGES[b][1]) + '</small></button>'; }).join('') + '</div>'
     + '<div class="help-controls"><label class="help-f">Baseline PB (mm:ss)<input type="text" id="help-base" value="24:30" inputmode="numeric" autocomplete="off" oninput="helpOne()"/></label>'
     + '<label class="help-f"><span id="help-diff-lab"></span><input type="range" id="help-diff" min="-270" max="100" value="-40" oninput="helpOne()"/></label></div>'
     + '<div class="help-readout"><div class="help-big" id="help-pts"></div><div><p id="help-line1"></p><p id="help-line2"></p></div></div>'
-    + '<div class="help-dir"><span class="s">&#9664; slower than baseline</span><span class="f">faster than baseline &#9654;</span></div>'
-    + '<div class="help-strip" id="help-s1"></div><div class="help-axis" id="help-a1"></div></div>'
+    + '<div class="help-scroll"><div><div class="help-dir"><span class="s">&#9664; slower than baseline</span><span class="f">faster than baseline &#9654;</span></div>'
+    + '<div class="help-strip" id="help-s1"></div><div class="help-axis" id="help-a1"></div></div></div><div id="help-need"></div></div>'
     + '<div class="card"><div class="card-title">2 &middot; All bands side by side</div>'
     + '<p class="help-note">Same seconds scale for every band. Slower runners get wider tiers, so the same points need a bigger improvement in seconds.</p>'
     + '<div class="help-legend">' + legend + '</div>'
