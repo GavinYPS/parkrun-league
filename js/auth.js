@@ -43,14 +43,26 @@ function tryLogin() {
     sessionStorage.setItem(SETTINGS_SESSION_KEY, '1');
     confirmCancel();
     renderNav();
-    sw('runners');
+    var go = pendingPage || 'runners'; pendingPage = null; sw(go);
   } else {
     if (inp) { inp.value = ''; inp.placeholder = 'Incorrect — try again'; inp.style.borderColor = 'var(--red)'; inp.focus(); }
   }
 }
 
+// Each tab is a page with its own link: index.html#help, #leaderboard, #runners, #events, #enter-times, #settings
+var PAGES = {leaderboard:'Leaderboard', help:'Help', runners:'Club Runners', events:'Tournaments', 'enter-times':'Enter Times', settings:'Global Settings'};
+var curPage = null, pendingPage = null;
+
 function sw(t) {
-  if (!isLoggedIn() && t !== 'leaderboard' && t !== 'help') { promptLogin(); return; }
+  if (!PAGES[t]) t = 'leaderboard';
+  if (!isLoggedIn() && t !== 'leaderboard' && t !== 'help') {
+    pendingPage = t; promptLogin();   // after login we land on the page that was asked for
+    if (curPage) { history.replaceState(null, '', '#' + curPage); return; }
+    t = 'leaderboard';                // opened a protected link cold: show the leaderboard behind the login box
+  }
+  curPage = t;
+  document.title = PAGES[t] + ' — ' + getClubName();
+  if (location.hash !== '#' + t) location.hash = t;
   document.querySelectorAll('#main-nav button').forEach(function(el) {
     el.classList.toggle('active', el.getAttribute('onclick') === "sw('" + t + "')");
   });

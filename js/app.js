@@ -9,7 +9,8 @@ document.getElementById('confirm-modal').addEventListener('click', function(e) {
 })();
 
 renderNav(); loadLogo(); renderRunners(); renderTournaments(); renderEnterTimesSel(); renderLbSel(); renderGlobalSettings();
-sw('leaderboard');
+sw(location.hash.slice(1));
+window.addEventListener('hashchange', function() { var p = location.hash.slice(1); if (p !== curPage) sw(p); });
 
 // Public data load — fetches data.json without a token so the leaderboard
 // shows for all visitors even without GitHub credentials configured.
@@ -33,6 +34,7 @@ sw('leaderboard');
         if (remote._logo) localStorage.setItem('parkrun_logo', remote._logo);
         loadLogo();
         renderRunners(); renderTournaments(); renderEnterTimesSel(); renderLbSel(); renderGlobalSettings();
+        if (curPage === 'help') renderHelp();
       }
       // Then do authenticated pull if configured (for admin saves)
       if (ghIsConfigured()) ghPull().then(function(){ renderLbSel(); }).catch(function(){});

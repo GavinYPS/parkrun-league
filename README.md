@@ -35,6 +35,8 @@ rundamentalist/     Separate club marketing page
 | import.js | parkrun import: club report paste or results screenshot (OCR via Tesseract.js, loaded from a CDN on demand) |
 | app.js | Startup wiring and initial render (**must load last**) |
 
+Every tab is a linkable page: `index.html#leaderboard`, `#help`, `#runners`, `#events`, `#enter-times`, `#settings` (the page list is `PAGES` in `auth.js`). Admin-only pages ask for the login first, then open the page that was linked.
+
 Add a new feature as a new `js/<feature>.js` with a `<script>` tag before `app.js`.
 
 ## Tests
