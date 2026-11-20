@@ -152,6 +152,7 @@ async function ghPull() {
     ghMarkRetrieved(); ghSetSaveEnabled(true);
     ghStatus('Loaded ' + new Date().toLocaleTimeString(), true);
     renderRunners(); renderTournaments(); renderLbSel(); renderGlobalSettings();
+    if (choice === 'merge') ghPush();   // a merge keeps local-only data, so save it to the cloud or the same conflict returns on every refresh
   } catch(e) {
     ghStatus('Load failed: ' + e.message + ' — you can still save manually', false);
     ghMarkRetrieved(); ghSetSaveEnabled(true); console.warn(e);
