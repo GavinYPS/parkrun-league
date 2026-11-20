@@ -7,10 +7,10 @@ function renderNav() {
   var nav = document.getElementById('main-nav');
   if (!nav) return;
   var tabs = loggedIn
-    ? [['runners','Club Runners'],['events','Tournaments'],['leaderboard','Leaderboard'],['settings','Global Settings'],['help','Help']]
+    ? [['runners','Club Runners','Runners'],['events','Tournaments'],['leaderboard','Leaderboard'],['settings','Global Settings','Settings'],['help','Help']]
     : [['leaderboard','Leaderboard'],['help','Help']];
   nav.innerHTML = tabs.map(function(t) {
-    return '<button onclick="sw(\'' + t[0] + '\')">' + t[1] + '</button>';
+    return '<button onclick="sw(\'' + t[0] + '\')"><span class="nav-full">' + t[1] + '</span><span class="nav-short">' + (t[2] || t[1]) + '</span></button>';
   }).join('');
   var authEl = document.getElementById('header-auth');
   if (authEl) {

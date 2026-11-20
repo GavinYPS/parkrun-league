@@ -85,6 +85,8 @@ function helpOne() {
   document.getElementById('help-line1').innerHTML = 'Baseline <b>' + sTime(bs) + '</b> puts the runner in <b>Band ' + band + '</b> (' + sTime(BAND_SEC_RANGES[band][0]) + '&ndash;' + sTime(BAND_SEC_RANGES[band][1]) + ').';
   document.getElementById('help-line2').innerHTML = 'Finishing in <b>' + sTime(bs + d) + '</b> is ' + (d < 0 ? (-d) + 's faster than' : d > 0 ? d + 's slower than' : 'level with') + ' baseline: <b>' + p + ' speed point' + (p === 1 ? '' : 's') + '</b>' + (p === 0 ? ' (outside every tier)' : '') + '.';
   strip.innerHTML = helpSegs(table, band, ax) + '<div class="help-marker" style="left:' + helpPct(-d, ax) + '%;"></div>';
+  var sc = strip.closest('.help-scroll'), mk = strip.querySelector('.help-marker');   // keep the marker in view when the strip scrolls sideways
+  if (sc && mk && sc.scrollWidth > sc.clientWidth) sc.scrollLeft = mk.offsetLeft - sc.clientWidth / 2;
   var need = helpNeed(bs, band, table), t = bs + d;
   document.getElementById('help-need').innerHTML = '<div class="help-need-head"><span>Points</span><span>Finish in</span><span>Against baseline</span></div>'
     + need.map(function(r) {
