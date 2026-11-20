@@ -84,6 +84,16 @@ function helpSeason() {
   document.getElementById('help-slegend').innerHTML = parts.map(function(p) { return '<span><i style="background:' + p.color + ';"></i>' + p.label + '</span>'; }).join('');
 }
 
+var helpTab = 'scoring';
+function helpTabSwitch(tab) {
+  helpTab = tab;
+  ['scoring', 'admin'].forEach(function(k) {
+    var panel = document.getElementById('help-p-' + k), btn = document.getElementById('help-t-' + k);
+    if (panel) panel.style.display = k === tab ? '' : 'none';
+    if (btn) btn.classList.toggle('active', k === tab);
+  });
+}
+
 function renderHelp() {
   var body = document.getElementById('help-body'); if (!body) return;
   var h = helpSettings(), s = h.settings, table = getBandTable(s), ax = helpAxis(table);
@@ -101,18 +111,48 @@ function renderHelp() {
   var legend = '<span><i style="background:' + helpColor(.5, false) + ';"></i>slower: 0.5&ndash;1 pt</span>'
     + [2, 4, 6, 8].map(function(p) { return '<span><i style="background:' + helpColor(p, true) + ';"></i>faster: ' + p + ' pts</span>'; }).join('')
     + '<span><i style="background:var(--bg3);"></i>0 pts</span>';
-  var how = [
-    ['Club Runners', 'Use <b>+ Add Runner</b> and enter the Parkrun ID. The band is suggested from the runner’s PB (<b>Use Band</b>) and can be changed. Runners can be archived rather than deleted.'],
-    ['Tournaments', '<b>+ New Tournament</b>, then add a location with <b>Add Location</b> and each week’s run with <b>+ Add Event</b>. <b>Baselines</b> sets each enrolled runner’s baseline PB, which is what every race is scored against. <b>Settings</b> holds the scoring tables and bonuses.'],
-    ['Entering times', 'Open <b>Enter Times</b> on an event. Mark each runner as <b>Raced</b> or <b>Volunteered</b>, type the time and press <b>Save</b>. <b>View Results</b> shows the baseline, difference, band and points for every runner. Use <b>Edit Times</b> to go back, and <b>Back to tournament</b> to return.'],
-    ['Importing from Parkrun', 'On Enter Times, <b>Import from Parkrun</b> accepts a pasted club report or a screenshot of the results. Check the matches, then <b>Commit Selected</b>.'],
-    ['Wildcard events', 'Tick an event as a wildcard in the tournament <b>Settings</b>. Everyone who attends gets the flat wildcard bonus instead of band scoring.'],
-    ['Leaderboard', 'Public view of the totals, with the points split into attendance, volunteer, speed, bonus and total. Pick a tournament at the top.'],
-    ['Saving and syncing', 'Data is stored in this browser. In <b>Global Settings</b> the <b>Data Sync</b> panel (GitHub token, repo, file path) saves it to the shared <b>data.json</b> so every device sees the same league. If saving fails with 401, the token has expired or is wrong.']
-  ].map(function(x) { return '<div class="help-how"><h3>' + x[0] + '</h3><p>' + x[1] + '</p></div>'; }).join('');
+  function cards(list) { return '<div class="help-hows">' + list.map(function(x) { return '<div class="help-how"><h3>' + x[0] + '</h3><p>' + x[1] + '</p></div>'; }).join('') + '</div>'; }
+  var admin = isLoggedIn();
+  if (!admin || !helpTab) helpTab = 'scoring';
+  var leaderboardHelp = cards([
+    ['Runner and #', 'Runners are ranked by total points. Ties are broken alphabetically. The small line under a name shows the Parkrun ID and how many races they have run.'],
+    ['Att.', 'Attendance points: a flat bonus for every race the runner completed.'],
+    ['Vol.', 'Volunteer points. Only shown once someone has volunteered.'],
+    ['WC', 'Wildcard points from wildcard events. Only shown when the tournament has a wildcard event.'],
+    ['Speed', 'Points for how much faster (or slower) the runner was than their own baseline, added up over every race. See section 1 above.'],
+    ['Bonus', 'The run-count bonus for racing often. Only the highest tier reached counts, once.'],
+    ['Total', 'Everything added together. Runners with no results yet are not listed.']
+  ]);
+  var adminHelp =
+      '<h3 class="help-sub">Club runners</h3>' + cards([
+        ['Adding a runner', 'On <b>Club Runners</b> press <b>+ Add Runner</b>. Only a name is required. Add the Parkrun ID (with or without the leading A) and a link to their Parkrun profile appears. The same ID cannot be added twice. Enter a baseline time for each activity type, and the band is suggested from the parkrun baseline (press <b>Use Band</b> or pick one from the list). Finish with <b>Save Runner</b>.'],
+        ['Changing a runner', 'Use the pencil beside the name to rename a runner or tick <b>Run Leader</b>. <b>Baselines</b> edits their personal bests and band. Changing a PB here does not change a baseline already set for a tournament (see below).'],
+        ['Adding a runner to a tournament', 'Adding a runner to the club does not put them on a leaderboard. In <b>Tournaments</b>, open the tournament’s <b>Club Runners</b> button, press <b>Edit</b>, tick the runner, enter their baseline for that tournament and check the band, then <b>Save</b>. Typing a baseline ticks the box for you, and a runner ticked without a baseline will not save.'],
+        ['Removing a runner from a tournament', 'In the same <b>Club Runners</b> panel, press <b>Edit</b>, untick the runner and <b>Save</b>. They drop off that tournament’s leaderboard and runner list. Their recorded times are kept, and they stay in the club and in any other tournament.'],
+        ['Archiving a runner', '<b>Archive</b> on a runner’s card (you are asked to confirm) is the safe way to take someone out, for example when they leave the club. They move to the greyed <b>Archived</b> section at the bottom of the page, disappear from every tournament and leaderboard, and cannot be enrolled. Nothing is lost.'],
+        ['Restoring or deleting', 'Open the <b>Archived</b> section and press <b>Restore</b> to bring a runner back. They return to every tournament they were in, with their times and baselines intact. <b>Delete</b> is permanent: it removes the runner and all of their recorded times and tournament entries, and cannot be undone. Archive instead unless it was added by mistake.']
+      ])
+    + '<h3 class="help-sub">Tournaments and events</h3>' + cards([
+        ['Creating a tournament', 'Press <b>+ New Tournament</b>, name it and choose its type. Then <b>Add Location</b>, and a <b>+ Add Event</b> for each week’s run. Archive a finished tournament to tidy the list, and restore it any time.'],
+        ['Baselines', 'The baseline is the time every race is scored against. It is set per tournament in the <b>Club Runners</b> panel, and starts from the runner’s PB for that activity.']
+      ])
+    + '<h3 class="help-sub">Match day</h3>' + cards([
+        ['Entering times', 'Open <b>Enter Times</b> on an event. Mark each runner as <b>Raced</b> or <b>Volunteered</b>, type the time and press <b>Save</b>. <b>View Results</b> shows baseline, difference, band and points for everyone. <b>Edit Times</b> goes back, and <b>Back to tournament</b> returns to the Tournaments page.'],
+        ['Importing from Parkrun', 'On Enter Times, <b>Import from Parkrun</b> takes a pasted club report or a screenshot of the results. Check the matches, then <b>Commit Selected</b>.'],
+        ['Wildcard events', 'Tick an event as a wildcard in the tournament <b>Settings</b>. Everyone who attends gets the flat wildcard bonus instead of band scoring.']
+      ])
+    + '<h3 class="help-sub">Scoring settings</h3>' + cards([
+        ['Editing the bands', 'Open a tournament’s <b>Settings</b>. In Band Scoring each box is the most seconds slower or faster than baseline that earns those points. Changing a box moves the neighbouring tier so there are never gaps or overlaps, and clearing a box drops that tier. The line under each band spells out the ranges. <b>Save Settings</b> keeps your changes and <b>Reset</b> restores the defaults.'],
+        ['Bonuses', 'Attendance, volunteer and wildcard points, and the run-count tiers, are in the same Settings panel. The Help figures above update to match as soon as you save.']
+      ])
+    + '<h3 class="help-sub">Saving and syncing</h3>' + cards([
+        ['Data Sync', 'Data is kept in this browser. In <b>Global Settings</b> the <b>Data Sync</b> panel (GitHub token, repo, file path) saves it to the shared <b>data.json</b> so every device sees the same league. <b>Save Data</b> pushes and <b>Load Data</b> pulls.'],
+        ['If saving fails', 'A 401 error means the GitHub token has expired or is wrong. Create a new fine-grained token with <b>Contents: Read and write</b> on the repo and paste it into the Token box.']
+      ]);
+  var tabs = admin ? '<div class="help-tabs"><button id="help-t-scoring" onclick="helpTabSwitch(\'scoring\')">Scoring</button><button id="help-t-admin" onclick="helpTabSwitch(\'admin\')">Admin guide</button></div>' : '';
 
-  body.innerHTML = '<div class="page-header"><h2>How it works</h2></div>'
-    + '<p class="help-lead">Every race is scored against the runner’s own baseline PB, so slower and faster runners earn points for the same relative effort. <span id="help-for"></span></p>'
+  body.innerHTML = '<div class="page-header"><h2>Help</h2>' + tabs + '</div>'
+    + '<div id="help-p-scoring"><p class="help-lead">Every race is scored against the runner’s own baseline PB, so slower and faster runners earn points for the same relative effort. <span id="help-for"></span></p>'
     + '<div class="help-formula">' + terms + '</div>'
     + '<div class="card"><div class="card-title">1 &middot; One race</div>'
     + '<div class="help-controls"><label class="help-f">Baseline PB (mm:ss)<input type="text" id="help-base" value="24:30" inputmode="numeric" autocomplete="off" oninput="helpOne()"/></label>'
@@ -132,7 +172,8 @@ function renderHelp() {
     + '<div class="help-readout"><div class="help-big" id="help-tot"></div><div><p id="help-totline"></p></div></div>'
     + '<div class="help-stack" id="help-stack"></div><div class="help-legend" id="help-slegend"></div>'
     + '<p class="help-note">Wildcard events are separate from races: they pay the flat wildcard bonus and do not count towards the run-count bonus.</p></div>'
-    + '<div class="page-header"><h2>Using the app</h2></div><div class="help-hows">' + how + '</div>';
+    + '<div class="card"><div class="card-title">Reading the leaderboard</div>' + leaderboardHelp + '</div></div>'
+    + (admin ? '<div id="help-p-admin" style="display:none;"><p class="help-lead">Admin only. These steps run the league week to week, and are hidden from visitors who are not logged in.</p>' + adminHelp + '</div>' : '');
   document.getElementById('help-for').textContent = h.name ? 'The figures below come from the “' + h.name + '” settings.' : 'The figures below are the league defaults.';
-  helpOne(); helpSeason();
+  helpOne(); helpSeason(); helpTabSwitch(helpTab);
 }
