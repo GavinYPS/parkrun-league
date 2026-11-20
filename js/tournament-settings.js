@@ -8,6 +8,13 @@ function toggleTournamentSettings(tid) {
   panel.innerHTML = buildSettingsPanel(tid); bodyEl.prepend(panel);
 }
 
+function bandCaptionHtml(brackets, band) {
+  var cap = [];
+  brackets.filter(function(b){ return b.minFaster != null; }).sort(function(a,b){ return b.pts - a.pts; }).forEach(function(b){ cap.push((b.maxFaster == null ? b.minFaster + 's+' : b.minFaster + '–' + b.maxFaster + 's') + ' faster &rarr; <b>' + b.pts + '</b>'); });
+  brackets.filter(function(b){ return b.slowerFrom != null; }).sort(function(a,b){ return a.slowerFrom - b.slowerFrom; }).forEach(function(b){ cap.push(b.slowerFrom + '–' + b.slowerTo + 's slower &rarr; <b>' + b.pts + '</b>'); });
+  return '<b>Band ' + band + ':</b> ' + cap.join(' &nbsp;&middot;&nbsp; ') + ' &nbsp;&middot;&nbsp; otherwise 0';
+}
+
 function buildSettingsPanel(tid) {
   var t = getTournament(tid); if (!t) return '';
   var s = t.settings;
@@ -53,25 +60,25 @@ function buildSettingsPanel(tid) {
     // Row 1: direction banners
     '<div style="display:grid;grid-template-columns:' + colT + ';gap:2px;padding:3px 6px 2px;border-bottom:1px solid var(--border2);align-items:center;">'
     + '<span></span><span></span>'
-    + '<div style="grid-column:span 2;text-align:center;font-size:9px;font-weight:700;color:' + slowerCol + ';background:' + slowerBg + ';border-radius:3px;padding:2px 0;">▼ Slower</div>'
+    + '<div style="grid-column:span 2;text-align:center;font-size:11px;font-weight:700;color:' + slowerCol + ';background:' + slowerBg + ';border-radius:3px;padding:3px 0;">▼ Slower than baseline</div>'
     + '<span style="text-align:center;font-size:10px;font-weight:800;color:var(--text3);">0</span>'
-    + '<div style="grid-column:span 7;text-align:center;font-size:9px;font-weight:700;color:' + fasterCol + ';background:' + fasterBg + ';border-radius:3px;padding:2px 0;">▲ Faster</div>'
+    + '<div style="grid-column:span 7;text-align:center;font-size:11px;font-weight:700;color:' + fasterCol + ';background:' + fasterBg + ';border-radius:3px;padding:3px 0;">▲ Faster than baseline</div>'
     + '</div>'
     // Row 2: pt labels
     + '<div style="display:grid;grid-template-columns:' + colT + ';gap:2px;padding:2px 6px;border-bottom:1px solid var(--border2);align-items:center;">'
-    + '<span style="font-size:9px;color:var(--text3);">Band</span>'
-    + '<span style="font-size:9px;color:var(--text3);">Baseline</span>'
-    + SLOWER_TIERS.map(function(p){ return '<span style="text-align:center;font-size:9px;font-weight:700;color:' + slowerCol + ';">' + p + 'pt</span>'; }).join('')
+    + '<span style="font-size:11px;color:var(--text3);">Band</span>'
+    + '<span style="font-size:11px;color:var(--text3);">Baseline</span>'
+    + SLOWER_TIERS.map(function(p){ return '<span style="text-align:center;font-size:12px;font-weight:700;color:' + slowerCol + ';">' + p + 'pt</span>'; }).join('')
     + '<span style="text-align:center;font-size:9px;font-weight:800;color:var(--text3);">―</span>'
-    + FASTER_TIERS.map(function(p){ return '<span style="text-align:center;font-size:9px;font-weight:700;color:' + fasterCol + ';">' + p + 'pt</span>'; }).join('')
+    + FASTER_TIERS.map(function(p){ return '<span style="text-align:center;font-size:12px;font-weight:700;color:' + fasterCol + ';">' + p + 'pt</span>'; }).join('')
     + '</div>'
     // Row 3: threshold labels
     + '<div style="display:grid;grid-template-columns:' + colT + ';gap:2px;padding:1px 6px;border-bottom:1px solid var(--border2);align-items:center;">'
-    + '<span></span><span style="font-size:8px;color:var(--text3);">mm:ss–mm:ss</span>'
-    + '<span style="font-size:8px;color:' + slowerCol + ';opacity:.7;text-align:center;">&lt; −s</span>'
-    + '<span style="font-size:8px;color:' + slowerCol + ';opacity:.7;text-align:center;">&lt; −s</span>'
+    + '<span></span><span style="font-size:10px;color:var(--text3);">mm:ss–mm:ss</span>'
+    + '<span style="font-size:10px;color:' + slowerCol + ';text-align:center;">up to s</span>'
+    + '<span style="font-size:10px;color:' + slowerCol + ';text-align:center;">up to s</span>'
     + '<span></span>'
-    + FASTER_TIERS.map(function(p){ return '<span style="font-size:8px;color:' + fasterCol + ';opacity:.7;text-align:center;">&gt; +s</span>'; }).join('')
+    + FASTER_TIERS.map(function(p){ return '<span style="font-size:10px;color:' + fasterCol + ';text-align:center;">up to s</span>'; }).join('')
     + '</div>';
 
   var bandRows = bandHdr + BAND_LABELS.map(function(band) {
@@ -93,14 +100,14 @@ function buildSettingsPanel(tid) {
       return mkCell(b.maxFaster != null ? b.maxFaster : null, 'btSetFaster(\'' + tid + '\',\'' + band + '\',' + p + ',\'to\',this.value)', false, false);
     }).join('');
 
-    return '<div style="display:grid;grid-template-columns:' + colT + ';gap:2px;align-items:center;padding:3px 6px;border-bottom:1px solid var(--border);">'
+    return '<div style="border-bottom:1px solid var(--border);padding:3px 6px 6px;"><div style="display:grid;grid-template-columns:' + colT + ';gap:2px;align-items:center;">'
       + '<span style="font-family:Barlow Condensed,sans-serif;font-weight:800;font-size:15px;color:var(--orange);">' + band + '</span>'
       + '<input type="text" value="' + sTime(range[0]) + '–' + sTime(range[1]) + '" class="text-mono"'
       + ' style="padding:3px 4px;font-size:11px;width:100%;" onchange="updateBandRange(\'' + tid + '\',\'' + band + '\',this.value)"/>'
       + slowerCells
       + '<div style="text-align:center;font-size:11px;font-weight:800;color:var(--text3);background:var(--bg3);border-radius:3px;padding:3px 0;">0</div>'
       + fasterCells
-      + '</div>';
+      + '</div><div class="bs-cap" id="bs-cap-' + tid + '-' + band + '">' + bandCaptionHtml(brackets, band) + '</div></div>';
   }).join('');
 
   return '<div class="card card-accent u-mb-0"><div class="card-title">Scoring Settings</div>'
@@ -138,6 +145,7 @@ function buildSettingsPanel(tid) {
     + '<div class="ss-label u-mb-0">&#9201; Band Scoring (A–G)</div>'
     + '<button class="btn btn-sm btn-danger u-btn-xs" onclick="resetBandTable(' + tid + ')">Reset</button>'
     + '</div>'
+    + '<p class="u-hint-11-sm">Each box is the <b>most seconds</b> slower or faster than the runner&rsquo;s baseline PR that still earns those points; the next tier starts where the previous one ends. Blank = tier not used. The line under each band spells out the ranges currently in force.</p>'
     + '<div style="border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;overflow-x:auto;" id="bands-list-' + tid + '">' + bandRows + '</div>'
     + '</div>'
     + '<div style="display:flex;gap:8px;margin-top:1rem;align-items:center;">'
@@ -148,7 +156,7 @@ function buildSettingsPanel(tid) {
 }
 
 function btEnsureTable(tid) {
-  var t = getTournament(tid); if (!t) return null;
+  var t = getTournament(parseInt(tid)); if (!t) return null;
   if (!t.settings.bandTable) t.settings.bandTable = JSON.parse(JSON.stringify(DEFAULT_BAND_TABLE));
   return t;
 }
@@ -215,6 +223,7 @@ function btSetFaster(tid, band, pts, field, val) {
   if (existing.minFaster == null && existing.maxFaster == null) {
     t.settings.bandTable[band] = t.settings.bandTable[band].filter(function(b){ return b !== existing; });
   }
+  var c = document.getElementById('bs-cap-' + tid + '-' + band); if (c) c.innerHTML = bandCaptionHtml(t.settings.bandTable[band], band);
 }
 function btSetSlower(tid, band, pts, field, val) {
   var t = btEnsureTable(tid); if (!t) return;
@@ -226,6 +235,7 @@ function btSetSlower(tid, band, pts, field, val) {
   if (field === 'to')   existing.slowerTo   = isNaN(sec) ? 0 : sec;
   // 1pt always starts from 0
   if (pts === 1) existing.slowerFrom = 0;
+  var c = document.getElementById('bs-cap-' + tid + '-' + band); if (c) c.innerHTML = bandCaptionHtml(t.settings.bandTable[band], band);
 }
 function resetBandTable(tid) {
   if (!confirm('Reset band scoring to defaults?')) return;

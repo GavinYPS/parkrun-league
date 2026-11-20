@@ -123,3 +123,4 @@ table tbody tr:hover{background:var(--bg3)}
   .lb-pt{font-size:14px;display:inline-flex;gap:5px;align-items:baseline}
   .lb-pt::before{content:attr(data-l);font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;font-family:'Barlow Condensed',sans-serif;letter-spacing:.06em}
 }
+.bs-cap{font-size:12px;color:var(--text2);margin-top:5px;line-height:1.5}.bs-cap b{color:var(--text)}
