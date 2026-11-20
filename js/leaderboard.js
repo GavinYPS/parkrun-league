@@ -65,7 +65,6 @@ function renderLeaderboard() {
     return {runner:r, bandPts:bandPts, runs:runs, attendancePts:attendancePts, wildcardPts:wildcardPts, volunteerPts:volunteerPts, bonus:getBonus(runs, ts), total:bandPts + attendancePts + wildcardPts + volunteerPts + getBonus(runs, ts)};
   }).filter(function(s) { return s.runs > 0 || s.volunteerPts > 0 || s.wildcardPts > 0; }).sort(function(a,b) { return b.total - a.total || a.runner.name.localeCompare(b.runner.name); });
 
-  var totalPts = scores.reduce(function(sum, s) { return sum + s.total; }, 0);
   var ts = getTournamentSettings(parseInt(tid));
   var showAttBonus = (ts.attendanceBonus || 0) > 0 && scores.some(function(s) { return s.attendancePts > 0; });
   var hasVolunteers = scores.some(function(s) { return s.volunteerPts > 0; });
@@ -98,6 +97,6 @@ function renderLeaderboard() {
   }).join('') : '<div class="notice">No results entered yet.</div>';
 
   area.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(95px,1fr));gap:10px;margin-bottom:1.25rem;">'
-    + [{label:'Club Runners',value:S.runners.length},{label:'Total Points',value:totalPts},{label:'Events',value:filterEvs.length}].map(function(m) { return '<div class="metric"><div class="metric-label">' + m.label + '</div><div class="metric-value">' + m.value + '</div></div>'; }).join('') + '</div>'
+    + [{label:'Club Runners',value:S.runners.length},{label:'Raced',value:scores.filter(function(x){return x.runs>0;}).length + ' of ' + S.runners.length},{label:'Lead',value:scores.length > 1 ? '+' + (scores[0].total - scores[1].total) : '–'},{label:'Events',value:filterEvs.length}].map(function(m) { return '<div class="metric"><div class="metric-label">' + m.label + '</div><div class="metric-value">' + m.value + '</div></div>'; }).join('') + '</div>'
     + '<div class="card"><div class="lb-hdr" style="--lbcols:' + colDef + ';">' + hdr + '</div>' + rows + '</div>';
 }

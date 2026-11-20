@@ -194,3 +194,28 @@ table tbody tr:hover{background:var(--bg3)}
 }
 .nav-short{display:none}
 @media(max-width:640px){.nav-short{display:inline}}
+.ss-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.25rem;margin-bottom:1.25rem}
+@media(max-width:700px){
+  .ss-grid{grid-template-columns:1fr}
+  .tournament-header>div,.location-header>div,.event-row>div{flex-shrink:1!important;min-width:0}
+  .tournament-header,.location-header{padding-left:.75rem;padding-right:.75rem}
+  .tournament-body{padding:.5rem .6rem .75rem}
+}
+.bt-grid{display:grid;grid-template-columns:24px 70px repeat(9,1fr);gap:2px;align-items:center}
+.bt-cell{display:block;margin:0}.bt-pt{display:none}
+.chevron.open{transform:none}
+@media(max-width:700px){
+  .bt-hdr{display:none}
+  .bt-grid{grid-template-columns:repeat(3,1fr);gap:6px}
+  .bt-grid>span:first-child{grid-column:1;font-size:20px!important}
+  .bt-grid>input.text-mono{grid-column:2/4;font-size:14px!important;padding:8px!important}
+  .bt-pt{display:block;font-size:11px;font-weight:700;margin-bottom:2px}
+  .bt-cell input{font-size:14px!important;padding:8px 4px!important}
+}
+.help-tiers{width:auto;margin:.5rem 0;font-size:13px}.help-tiers th,.help-tiers td{padding:4px 14px 4px 0;text-align:left}
+@media(max-width:700px){
+  #tab-help .card{padding:.75rem .85rem;margin-bottom:.6rem}
+  #tab-help .card-title{margin-bottom:.4rem}
+  #tab-help p{margin:.3rem 0;line-height:1.4}
+  .help-chips{gap:4px}
+}

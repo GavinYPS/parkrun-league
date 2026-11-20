@@ -44,13 +44,13 @@ function buildSettingsPanel(tid) {
   var slowerCol = 'var(--red)';              var fasterCol = 'var(--green)';
   var inpS = 'padding:3px 4px;font-size:11px;width:100%;text-align:center;font-family:SF Mono,Fira Code,monospace;border-radius:3px;box-sizing:border-box;';
 
-  function mkCell(val, onch, isSlower, readOnly) {
+  function mkCell(val, onch, isSlower, readOnly, pt) {
     var bg  = isSlower ? slowerBg  : fasterBg;
     var col = isSlower ? slowerCol : fasterCol;
     var bdr = isSlower ? 'rgba(224,90,90,.25)' : 'rgba(106,176,76,.25)';
-    return '<input type="number" min="0" value="' + (val != null ? val : '') + '" placeholder="—"'
+    return '<label class="bt-cell"><span class="bt-pt" style="color:' + col + ';">' + (isSlower ? '▼' : '▲') + pt + 'pt</span><input type="number" min="0" value="' + (val != null ? val : '') + '" placeholder="—"'
       + ' style="' + inpS + 'background:' + bg + ';color:' + col + ';border:1px solid ' + bdr + ';' + (readOnly ? 'opacity:.35;' : '') + '"'
-      + (readOnly ? ' disabled' : ' onchange="' + onch + '"') + '/>';
+      + (readOnly ? ' disabled' : ' onchange="' + onch + '"') + '/></label>';
   }
 
   // Columns: band | baseline | 0.5pt | 1pt | 2pt | 3pt | 4pt | 5pt | 6pt | 7pt | 8pt
@@ -58,20 +58,20 @@ function buildSettingsPanel(tid) {
 
   var bandHdr =
     // Row 1: direction banners
-    '<div style="display:grid;grid-template-columns:' + colT + ';gap:2px;padding:3px 6px 2px;border-bottom:1px solid var(--border2);align-items:center;">'
+    '<div class="bt-grid bt-hdr" style="padding:3px 6px 2px;border-bottom:1px solid var(--border2);align-items:center;">'
     + '<span></span><span></span>'
     + '<div style="grid-column:span 2;text-align:center;font-size:11px;font-weight:700;color:' + slowerCol + ';background:' + slowerBg + ';border-radius:3px;padding:3px 0;">▼ Slower than baseline</div>'
     + '<div style="grid-column:span 7;text-align:center;font-size:11px;font-weight:700;color:' + fasterCol + ';background:' + fasterBg + ';border-radius:3px;padding:3px 0;">▲ Faster than baseline</div>'
     + '</div>'
     // Row 2: pt labels
-    + '<div style="display:grid;grid-template-columns:' + colT + ';gap:2px;padding:2px 6px;border-bottom:1px solid var(--border2);align-items:center;">'
+    + '<div class="bt-grid bt-hdr" style="padding:2px 6px;border-bottom:1px solid var(--border2);align-items:center;">'
     + '<span style="font-size:11px;color:var(--text3);">Band</span>'
     + '<span style="font-size:11px;color:var(--text3);">Baseline</span>'
     + SLOWER_TIERS.map(function(p){ return '<span style="text-align:center;font-size:12px;font-weight:700;color:' + slowerCol + ';">' + p + 'pt</span>'; }).join('')
     + FASTER_TIERS.map(function(p){ return '<span style="text-align:center;font-size:12px;font-weight:700;color:' + fasterCol + ';">' + p + 'pt</span>'; }).join('')
     + '</div>'
     // Row 3: threshold labels
-    + '<div style="display:grid;grid-template-columns:' + colT + ';gap:2px;padding:1px 6px;border-bottom:1px solid var(--border2);align-items:center;">'
+    + '<div class="bt-grid bt-hdr" style="padding:1px 6px;border-bottom:1px solid var(--border2);align-items:center;">'
     + '<span></span><span style="font-size:10px;color:var(--text3);">mm:ss–mm:ss</span>'
     + '<span style="font-size:10px;color:' + slowerCol + ';text-align:center;">up to s</span>'
     + '<span style="font-size:10px;color:' + slowerCol + ';text-align:center;">up to s</span>'
@@ -88,16 +88,16 @@ function buildSettingsPanel(tid) {
 
     var slowerCells =
       // 0.5pt — upper bound (the most-slower threshold)
-      mkCell(h.slowerTo   != null ? h.slowerTo   : null, 'btSetSlower(\'' + tid + '\',\'' + band + '\',0.5,\'to\',this.value)',   true, false)
+      mkCell(h.slowerTo   != null ? h.slowerTo   : null, 'btSetSlower(\'' + tid + '\',\'' + band + '\',0.5,\'to\',this.value)',   true, false, 0.5)
       // 1pt — upper bound (closest to 0)
-    + mkCell(one.slowerTo != null ? one.slowerTo : null, 'btSetSlower(\'' + tid + '\',\'' + band + '\',1,\'to\',this.value)',    true, false);
+    + mkCell(one.slowerTo != null ? one.slowerTo : null, 'btSetSlower(\'' + tid + '\',\'' + band + '\',1,\'to\',this.value)',    true, false, 1);
 
     var fasterCells = FASTER_TIERS.map(function(p) {
       var b = getB(p) || {};
-      return mkCell(b.maxFaster != null ? b.maxFaster : null, 'btSetFaster(\'' + tid + '\',\'' + band + '\',' + p + ',\'to\',this.value)', false, false);
+      return mkCell(b.maxFaster != null ? b.maxFaster : null, 'btSetFaster(\'' + tid + '\',\'' + band + '\',' + p + ',\'to\',this.value)', false, false, p);
     }).join('');
 
-    return '<div style="border-bottom:1px solid var(--border);padding:3px 6px 6px;"><div style="display:grid;grid-template-columns:' + colT + ';gap:2px;align-items:center;">'
+    return '<div style="border-bottom:1px solid var(--border);padding:3px 6px 6px;"><div class="bt-grid">'
       + '<span style="font-family:Barlow Condensed,sans-serif;font-weight:800;font-size:15px;color:var(--orange);">' + band + '</span>'
       + '<input type="text" value="' + sTime(range[0]) + '–' + sTime(range[1]) + '" class="text-mono"'
       + ' style="padding:3px 4px;font-size:11px;width:100%;" onchange="updateBandRange(\'' + tid + '\',\'' + band + '\',this.value)"/>'
@@ -107,7 +107,7 @@ function buildSettingsPanel(tid) {
   }).join('');
 
   return '<div class="card card-accent u-mb-0"><div class="card-title">Scoring Settings</div>'
-    + '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.25rem;margin-bottom:1.25rem;">'
+    + '<div class="ss-grid">'
     // Col 1: Attendance + Wildcard
     + '<div>'
     + '<div class="ss-label">&#9989; Attendance Bonus</div>'

@@ -24,7 +24,7 @@ function helpSeasonParts(runs, avgSpeed, wildcards, volunteered, settings) {
     { label: 'Attendance', pts: runs * (settings.attendanceBonus || 0), color: 'var(--blue)' },
     { label: 'Volunteer', pts: volunteered ? (settings.volunteerBonus || 0) : 0, color: 'var(--green)' },
     { label: 'Wildcard', pts: wildcards * (settings.wildcardBonus || 2), color: 'var(--purple)' },
-    { label: 'Run-count bonus', pts: getBonus(runs, settings), color: 'var(--text3)' }
+    { label: 'Attendance Bonus Tiers', pts: getBonus(runs, settings), color: 'var(--text3)' }
   ];
 }
 
@@ -131,7 +131,7 @@ function renderHelp() {
     ['var(--blue)', 'Attendance', '+' + (s.attendanceBonus || 0) + ' for every race'],
     ['var(--green)', 'Volunteer', '+' + (s.volunteerBonus || 0) + ' (max ' + (s.volunteerMaxSessions != null ? s.volunteerMaxSessions : 1) + ' session)'],
     ['var(--purple)', 'Wildcard', '+' + (s.wildcardBonus || 2) + ' per wildcard event'],
-    ['var(--text3)', 'Run-count bonus', tiers + ' (highest tier only)']
+    ['var(--text3)', 'Attendance Bonus Tiers', tiers + ' (highest tier only)']
   ].map(function(t) { return '<div class="help-term"><i style="background:' + t[0] + ';"></i><b>' + t[1] + '</b><span>' + t[2] + '</span></div>'; }).join('');
   var rows = BAND_LABELS.map(function(b) {
     return '<div class="help-row"><div class="help-lab">Band ' + b + '<small>' + sTime(BAND_SEC_RANGES[b][0]) + '&ndash;' + sTime(BAND_SEC_RANGES[b][1]) + '</small></div><div class="help-strip help-strip-sm">' + helpSegs(table, b, ax) + '</div></div>';
@@ -142,13 +142,18 @@ function renderHelp() {
   function cards(list) { return '<div class="help-hows">' + list.map(function(x) { return '<div class="help-how"><h3>' + x[0] + '</h3><p>' + x[1] + '</p></div>'; }).join('') + '</div>'; }
   var admin = isLoggedIn();
   if (!admin || !helpTab) helpTab = 'scoring';
+  var tierList = (s.bonusTiers || []).slice().sort(function(x, y) { return y.minRuns - x.minRuns; });
+  var tierTop = tierList[0], tierEx = tierList.length ? tierList[0].minRuns + 1 : 0;
+  var tierHelp = '<p class="help-sub">Separate from the flat +' + (s.attendanceBonus || 0) + ' per race. This is a one-off reward for racing often. Count the races a runner has finished (volunteering and wildcard events do not count), find the highest tier they have reached, and add that tier&rsquo;s points <b>once</b>. Tiers do not stack.</p>'
+    + '<table class="help-tiers"><tr><th>Races finished</th><th>Bonus (once)</th></tr>' + tierList.slice().reverse().map(function(t) { return '<tr><td>' + t.minRuns + ' or more</td><td>+' + t.points + '</td></tr>'; }).join('') + '<tr><td>Fewer than ' + (tierList.length ? tierList[tierList.length - 1].minRuns : 0) + '</td><td>0</td></tr></table>'
+    + (tierTop ? '<p class="help-note">Example: ' + tierEx + ' races is +' + getBonus(tierEx, s) + ' (the ' + tierTop.minRuns + '+ tier), not the lower tiers added together.</p>' : '');
   var leaderboardHelp = cards([
     ['Runner and #', 'Runners are ranked by total points. Ties are broken alphabetically. The small line under a name shows the Parkrun ID and how many races they have run.'],
     ['Att.', 'Attendance points: a flat bonus for every race the runner completed.'],
     ['Vol.', 'Volunteer points. Only shown once someone has volunteered.'],
     ['WC', 'Wildcard points from wildcard events. Only shown when the tournament has a wildcard event.'],
     ['Speed', 'Points for how much faster (or slower) the runner was than their own baseline, added up over every race. See section 1 above.'],
-    ['Bonus', 'The run-count bonus for racing often. Only the highest tier reached counts, once.'],
+    ['Bonus', 'Attendance Bonus Tiers: a one-off extra for racing often. Only the highest tier reached counts, and it is added once, not per race.'],
     ['Total', 'Everything added together. Runners with no results yet are not listed.']
   ]);
   var adminHelp =
@@ -171,7 +176,7 @@ function renderHelp() {
       ])
     + '<h3 class="help-sub">Scoring settings</h3>' + cards([
         ['Editing the bands', 'Open a tournament’s <b>Settings</b>. In Band Scoring each box is the most seconds slower or faster than baseline that earns those points. Changing a box moves the neighbouring tier so there are never gaps or overlaps, and clearing a box drops that tier. The line under each band spells out the ranges. <b>Save Settings</b> keeps your changes and <b>Reset</b> restores the defaults.'],
-        ['Bonuses', 'Attendance, volunteer and wildcard points, and the run-count tiers, are in the same Settings panel. The Help figures above update to match as soon as you save.']
+        ['Bonuses', 'Attendance, volunteer and wildcard points, and the Attendance Bonus Tiers (races needed / points), are in the same Settings panel. The Help figures above update to match as soon as you save.']
       ])
     + '<h3 class="help-sub">Saving and syncing</h3>' + cards([
         ['Data Sync', 'Data is kept in this browser. In <b>Global Settings</b> the <b>Data Sync</b> panel (GitHub token, repo, file path) saves it to the shared <b>data.json</b> so every device sees the same league. <b>Save Data</b> pushes and <b>Load Data</b> pulls.'],
@@ -201,7 +206,8 @@ function renderHelp() {
     + '<label class="help-chk"><input type="checkbox" id="help-vol" onchange="helpSeason()"/> Volunteered once</label></div>'
     + '<div class="help-readout"><div class="help-big" id="help-tot"></div><div><p id="help-totline"></p></div></div>'
     + '<div class="help-stack" id="help-stack"></div><div class="help-legend" id="help-slegend"></div>'
-    + '<p class="help-note">Wildcard events are separate from races: they pay the flat wildcard bonus and do not count towards the run-count bonus.</p></div>'
+    + '<p class="help-note">Wildcard events are separate from races: they pay the flat wildcard bonus and do not count towards the Attendance Bonus Tiers.</p></div>'
+    + '<div class="card"><div class="card-title">Attendance Bonus Tiers</div>' + tierHelp + '</div>'
     + '<div class="card"><div class="card-title">Reading the leaderboard</div>' + leaderboardHelp + '</div></div>'
     + (admin ? '<div id="help-p-admin" style="display:none;"><p class="help-lead">Admin only. These steps run the league week to week, and are hidden from visitors who are not logged in.</p>' + adminHelp + '</div>' : '');
   document.getElementById('help-for').textContent = h.name ? 'The figures below come from the “' + h.name + '” settings.' : 'The figures below are the league defaults.';

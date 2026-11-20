@@ -54,7 +54,7 @@ function removeActivityType(i) { if (!S.activityTypes || S.activityTypes.length 
 
 function toggleClubEdit(forceState) {
   var view = document.getElementById('club-view-state'); var edit = document.getElementById('club-edit-state'); var btn = document.getElementById('club-edit-btn');
-  var isEditing = forceState !== undefined ? forceState : (view.style.display === 'none');
+  var isEditing = forceState !== undefined ? forceState : (view.style.display !== 'none');   // no argument = toggle
   if (isEditing) { view.style.display = 'none'; edit.style.display = 'block'; btn.style.display = 'none'; var inp = document.getElementById('setting-club-name'); if (inp) inp.focus(); }
   else { view.style.display = 'block'; edit.style.display = 'none'; btn.style.display = ''; btn.textContent = 'Edit'; }
 }
