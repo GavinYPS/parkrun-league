@@ -43,6 +43,7 @@ function tryLogin() {
     sessionStorage.setItem(SETTINGS_SESSION_KEY, '1');
     confirmCancel();
     renderNav();
+    if (ghIsConfigured()) ghPull().then(function(){ renderLbSel(); }).catch(function(){});   // admins only: sync after login
     var go = pendingPage || 'runners'; pendingPage = null; sw(go);
   } else {
     if (inp) { inp.value = ''; inp.placeholder = 'Incorrect — try again'; inp.style.borderColor = 'var(--red)'; inp.focus(); }

@@ -38,10 +38,10 @@ window.addEventListener('hashchange', function() { var p = location.hash.slice(1
         if (curPage === 'help') renderHelp();
       }
       // Then do authenticated pull if configured (for admin saves)
-      if (ghIsConfigured()) ghPull().then(function(){ renderLbSel(); }).catch(function(){});
+      if (ghIsConfigured() && isLoggedIn()) ghPull().then(function(){ renderLbSel(); }).catch(function(){});
     })
     .catch(function() {
       // Public fetch failed — fall back to authenticated pull
-      if (ghIsConfigured()) ghPull().then(function(){ renderLbSel(); }).catch(function(){});
+      if (ghIsConfigured() && isLoggedIn()) ghPull().then(function(){ renderLbSel(); }).catch(function(){});
     });
 })();
