@@ -29,6 +29,7 @@ rundamentalist/     Separate club marketing page
 | tournament-settings.js, tournament-runners.js | Per-tournament panels |
 | enter-times.js | Enter Times page |
 | leaderboard.js | Leaderboard page |
+| help.js | Help tab: interactive scoring explainer (reads the live tournament settings) and how-to guide |
 | global-settings.js | Global settings, activity types |
 | export.js | CSV export |
 | import.js | parkrun import: club report paste or results screenshot (OCR via Tesseract.js, loaded from a CDN on demand) |

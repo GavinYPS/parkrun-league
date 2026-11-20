@@ -4,7 +4,7 @@ const path = require('path');
 const vm = require('vm');
 
 const ROOT = path.join(__dirname, '..');
-const PURE_FILES = ['config', 'bands', 'state', 'utils', 'tournament-data', 'github-sync', 'import', 'tournament-settings'];
+const PURE_FILES = ['config', 'bands', 'state', 'utils', 'tournament-data', 'github-sync', 'import', 'tournament-settings', 'help'];
 
 function memoryStorage(initial) {
   const m = Object.assign({}, initial);

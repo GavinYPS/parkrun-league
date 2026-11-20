@@ -7,8 +7,8 @@ function renderNav() {
   var nav = document.getElementById('main-nav');
   if (!nav) return;
   var tabs = loggedIn
-    ? [['runners','Club Runners'],['events','Tournaments'],['leaderboard','Leaderboard'],['settings','Global Settings']]
-    : [['leaderboard','Leaderboard']];
+    ? [['runners','Club Runners'],['events','Tournaments'],['leaderboard','Leaderboard'],['settings','Global Settings'],['help','Help']]
+    : [['leaderboard','Leaderboard'],['help','Help']];
   nav.innerHTML = tabs.map(function(t) {
     return '<button onclick="sw(\'' + t[0] + '\')">' + t[1] + '</button>';
   }).join('');
@@ -50,7 +50,7 @@ function tryLogin() {
 }
 
 function sw(t) {
-  if (!isLoggedIn() && t !== 'leaderboard') { promptLogin(); return; }
+  if (!isLoggedIn() && t !== 'leaderboard' && t !== 'help') { promptLogin(); return; }
   document.querySelectorAll('#main-nav button').forEach(function(el) {
     el.classList.toggle('active', el.getAttribute('onclick') === "sw('" + t + "')");
   });
@@ -59,5 +59,6 @@ function sw(t) {
   if (target) target.classList.add('active');
   if (t === 'leaderboard') { renderLbSel(); renderLeaderboard(); }
   if (t === 'enter-times') { renderEnterTimesSel(); renderEnterTimes(); }
+  if (t === 'help') renderHelp();
   if (t === 'settings') { renderGlobalSettings(); syncLogoPreview(); }
 }
