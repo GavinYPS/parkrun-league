@@ -46,7 +46,9 @@ function renderEnterTimes() {
     if (parkrunActive) { pkBtn = ' <button onclick="openParkrunResults(\'' + parkrunLink + '\')" style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--orange);background:none;border:none;cursor:pointer;padding:0;letter-spacing:.06em;">Open Parkrun Results &#8599;</button>'; }
     else { pkBtn = ' <button disabled style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--orange);background:none;border:none;cursor:not-allowed;padding:0;letter-spacing:.06em;opacity:.4;" title="Available on ' + fmtDate(ev.date) + '">Open Parkrun Results &#8599;</button>'; }
   }
-  area.innerHTML = '<div class="card">'
+  var tourn = getTournament(ev.tournamentId);
+  var backBtn = '<button class="btn btn-sm" style="margin-bottom:.75rem;" onclick="sw(\'events\');var b=document.getElementById(\'tbody-' + ev.tournamentId + '\');if(b)b.scrollIntoView({block:\'start\'});">&larr; Back to ' + (tourn ? tourn.name : 'Tournaments') + '</button>';
+  area.innerHTML = backBtn + '<div class="card">'
     + '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:1rem;">'
     + '<div><span style="font-size:17px;font-weight:800;text-transform:uppercase;">' + titleHtml + '</span>'
     + '<div style="font-size:12px;color:var(--text2);margin-top:3px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;">' + fmtDate(ev.date) + pkBtn + '</div></div>'
