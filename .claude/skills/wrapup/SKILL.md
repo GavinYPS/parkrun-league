@@ -40,6 +40,8 @@ python -m http.server 8765                              # serve, then load http:
 ```
 Run `npm test` (scoring, merge and data.json compatibility tests) and `npm run check` (syntax). Then smoke test in a browser (Playwright works): page loads with no `pageerror`, leaderboard renders, and the changed path is exercised (log in via settings, click through the feature). A syntax check does not prove the UI works.
 
+- **Cache-busting:** Pages serves assets with `max-age=600`, so browsers can mix old CSS with new JS. When `css/` or `js/` change, bump the `?v=` string on every `<link>`/`<script>` in `index.html` (one shared value, e.g. `20261120a`).
+
 ## 5b. Other parts of the repo
 - `rundamentalist/rundamentalist.html` is a separate, self-contained marketing page (own CSS, large embedded assets). Don't apply `js/`/`css/` conventions to it or mix the two.
 - `data.json` is live league data (the app commits "Sync ..." changes to it). Never hand-edit or reformat it as part of a code change; keep it out of the diff unless that is the task.
