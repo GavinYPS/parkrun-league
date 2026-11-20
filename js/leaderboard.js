@@ -73,8 +73,8 @@ function renderLeaderboard() {
   var hasWildcard = filterEvs.some(function(e) { return e.wildcard === true; });
   var showWcBonus = hasWildcard && (ts.wildcardBonus || 2) > 0 && scores.some(function(s) { return s.wildcardPts > 0; });
   var colDef = '40px 1fr' + (showAttBonus ? ' 75px' : '') + (showVolBonus ? ' 75px' : '') + (showWcBonus ? ' 75px' : '') + ' 75px 90px 80px';
-  var hdr = '<span style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;">#</span>'
-    + '<span style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;">Runner</span>'
+  var hdr = '<span class="u-th-right" style="text-align:left;">#</span>'
+    + '<span class="u-th-right" style="text-align:left;">Runner</span>'
     + (showAttBonus ? '<span class="u-th-right">&#9989; Att.</span>' : '')
     + (showVolBonus ? '<span class="u-th-right">&#129309; Vol.</span>' : '')
     + (showWcBonus ? '<span class="u-th-right">&#9889; WC</span>' : '')
@@ -84,18 +84,20 @@ function renderLeaderboard() {
   var posStyles = ['background:var(--orange);color:#fff;', 'background:#555;color:#fff;', 'background:#7a3d10;color:#fff;'];
   var rows = scores.length ? scores.map(function(s, i) {
     var bandColor = s.bandPts > 0 ? 'var(--green)' : s.bandPts < 0 ? 'var(--red)' : 'var(--text)';
-    return '<div style="display:grid;grid-template-columns:' + colDef + ';gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);">'
+    return '<div class="lb-row" style="--lbcols:' + colDef + ';">'
       + '<div class="pos-num" style="' + (posStyles[i] || 'background:var(--bg4);color:var(--text2);font-size:12px;') + '">' + (i+1) + '</div>'
       + '<div><div class="lb-name">' + s.runner.name + '</div><div class="lb-sub">' + (s.runner.rid ? 'A' + s.runner.rid + ' &middot; ' : '') + s.runs + ' run' + (s.runs !== 1 ? 's' : '') + '</div></div>'
-      + (showAttBonus ? '<div class="text-right" style="color:var(--blue);font-weight:600;">+' + s.attendancePts + '</div>' : '')
-      + (showVolBonus ? '<div class="text-right" style="color:var(--green);font-weight:600;">+' + s.volunteerPts + '</div>' : '')
-      + (showWcBonus ? '<div class="text-right" style="color:#c084fc;font-weight:600;">+' + s.wildcardPts + '</div>' : '')
-      + '<div class="text-right" style="font-weight:600;color:' + bandColor + ';">' + (s.bandPts > 0 ? '+' : '') + s.bandPts + '</div>'
-      + '<div class="text-right" style="color:var(--orange);font-weight:600;">' + (s.bonus > 0 ? '+' : '') + s.bonus + '</div>'
-      + '<div class="text-right" style="font-size:22px;font-weight:800;color:' + (i === 0 ? 'var(--orange)' : 'var(--text)') + ';">' + s.total + '</div></div>';
+      + '<div class="lb-pts">'
+      + (showAttBonus ? '<div class="text-right lb-pt" data-l="Att." style="color:var(--blue);">+' + s.attendancePts + '</div>' : '')
+      + (showVolBonus ? '<div class="text-right lb-pt" data-l="Vol." style="color:var(--green);">+' + s.volunteerPts + '</div>' : '')
+      + (showWcBonus ? '<div class="text-right lb-pt" data-l="WC" style="color:#c084fc;">+' + s.wildcardPts + '</div>' : '')
+      + '<div class="text-right lb-pt" data-l="Speed" style="color:' + bandColor + ';">' + (s.bandPts > 0 ? '+' : '') + s.bandPts + '</div>'
+      + '<div class="text-right lb-pt" data-l="Bonus" style="color:var(--orange);">' + (s.bonus > 0 ? '+' : '') + s.bonus + '</div>'
+      + '</div>'
+      + '<div class="text-right lb-total" style="color:' + (i === 0 ? 'var(--orange)' : 'var(--text)') + ';">' + s.total + '</div></div>';
   }).join('') : '<div class="notice">No results entered yet.</div>';
 
-  area.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:1.25rem;">'
+  area.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(95px,1fr));gap:10px;margin-bottom:1.25rem;">'
     + [{label:'Club Runners',value:S.runners.length},{label:'Total Points',value:totalPts},{label:'Events',value:filterEvs.length}].map(function(m) { return '<div class="metric"><div class="metric-label">' + m.label + '</div><div class="metric-value">' + m.value + '</div></div>'; }).join('') + '</div>'
-    + '<div class="card"><div style="display:grid;grid-template-columns:' + colDef + ';gap:8px;padding:6px 0 10px;border-bottom:1px solid var(--border2);margin-bottom:4px;">' + hdr + '</div>' + rows + '</div>';
+    + '<div class="card"><div class="lb-hdr" style="--lbcols:' + colDef + ';">' + hdr + '</div>' + rows + '</div>';
 }
