@@ -7,6 +7,7 @@ function confirmModal(title, msg, okLabel, cb) {
   document.getElementById('confirm-ok-btn').textContent = okLabel || 'OK';
   document.getElementById('confirm-cancel').textContent = 'Cancel';
   document.getElementById('confirm-cancel').onclick = confirmCancel;
+  document.getElementById('confirm-ok-btn').onclick = confirmOK;
   _confirmCb = cb;
   document.getElementById('confirm-modal').classList.add('open');
 }

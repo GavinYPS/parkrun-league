@@ -119,8 +119,16 @@ async function ghPull() {
     var d = await r.json();
     var raw = d.content.replace(/\n/g, '');
     var remote = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(raw), function(c) { return c.charCodeAt(0); })));
-    var differs = JSON.stringify(S) !== JSON.stringify(remote);
+    // Compare content only: ignore save timestamps/logo, key order and array order, so a merge or a re-save alone is not a "change"
+    var norm = function(k, v) {
+      if (k === '_savedAt' || k === '_logo') return undefined;
+      if (Array.isArray(v) && v.length && v[0] && v[0].id != null) return v.slice().sort(function(x, y) { return x.id - y.id; });
+      if (v && typeof v === 'object' && !Array.isArray(v)) { var o = {}; Object.keys(v).sort().forEach(function(key) { o[key] = v[key]; }); return o; }
+      return v;
+    };
     var hasLocal = !!(S.runners && S.runners.length || S.tournaments && S.tournaments.length);
+    // Only a conflict when local holds something the cloud copy does not already have
+    var differs = hasLocal && JSON.stringify(ghMerge(S, remote), norm) !== JSON.stringify(remote, norm);
     if (hasLocal && differs) {
       var ls = S._savedAt ? new Date(S._savedAt).toLocaleString() : 'unsaved';
       var rs = remote._savedAt ? new Date(remote._savedAt).toLocaleString() : 'unknown';
