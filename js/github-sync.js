@@ -132,8 +132,10 @@ async function ghPull() {
     if (hasLocal && differs) {
       var ls = S._savedAt ? new Date(S._savedAt).toLocaleString() : 'unsaved';
       var rs = remote._savedAt ? new Date(remote._savedAt).toLocaleString() : 'unknown';
+      var mergedNow = ghMerge(S, remote);
+      var what = Object.keys(mergedNow).filter(function(key) { return key !== '_savedAt' && key !== '_logo' && JSON.stringify(mergedNow[key], norm) !== JSON.stringify(remote[key], norm); }).join(', ');
       var choice = await new Promise(function(resolve) {
-        confirmModal('Data Conflict', 'Local: ' + ls + '\nCloud: ' + rs + '\n\nMerge keeps both. Overwrite replaces local with cloud.', 'Merge', function() { resolve('merge'); });
+        confirmModal('Data Conflict', 'Local: ' + ls + '\nCloud: ' + rs + '\nLocal has changes the cloud lacks in: ' + what + '\n\nMerge keeps both. Overwrite replaces local with cloud.', 'Merge', function() { resolve('merge'); });
         setTimeout(function() {
           var b = document.getElementById('confirm-cancel');
           if (b) { b.textContent = 'Overwrite'; b.onclick = function() { resolve('overwrite'); confirmCancel(); }; }
