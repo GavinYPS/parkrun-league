@@ -20,6 +20,6 @@ test('showRunnerSummary lists the runner\'s times and band points per event', ()
   assert.match(els['runner-modal-body'].innerHTML, /Wildcard/);
   assert.match(els['runner-modal-body'].innerHTML, /Baseline 26:00/);
   assert.match(els['runner-modal-body'].innerHTML, /−1:00/);          // 25:00 against a 26:00 baseline
-  assert.match(els['runner-modal-body'].innerHTML, /2 of 2.*= <b>8<\/b>/);  // rank and points breakdown
+  assert.match(els['runner-modal-body'].innerHTML, /2nd place[\s\S]*Total<\/div><div[^>]*>8</);  // rank and points breakdown
   assert.ok(els['runner-modal'].classList.on);
 });

@@ -133,7 +133,14 @@ function showRunnerSummary(rid) {
       + '<div style="overflow-x:auto;"><table style="font-size:13px;"><tr><th style="text-align:left;">Date</th><th style="text-align:left;">Event</th><th style="text-align:left;">Time</th><th class="text-right">Pts</th></tr>' + rows + '</table></div></div>';
   });
   var pos = lbScores.findIndex(function(x) { return x.runner.id === r.id; }), me = lbScores[pos];
-  if (me) html = '<div style="font-size:13px;color:var(--text2);">' + (pos + 1) + ' of ' + lbScores.length + ' &middot; Speed ' + (me.bandPts > 0 ? '+' : '') + me.bandPts + ' &middot; Att. +' + me.attendancePts + ' &middot; Bonus +' + me.bonus + ' &middot; Wildcard +' + me.wildcardPts + ' &middot; Vol. +' + me.volunteerPts + ' = <b>' + me.total + '</b></div>' + html;
+  if (me) {
+    var ord = pos + 1, sfx = (ord % 100 >= 11 && ord % 100 <= 13) ? 'th' : ['th','st','nd','rd','th','th','th','th','th','th'][ord % 10];
+    var parts = [['Speed', me.bandPts, 'var(--text)'], ['Att.', me.attendancePts, 'var(--blue)'], ['Bonus', me.bonus, 'var(--orange)'], ['Wildcard', me.wildcardPts, '#c084fc'], ['Vol.', me.volunteerPts, 'var(--green)']]
+      .filter(function(x) { return x[0] === 'Speed' || x[1] !== 0; });
+    html = '<div style="display:flex;align-items:center;gap:8px;margin-bottom:.6rem;"><span style="font-family:Barlow Condensed,sans-serif;font-size:22px;font-weight:800;color:var(--orange);">' + ord + sfx + ' place</span></div>'
+      + '<div style="display:flex;flex-wrap:wrap;gap:6px;">' + parts.map(function(x) { return '<div style="background:var(--bg3);border-radius:6px;padding:6px 10px;text-align:center;min-width:56px;"><div style="font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);">' + x[0] + '</div><div style="font-size:16px;font-weight:700;color:' + x[2] + ';">' + (x[1] > 0 ? '+' : '') + x[1] + '</div></div>'; }).join('')
+      + '<div style="background:var(--bg4);border-radius:6px;padding:6px 10px;text-align:center;min-width:56px;"><div style="font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);">Total</div><div style="font-size:16px;font-weight:800;color:var(--orange);">' + me.total + '</div></div></div>' + html;
+  }
   document.getElementById('runner-modal-title').textContent = r.name + (r.band ? ' · Band ' + r.band : '');
   document.getElementById('runner-modal-body').innerHTML = html || '<p style="color:var(--text3);">No times recorded yet.</p>';
   document.getElementById('runner-modal').classList.add('open');
