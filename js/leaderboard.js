@@ -100,7 +100,7 @@ function renderLeaderboard() {
   }).join('') : '<div class="notice">No results entered yet.</div>';
 
   area.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(95px,1fr));gap:10px;margin-bottom:1.25rem;">'
-    + [{label:'Club Runners',value:S.runners.length},{label:'Avg Turnout',value:(filterEvs.filter(function(e){return !e.wildcard;}).length ? Math.round(scores.reduce(function(n,x){return n+x.runs;},0) / filterEvs.filter(function(e){return !e.wildcard;}).length * 10) / 10 : 0) + ' / race'},{label:'Events',value:filterEvs.length}].map(function(m) { return '<div class="metric"><div class="metric-label">' + m.label + '</div><div class="metric-value">' + m.value + '</div>' + '</div>'; }).join('') + '</div>'
+    + [{label:'Club Runners',value:S.runners.length},{label:'Avg Turnout',value:(filterEvs.filter(function(e){return !e.wildcard;}).length ? Math.floor(scores.reduce(function(n,x){return n+x.runs;},0) / filterEvs.filter(function(e){return !e.wildcard;}).length) : 0) + ' / race'},{label:'Events',value:filterEvs.length}].map(function(m) { return '<div class="metric"><div class="metric-label">' + m.label + '</div><div class="metric-value">' + m.value + '</div>' + '</div>'; }).join('') + '</div>'
     + '<div class="card"><div class="lb-hdr" style="--lbcols:' + colDef + ';">' + hdr + '</div>' + rows + '</div>';
 }
 
