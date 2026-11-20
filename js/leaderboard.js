@@ -88,7 +88,7 @@ function renderLeaderboard() {
       + '<div class="pos-num" style="' + (posStyles[i] || 'background:var(--bg4);color:var(--text2);font-size:12px;') + '">' + (i+1) + '</div>'
       + '<div><div class="lb-name">' + s.runner.name + '</div><div class="lb-sub">' + (s.runner.rid ? 'A' + s.runner.rid + ' &middot; ' : '') + s.runs + ' run' + (s.runs !== 1 ? 's' : '') + '</div></div>'
       + (showAttBonus ? '<div class="text-right" style="color:var(--blue);font-weight:600;">+' + s.attendancePts + '</div>' : '')
-      + (showVolBonus ? '<div class="text-right" style="color:#6ab04c;font-weight:600;">+' + s.volunteerPts + '</div>' : '')
+      + (showVolBonus ? '<div class="text-right" style="color:var(--green);font-weight:600;">+' + s.volunteerPts + '</div>' : '')
       + (showWcBonus ? '<div class="text-right" style="color:#c084fc;font-weight:600;">+' + s.wildcardPts + '</div>' : '')
       + '<div class="text-right" style="font-weight:600;color:' + bandColor + ';">' + (s.bandPts > 0 ? '+' : '') + s.bandPts + '</div>'
       + '<div class="text-right" style="color:var(--orange);font-weight:600;">' + (s.bonus > 0 ? '+' : '') + s.bonus + '</div>'

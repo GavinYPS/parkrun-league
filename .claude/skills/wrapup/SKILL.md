@@ -45,6 +45,15 @@ Run `npm test` (scoring, merge and data.json compatibility tests) and `npm run c
 - `data.json` is live league data (the app commits "Sync ..." changes to it). Never hand-edit or reformat it as part of a code change; keep it out of the diff unless that is the task.
 - Pages deploys straight from `main`; there is no workflow or build.
 
+## 5c. Tests for the work done (from Acto)
+Tests live in `tests/*.test.js` and run real scripts via `tests/load.js`. For each behaviour change or bug fix, add a test that would have **failed before** the change, not one that only asserts something exists. Then do a manual mutation check: temporarily revert/break the change, run `npm test`, confirm the new test fails for the expected reason, restore, and confirm the full suite is green again. A test that doesn't fail under mutation tests nothing; rewrite or drop it. If a change can't be unit-tested (pure UI), say so in the report.
+
+## 5d. Working-style rules (from Acto feedback memory)
+- Edit existing functions in place with the smallest change. Don't add helper functions, global guards or extra checks scattered through other code. If a structurally big change is needed, propose the shape first.
+- Stop work/polling once the goal is reached (e.g. no timers or listeners left running after a sync or import finishes).
+- Keep safety checks inline at the action they protect (e.g. confirm before destructive deletes or overwriting synced data).
+- Cross-check the change against the `feedback_*` notes in this project's memory so a corrected pattern isn't reintroduced.
+
 ## 6. Duplication
 Search `js/` for existing helpers (`utils.js`, `tournament-data.js`, `ui.js`) before adding new ones. Consolidate real duplication; don't invent abstractions for things that only look similar.
 
@@ -54,4 +63,5 @@ Search `js/` for existing helpers (`utils.js`, `tournament-data.js`, `ui.js`) be
 - **Structure**: files touched, load order OK.
 - **Security**: secrets flagged.
 - **Verification**: syntax + smoke test results, honestly (what was not run).
+- **Tests**: added, plus mutation-check result (say explicitly if a test failed to fail).
 - **Open questions / follow-ups**.

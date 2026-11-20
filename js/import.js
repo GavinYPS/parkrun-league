@@ -72,7 +72,7 @@ function prBuildConsolidatedUrl(date) {
 }
 
 function prBuildEventUrl(ev) {
-  var loc = S.locations.find(function(l){ return l.id===ev.locationId; });
+  var loc = getLocation(ev.locationId);
   if (!loc || !ev.date) return null;
   var slug = null;
   if (loc.eventPage) { var m=loc.eventPage.match(/parkrun\.org\.uk\/([a-z0-9-]+)/i); if(m) slug=m[1].toLowerCase(); }
@@ -146,12 +146,12 @@ function prParseConsolidated(text) {
 // ── Modal open ───────────────────────────────────────────────────────────────
 function imOpen(eventId) {
   _imS.evId = eventId;
-  var ev = S.events.find(function(e){ return e.id===eventId; });
+  var ev = getEvent(eventId);
   if (!ev) return;
   _imS.tId    = ev.tournamentId;
   _imS.evDate = ev.date || null;
 
-  var loc = S.locations.find(function(l){ return l.id===ev.locationId; });
+  var loc = getLocation(ev.locationId);
   var consolidatedUrl = prBuildConsolidatedUrl(_imS.evDate);
   var eventUrl = prBuildEventUrl(ev);
 
@@ -341,7 +341,7 @@ function imBuild(allResults) {
 
   // Filter to just the event's location if we know it
   // The consolidated report shows ALL parkruns — we want to match by event location
-  var loc = S.locations.find(function(l){ var ev=S.events.find(function(e){return e.id===_imS.evId;}); return ev && l.id===ev.locationId; });
+  var loc = (function(){ var e=getEvent(_imS.evId); return e && getLocation(e.locationId); })();
   var locName = loc ? loc.name.toLowerCase().replace(/\s+parkrun.*/i,'').trim() : '';
 
   // Split into: ran this event's location vs ran elsewhere
@@ -379,7 +379,7 @@ function imBuild(allResults) {
 function imRender() {
   var tRunners = getTournamentRunners(_imS.tId);
   var html = '';
-  var loc = S.locations.find(function(l){ var ev=S.events.find(function(e){return e.id===_imS.evId;}); return ev && l.id===ev.locationId; });
+  var loc = (function(){ var e=getEvent(_imS.evId); return e && getLocation(e.locationId); })();
 
   // Summary
   var total = _imS.rows.length + (_imS.otherEvents||[]).length;
@@ -561,7 +561,7 @@ function imShowNewRunnerPbs(newRunners, tId) {
 function imSaveNewPbs(newRunners, tId, btn) {
   var types = S.activityTypes || ['parkrun'];
   newRunners.forEach(function(nr, i) {
-    var runner = S.runners.find(function(r){ return r.id === nr.id; });
+    var runner = getRunner(nr.id);
     if (!runner) return;
     var bestSec = null;
     types.forEach(function(type) {
@@ -598,7 +598,7 @@ function imInjectButton(){
   var header=document.querySelector('#tab-enter-times .page-header');
   if(!header||header.querySelector('#im-import-btn')) return;
   var evId=parseInt(sel.value);
-  var ev=S.events.find(function(e){return e.id===evId;});
+  var ev=getEvent(evId);
   if(!ev||!isParkrun(ev.tournamentId)) return;
   var btn=document.createElement('button');
   btn.id='im-import-btn';
