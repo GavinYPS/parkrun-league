@@ -10,6 +10,7 @@ document.getElementById('confirm-modal').addEventListener('click', function(e) {
 
 renderNav(); loadLogo(); renderRunners(); renderTournaments(); renderEnterTimesSel(); renderLbSel(); renderGlobalSettings();
 sw(location.hash.slice(1));
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') document.getElementById('runner-modal').classList.remove('open'); });
 window.addEventListener('hashchange', function() { var p = location.hash.slice(1); if (p !== curPage) sw(p); });
 
 // Public data load — fetches data.json without a token so the leaderboard

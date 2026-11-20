@@ -1,5 +1,7 @@
 // Leaderboard page
 
+var lbScores = [];   // rows of the leaderboard on screen, used by the runner modal
+
 function renderLbSel() {
   var sel = document.getElementById('lb-tournament-sel'); var cur = sel ? sel.value : '';
   if (!sel) return;
@@ -65,6 +67,7 @@ function renderLeaderboard() {
     return {runner:r, bandPts:bandPts, runs:runs, attendancePts:attendancePts, wildcardPts:wildcardPts, volunteerPts:volunteerPts, bonus:getBonus(runs, ts), total:bandPts + attendancePts + wildcardPts + volunteerPts + getBonus(runs, ts)};
   }).filter(function(s) { return s.runs > 0 || s.volunteerPts > 0 || s.wildcardPts > 0; }).sort(function(a,b) { return b.total - a.total || a.runner.name.localeCompare(b.runner.name); });
 
+  lbScores = scores;
   var ts = getTournamentSettings(parseInt(tid));
   var showAttBonus = (ts.attendanceBonus || 0) > 0 && scores.some(function(s) { return s.attendancePts > 0; });
   var hasVolunteers = scores.some(function(s) { return s.volunteerPts > 0; });
@@ -93,7 +96,7 @@ function renderLeaderboard() {
       + '<div class="text-right lb-pt" data-l="Bonus" style="color:var(--orange);">' + (s.bonus > 0 ? '+' : '') + s.bonus + '</div>'
       + (showVolBonus ? '<div class="text-right lb-pt" data-l="Vol." style="color:var(--green);">+' + s.volunteerPts + '</div>' : '')
       + '</div>'
-      + '<div class="text-right lb-total" style="color:' + (i === 0 ? 'var(--orange)' : 'var(--text)') + ';">' + s.total + '</div></div>';
+      + '<div class="text-right lb-total" style="color:' + (i === 0 ? 'var(--orange)' : 'var(--text)') + ';">' + s.total + ' <span style="color:var(--text3);font-weight:400;">&rsaquo;</span></div></div>';
   }).join('') : '<div class="notice">No results entered yet.</div>';
 
   area.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(95px,1fr));gap:10px;margin-bottom:1.25rem;">'
@@ -118,16 +121,19 @@ function showRunnerSummary(rid) {
         else if (rd.volunteer) { what = '<span style="color:var(--green);">Volunteered</span>'; }
         else if (rd.actualSec != null) {
           what = '<b class="text-mono">' + sTime(rd.actualSec) + '</b>';
+          if (base != null) { var dl = rd.actualSec - base; what += ' <span style="font-size:11px;color:' + (dl < 0 ? 'var(--green)' : dl > 0 ? 'var(--red)' : 'var(--text3)') + ';">' + (dl < 0 ? '−' : '+') + sTime(Math.abs(dl)) + '</span>'; }
           if (best == null || rd.actualSec < best) best = rd.actualSec;
           if (base != null && isParkrun(t.id) && r.band) { var bp = getBandPtsForRunner(rd.actualSec - base, r.band, ts).pts; pts = (bp > 0 ? '+' : '') + bp; }
         } else return;
-        rows += '<tr><td>' + (ev.date ? fmtDate(ev.date) : '') + '</td><td>' + ev.locationName + ' #' + ev.runNumber + '</td><td>' + what + '</td><td class="text-right">' + pts + '</td></tr>';
+        rows += '<tr><td>' + (ev.date ? fmtDate(ev.date) : '') + '</td><td>' + ev.locationName.split(' ')[0] + ' #' + ev.runNumber + '</td><td>' + what + '</td><td class="text-right">' + pts + '</td></tr>';
       });
     if (!rows) return;
     html += '<div style="margin-top:.9rem;"><div style="font-weight:700;color:var(--orange);">' + t.name + '</div>'
       + '<div style="font-size:12px;color:var(--text3);margin-bottom:4px;">' + (base != null ? 'Baseline ' + sTime(base) : 'No baseline') + (best != null ? ' &middot; Best ' + sTime(best) : '') + '</div>'
       + '<div style="overflow-x:auto;"><table style="font-size:13px;"><tr><th style="text-align:left;">Date</th><th style="text-align:left;">Event</th><th style="text-align:left;">Time</th><th class="text-right">Pts</th></tr>' + rows + '</table></div></div>';
   });
+  var pos = lbScores.findIndex(function(x) { return x.runner.id === r.id; }), me = lbScores[pos];
+  if (me) html = '<div style="font-size:13px;color:var(--text2);">' + (pos + 1) + ' of ' + lbScores.length + ' &middot; Speed ' + (me.bandPts > 0 ? '+' : '') + me.bandPts + ' &middot; Att. +' + me.attendancePts + ' &middot; Bonus +' + me.bonus + ' &middot; Wildcard +' + me.wildcardPts + ' &middot; Vol. +' + me.volunteerPts + ' = <b>' + me.total + '</b></div>' + html;
   document.getElementById('runner-modal-title').textContent = r.name + (r.band ? ' · Band ' + r.band : '');
   document.getElementById('runner-modal-body').innerHTML = html || '<p style="color:var(--text3);">No times recorded yet.</p>';
   document.getElementById('runner-modal').classList.add('open');
