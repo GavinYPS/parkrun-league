@@ -102,6 +102,7 @@ async function ghPush() {
     localStorage.setItem(STORE_KEY, JSON.stringify(S));
     ghStatus('Saved ' + new Date().toLocaleTimeString(), true);
     ghSetSaveEnabled(true);
+    sessionStorage.setItem('gh_resolved', String(S._savedAt));   // our own save is the cloud version now
     showToast('Data saved to cloud');
   } catch(e) { ghStatus('Save failed: ' + e.message, false); console.error(e); }
 }
@@ -129,7 +130,9 @@ async function ghPull() {
     var hasLocal = !!(S.runners && S.runners.length || S.tournaments && S.tournaments.length);
     // Only a conflict when local holds something the cloud copy does not already have
     var differs = hasLocal && JSON.stringify(ghMerge(S, remote), norm) !== JSON.stringify(remote, norm);
-    if (hasLocal && differs) {
+    if (hasLocal && differs && sessionStorage.getItem('gh_resolved') === String(remote._savedAt)) {
+      // Already merged/overwritten against this exact cloud version this session: keep local, do not ask again
+    } else if (hasLocal && differs) {
       var ls = S._savedAt ? new Date(S._savedAt).toLocaleString() : 'unsaved';
       var rs = remote._savedAt ? new Date(remote._savedAt).toLocaleString() : 'unknown';
       var mergedNow = ghMerge(S, remote);
@@ -142,6 +145,7 @@ async function ghPull() {
         }, 30);
       });
       S = choice === 'merge' ? ghMerge(S, remote) : remote;
+      sessionStorage.setItem('gh_resolved', String(remote._savedAt));
     } else {
       S = remote;
     }
